@@ -34,7 +34,7 @@ const Navbar = () => {
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 2 }}>
           <SearchIcon sx={{ color: '#333' }} />
-          <InputBase placeholder="Search Employee" sx={{ marginLeft: 1 }} />
+          <InputBase placeholder="Search Project" sx={{ marginLeft: 1 }} />
         </Box>
         {/* <IconButton onClick={toggleDarkMode} sx={{ color: '#333' }}>
           {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
@@ -58,7 +58,7 @@ const Navbar = () => {
 
 export default Navbar;
 
-
+// dark mode
 // // src/components/Navbar.tsx
 // import React from 'react';
 // import { AppBar, Toolbar, Typography, InputBase, Box, IconButton, Menu, MenuItem } from '@mui/material';

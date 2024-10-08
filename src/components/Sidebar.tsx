@@ -23,23 +23,23 @@ const Sidebar = () => {
       }}
     >
       {/* Home */}
-      <ListItem component={Link} href="/" sx={{ textDecoration: 'none', color: theme.palette.secondary.main }}>
+      <ListItem component={Link} href="/" sx={{ textDecoration: 'none', color: theme.palette.common.black}}>
         <ListItemIcon>
           <HomeIcon />
         </ListItemIcon>
         <ListItemText primary="Home" />
       </ListItem>
 
-      {/* Profile */}
-      <ListItem component={Link} href="/profile" sx={{ textDecoration: 'none', color: theme.palette.secondary.main }}>
+      {/* Profile
+      <ListItem component={Link} href="/profile" sx={{ textDecoration: 'none', color: theme.palette.common.black }}>
         <ListItemIcon>
           <PersonIcon />
         </ListItemIcon>
         <ListItemText primary="My Profile" />
-      </ListItem>
+      </ListItem> */}
 
       {/* Info */}
-      <ListItem component={Link} href="/info" sx={{ textDecoration: 'none', color: theme.palette.secondary.main }}>
+      <ListItem component={Link} href="/info" sx={{ textDecoration: 'none', color: theme.palette.common.black }}>
         <ListItemIcon>
           <InfoIcon />
         </ListItemIcon>
@@ -47,7 +47,7 @@ const Sidebar = () => {
       </ListItem>
 
       {/* Leave Requests */}
-      <ListItem component={Link} href="/leave-requests" sx={{ textDecoration: 'none', color: theme.palette.secondary.main }}>
+      <ListItem component={Link} href="/leave-requests" sx={{ textDecoration: 'none', color: theme.palette.common.black }}>
         <ListItemIcon>
           <SettingsIcon />
         </ListItemIcon>
@@ -55,27 +55,27 @@ const Sidebar = () => {
       </ListItem>
 
        {/* projects*/}
-       <ListItem component={Link} href="/projects" sx={{ textDecoration: 'none', color: theme.palette.secondary.main }}>
+       <ListItem component={Link} href="/projects" sx={{ textDecoration: 'none', color: theme.palette.common.black }}>
         <ListItemIcon>
           <SettingsIcon />
         </ListItemIcon>
         <ListItemText primary="projects" />
       </ListItem>
 
-      {/* Logout */}
+      {/* Logout
       <ListItem component={Link} href="/logout" sx={{ textDecoration: 'none', color: theme.palette.secondary.main }}>
         <ListItemIcon>
           <ExitToAppIcon />
         </ListItemIcon>
         <ListItemText primary="Logout" />
-      </ListItem>
+      </ListItem> */}
     </List>
   );
 };
 
 export default Sidebar;
 
-
+// dark mode
 // // src/components/Sidebar.tsx
 // import React from 'react';
 // import { List, ListItem, ListItemIcon, ListItemText, useTheme } from '@mui/material';

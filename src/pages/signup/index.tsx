@@ -1,3 +1,4 @@
+
 import { useState, Fragment, ChangeEvent, ReactNode } from 'react'
 
 // ** Next Imports
@@ -19,7 +20,6 @@ import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
 
-// ** Demo Imports
 import { useRouter } from 'next/router'
 import { API_BASE_URL } from 'src/pages/api/http.api'
 import { Grid } from '@mui/material'
@@ -45,9 +45,9 @@ interface State {
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: '1000px',
     margin: '0 auto',
-    padding: theme.spacing(5),
+    padding: theme.spacing(3),
     borderRadius: theme.shape.borderRadius * 2,
     boxShadow: theme.shadows[3],
     backgroundColor: theme.palette.background.paper
@@ -61,7 +61,7 @@ const LinkStyled = styled('a')(({ theme }) => ({
 
 const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
     marginTop: theme.spacing(1.5),
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(1),
     '& .MuiFormControlLabel-label': {
         fontSize: '0.875rem',
         color: theme.palette.text.secondary
@@ -113,7 +113,6 @@ const RegisterPage = () => {
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
         try {
-            console.log('signing up with:', signupDetails)
             const response = await fetch(`${API_BASE_URL}/signup-professional`, {
                 method: 'POST',
                 headers: {
@@ -124,24 +123,20 @@ const RegisterPage = () => {
 
             if (!response.ok) {
                 const errorText = await response.text()
-                console.error('Response error text:', errorText)
-                throw new Error('Registration failed')
+                throw new Error(errorText || 'Registration failed')
             }
 
             const contentType = response.headers.get('Content-Type')
-            if (contentType && contentType.includes('application/json')) {
+            if (contentType?.includes('application/json')) {
                 const data = await response.json()
-                console.log('registered successfully:', data)
                 setSuccessMessage('Registration successful! Redirecting to login page...')
                 router.push('/pages/login')
             } else {
                 const errorText = await response.text()
-                console.error('Unexpected content type:', contentType, 'Response text:', errorText)
-                throw new Error('Unexpected response format')
+                throw new Error(errorText || 'Unexpected response format')
             }
         } catch (error) {
             setError('An error occurred. Please try again later.')
-            console.error('Registration failed:', error instanceof Error ? error.message : 'Unknown error')
         }
     }
 
@@ -150,62 +145,83 @@ const RegisterPage = () => {
             sx={{
                 minHeight: '100vh',
                 display: 'flex',
+                flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: theme.palette.background.default
             }}
         >
+            {/* Centered Logo */}
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+                <img src='/images/LOGO.png' alt='LOGO' width={100} />
+            </Box>
+
             <Card>
-                <Box sx={{ textAlign: 'center', mb: 4 }}>
-                    <img src='/images/logo.png' alt='LOGO' width={80} />
-                    {/* <Typography variant='h6' sx={{ mt: 2, color: '#6c757d' }}>
-            LOGO
-          </Typography> */}
-                </Box>
-                <Typography variant='h5' sx={{ mb: 3, textAlign: 'center', fontWeight: 600 }}>
+                <Typography variant='h5' sx={{ mb: 2, textAlign: 'center', fontWeight: 600 }}>
                     Create an Account
                 </Typography>
+
                 <form noValidate autoComplete='off' onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ mb: 1 }}>First Name</Typography>
                             <TextField
                                 fullWidth
-                                label='First Name'
                                 name='firstName'
                                 value={signupDetails.firstName}
                                 onChange={handleChange('firstName')}
-                                sx={{ marginBottom: 3, height: '56px' }}
+                                sx={{
+                                    marginBottom: 1,
+                                    '& .MuiInputBase-input': {
+                                        padding: '10px 14px',
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ mb: 1 }}>Last Name</Typography>
                             <TextField
                                 fullWidth
-                                label='Last Name'
                                 name='lastName'
                                 value={signupDetails.lastName}
                                 onChange={handleChange('lastName')}
-                                sx={{ marginBottom: 3, height: '56px' }}
+                                sx={{
+                                    marginBottom: 1,
+                                    '& .MuiInputBase-input': {
+                                        padding: '10px 14px',
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ mb: 1 }}>Email</Typography>
                             <TextField
                                 fullWidth
-                                label='Email'
                                 name='email'
                                 value={signupDetails.email}
                                 onChange={handleChange('email')}
-                                sx={{ marginBottom: 3, height: '56px' }}
+                                sx={{
+                                    marginBottom: 1,
+                                    '& .MuiInputBase-input': {
+                                        padding: '10px 14px',
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ mb: 1 }}>Password</Typography>
                             <TextField
                                 fullWidth
                                 type={showPassword ? 'text' : 'password'}
-                                label='Password'
                                 name='password'
                                 value={signupDetails.password}
                                 onChange={handleChange('password')}
-                                sx={{ marginBottom: 3, height: '56px' }}
+                                sx={{
+                                    marginBottom: 1,
+                                    '& .MuiInputBase-input': {
+                                        padding: '10px 14px',
+                                    }
+                                }}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
@@ -217,46 +233,69 @@ const RegisterPage = () => {
                                 }}
                             />
                         </Grid>
+
+                        {/* Address Fields */}
                         <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ mb: 1 }}>Street</Typography>
                             <TextField
                                 fullWidth
-                                label='Street'
                                 name='street'
                                 value={signupDetails.address.street}
                                 onChange={handleAddressChange('street')}
-                                sx={{ marginBottom: 3, height: '56px' }}
+                                sx={{
+                                    marginBottom: 1,
+                                    '& .MuiInputBase-input': {
+                                        padding: '10px 14px',
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ mb: 1 }}>City</Typography>
                             <TextField
                                 fullWidth
-                                label='City'
                                 name='city'
                                 value={signupDetails.address.city}
                                 onChange={handleAddressChange('city')}
-                                sx={{ marginBottom: 3, height: '56px' }}
+                                sx={{
+                                    marginBottom: 1,
+                                    '& .MuiInputBase-input': {
+                                        padding: '10px 14px',
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ mb: 1 }}>Country</Typography>
                             <TextField
                                 fullWidth
-                                label='Country'
                                 name='country'
                                 value={signupDetails.address.country}
                                 onChange={handleAddressChange('country')}
-                                sx={{ marginBottom: 3, height: '56px' }}
+                                sx={{
+                                    marginBottom: 1,
+                                    '& .MuiInputBase-input': {
+                                        padding: '10px 14px',
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ mb: 1 }}>Telephone</Typography>
                             <TextField
                                 fullWidth
-                                label='Telephone'
                                 name='telephone'
                                 value={signupDetails.address.telephone}
                                 onChange={handleAddressChange('telephone')}
-                                sx={{ marginBottom: 3, height: '56px' }}
+                                sx={{
+                                    marginBottom: 1,
+                                    '& .MuiInputBase-input': {
+                                        padding: '10px 14px',
+                                    }
+                                }}
                             />
                         </Grid>
+
                         <Grid item xs={12}>
                             <FormControlLabel
                                 control={<Checkbox />}
@@ -270,6 +309,7 @@ const RegisterPage = () => {
                                 }
                             />
                         </Grid>
+
                         {error && (
                             <Grid item xs={12}>
                                 <Typography color='error' variant='body2'>
@@ -296,8 +336,8 @@ const RegisterPage = () => {
                                     '&:hover': {
                                         backgroundColor: theme.palette.secondary.main
                                     },
-                                    height: '56px', // Matching height with input fields
-                                    borderRadius: '8px', // Adding the border radius similar to the style in the image
+                                    height: '50px',
+                                    borderRadius: '8px',
                                     marginTop: '20px',
                                     fontSize: '1rem',
                                 }}
@@ -307,6 +347,7 @@ const RegisterPage = () => {
                         </Grid>
                     </Grid>
                 </form>
+
                 <Divider sx={{ my: 3 }} />
                 <Box sx={{ textAlign: 'center' }}>
                     <Typography variant='body2' sx={{ mb: 2 }}>
@@ -325,4 +366,3 @@ RegisterPage.getLayout = (page: ReactNode) => <AuthLayout>{page}</AuthLayout>
 RegisterPage.guestGuard = true
 
 export default RegisterPage
-

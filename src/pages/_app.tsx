@@ -26,9 +26,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWith
     const palette = DefaultPalette('light', 'primary');
     const theme = createTheme({ palette }); // Apply the palette directly
 
-    useEffect(() => {
-        document.body.style.background = 'radial-gradient(circle at bottom, #FFFFFF 80%, #92E000 20%)';
-    }, []);
+    // useEffect(() => {
+    //     document.body.style.background = 'radial-gradient(circle at bottom, #FFFFFF 80%, #92E000 20%)';
+    // }, []);
 
     // Check if the page has a custom layout, like `AuthLayout`, or fallback to default
     const getLayout = Component.getLayout || ((page) => (
@@ -65,12 +65,12 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWith
     return (
         <SessionProvider session={session}>
             <UserProvider>
-            <ThemeProviderWrapper>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    {getLayout(<Component {...pageProps} />)}
-                </ThemeProvider>
-            </ThemeProviderWrapper>
+                <ThemeProviderWrapper>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        {getLayout(<Component {...pageProps} />)}
+                    </ThemeProvider>
+                </ThemeProviderWrapper>
             </UserProvider>
         </SessionProvider>
     );

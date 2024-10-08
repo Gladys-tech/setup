@@ -19,10 +19,8 @@ import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 
 // ** Icons Imports
- import EyeOutline from 'mdi-material-ui/EyeOutline'
+import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-
-// ** Configs
 
 // ** Context
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -39,13 +37,17 @@ interface State {
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   width: '100%',
-  maxWidth: '400px', // Adjust width to match the card size in the design
+  maxWidth: '100%', 
+  [theme.breakpoints.up('sm')]: {
+    maxWidth: '1000px',  
+  },
   margin: '0 auto',
-  padding: theme.spacing(5),
-  borderRadius: theme.shape.borderRadius * 2, // Rounded corners
+  padding: theme.spacing(4),
+  borderRadius: theme.shape.borderRadius * 2,
   boxShadow: theme.shadows[3],
   backgroundColor: theme.palette.background.paper
 }))
+
 
 const LoginPage = () => {
   const [values, setValues] = useState<State>({
@@ -56,7 +58,7 @@ const LoginPage = () => {
 
   const theme = useTheme()
   const router = useRouter()
-  const { setUser } = useUser() // Use context to set user after login
+  const { setUser } = useUser()
 
   const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value })
@@ -83,66 +85,69 @@ const LoginPage = () => {
           email: values.email,
           password: values.password,
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Login failed');
+        throw new Error('Login failed')
       }
 
-      const responseData = await response.json();
-      const { user, token } = responseData; // Extract user and token from response
-      setUser(user); // Set user after successful login
-      router.push('/pages/dashboard'); // Redirect to dashboard
-      localStorage.setItem('user', JSON.stringify(user)); // Store user in local storage
-      localStorage.setItem('token', token); // Store token in local storage
+      const responseData = await response.json()
+      const { user, token } = responseData
+      setUser(user)
+      router.push('/pages/dashboard')
+      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('token', token)
 
     } catch (error) {
-      console.error('Login failed:', error instanceof Error ? error.message : 'Unknown error');
-
-      // Handle login error and display an alert
-      alert('Login failed. Please try again.');
+      console.error('Login failed:', error instanceof Error ? error.message : 'Unknown error')
+      alert('Login failed. Please try again.')
     }
   }
 
   return (
     <Box
       sx={{
-        minHeight: '100vh',
+        maxHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.palette.background.default // Use background from theme
+        backgroundColor: theme.palette.background.default
       }}
     >
+      {/* Logo centered above the login card */}
+      <Box sx={{ mb:2 , mt:6}}>
+        <img src='/images/LOGO.png' alt='LOGO' width={100} />
+      </Box>
+      
       <Card>
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <img src='/images/LOGO.png' alt='LOGO' width={80} /> {/* Logo */}
-          {/* <Typography variant='h6' sx={{ mt: 2, color: '#6c757d' }}>
-            LOGO
-          </Typography> */}
-        </Box>
-        <Typography variant='h5' sx={{ mb: 3, textAlign: 'center', fontWeight: 600 }}>
+        <Typography variant='h5' sx={{ mb: 1, textAlign: 'center', fontWeight: 600 }}>
           Sign In
         </Typography>
-        <Typography variant='body2' sx={{ textAlign: 'center', mb: 4, color: '#6c757d' }}>
+        <Typography variant='body2' sx={{ textAlign: 'center', mb: 2, color: '#6c757d' }}>
           Enter your username and password to sign in
         </Typography>
+
         <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+          {/* Headers above input fields */}
+          <InputLabel htmlFor='auth-login-email' sx={{ mb: 1, fontWeight: 600 }}>Username</InputLabel>
           <TextField
+            id='auth-login-email'
             fullWidth
-            label='Your Username'
             value={values.email}
             onChange={handleChange('email')}
-            sx={{ mb: 3 }}
-            InputLabelProps={{ shrink: true }}
+            sx={{ mb: 2, height: '40px' }}  // Reduced field height
+            InputProps={{ sx: { height: '40px' } }}  // Input height
           />
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
+
+          <InputLabel htmlFor='auth-login-password' sx={{ mb: 1, fontWeight: 600 }}>Password</InputLabel>
+          <FormControl fullWidth sx={{ mb: 2, height: '40px' }}>
             <OutlinedInput
-              label='Password'
+              id='auth-login-password'
               value={values.password}
               onChange={handleChange('password')}
               type={values.showPassword ? 'text' : 'password'}
+              sx={{ height: '40px' }}  // Reduced input field height
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
@@ -156,24 +161,27 @@ const LoginPage = () => {
               }
             />
           </FormControl>
+
           <Button
             fullWidth
             size='large'
             variant='contained'
             sx={{
-              backgroundColor: theme.palette.primary.main, // Use primary color from theme
-              color: theme.palette.primary.contrastText, // Use contrast text color from theme
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
               textTransform: 'none',
-              '&:hover': {
-                backgroundColor: theme.palette.secondary.main // Use secondary color for hover
-              },
+              height: '40px',  // Match input field height
+              borderRadius: '8px',
               mb: 3,
-              borderRadius: '8px' 
+              '&:hover': {
+                backgroundColor: theme.palette.secondary.main
+              }
             }}
             type='submit'
           >
             Sign In
           </Button>
+          
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
             <FormControlLabel control={<Checkbox />} label='Remember Me' />
             <Link href='/forgot-password' passHref>
@@ -182,6 +190,7 @@ const LoginPage = () => {
               </Typography>
             </Link>
           </Box>
+
           <Box sx={{ textAlign: 'center', mt: 3 }}>
             <Typography variant='body2' sx={{ color: '#6c757d', mb: 1 }}>
               Don't have an account?
