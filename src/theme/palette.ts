@@ -88,13 +88,20 @@ const DefaultPalette = (mode: PaletteMode, themeColor: ThemeColor): CustomPalett
       disabled: `rgba(${mode === 'light' ? '0,0,0' : '255,255,255'}, 0.38)`,
     },
     divider: `rgba(0, 0, 0, 0.12)`,
+    // background: {
+    //   paper: mode === 'light' ? '#FFFFFF' : '#2C3E50',
+    //   default: mode === 'light' ? 
+    //     // 'linear-gradient(to bottom, #FFFFFF 80%, #E1FF00 20%)' : 
+    //     'radial-gradient(circle at bottom, #FFFFFF 80%, #92E000 20%)':
+    //     '#1A252F',
+    // },
     background: {
       paper: mode === 'light' ? '#FFFFFF' : '#2C3E50',
-      default: mode === 'light' ? 
-        // 'linear-gradient(to bottom, #FFFFFF 80%, #E1FF00 20%)' : 
-        'radial-gradient(circle at bottom, #FFFFFF 80%, #92E000 20%)':
-        '#1A252F',
-    },
+      default: mode === 'light'
+        ?'linear-gradient(to top, rgba(146, 224, 0, 1) 5%, rgba(146, 224, 0, 0.5) 10%, rgba(146, 224, 0, 0) 20%, #FFFFFF 90%)'
+        : '#1A252F',
+    },    
+    
     action: {
       active: `rgba(0, 0, 0, 0.54)`,
       hover: `rgba(0, 0, 0, 0.04)`,

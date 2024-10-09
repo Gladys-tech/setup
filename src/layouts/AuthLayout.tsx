@@ -1,19 +1,17 @@
-// src/layouts/AuthLayout.tsx
 import React, { ReactNode } from 'react';
 import { Box } from '@mui/material';
 
 interface AuthLayoutProps {
-  children: ReactNode; // Explicitly type the children prop
+  children: ReactNode;
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   return (
-    <Box 
-      display="flex" 
-      minHeight="100vh" 
-      justifyContent="center" 
-      alignItems="center" // Center content vertically and horizontally
-      // sx={{ backgroundColor: '#f4f6f8' }} // Optional background color
+    <Box
+      display="flex"
+      minHeight="100vh"
+      justifyContent="center"
+      alignItems="center"
     >
       <Box width="100%" maxWidth="600px" p={3}>
         {children}
