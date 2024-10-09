@@ -15,14 +15,18 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ background: '#fff', boxShadow: 'none', borderBottom: '1px solid #ccc', width: '100%' }}>
-      <Toolbar sx={{ display: 'flex', justifyContent: { xs: 'space-between', md: 'flex-start' } }}>
-        {/* Logo container */}
-        <Box 
+    <AppBar
+      position="static"
+      sx={{ background: '#fff', boxShadow: 'none', borderBottom: '1px solid #ccc', width: '100%' }}
+    >
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+        {/* Logo container for large and small screens */}
+        <Box
           sx={{
-            display: { xs: 'flex', md: 'none' }, // Show only on small screens
-            justifyContent: 'center', // Center the logo
-            flexGrow: 1,
+            display: 'flex',
+            justifyContent: { xs: 'center', md: 'flex-start' }, // Center on small screens, left-align on large screens
+            flexGrow: { xs: 1, md: 0 },  // Grow to center on small screens, don't grow on large screens
           }}
         >
           <Typography variant="h6" component="div" sx={{ color: '#333' }}>
@@ -30,21 +34,15 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        <Box 
+        {/* Search icon box */}
+        <Box
           sx={{
-            display: { xs: 'none', md: 'flex' }, // Show only on larger screens
-            flexGrow: 1,
+            display: 'flex',
+            alignItems: 'center',
+            marginRight: { xs: 0, md: 2 },  // Adjust margin on large screens
           }}
         >
-          <Typography variant="h6" component="div" sx={{ color: '#333', textAlign: 'center', flexGrow: 1 }}>
-            LOGO
-          </Typography>
-        </Box>
-
-        {/* Search box */}
-        <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 2 }}>
           <SearchIcon sx={{ color: '#333' }} />
-          {/* <InputBase placeholder="Search Project" sx={{ marginLeft: 1 }} /> */}
         </Box>
 
         {/* Account icon and menu */}
@@ -67,3 +65,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 interface SidebarProps {
   userRole: 'client' | 'professional' | 'company'; // Define user roles
-  onClose?: () => void; 
+  onClose?: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ userRole, onClose }) => {
@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole, onClose }) => {
       case 'client':
         return (
           <>
-            <ListItem component={Link} href="/client/" onClick={onClose}>
+            <ListItem component={Link} href="/client/" onClick={onClose} sx={{ width: '231px', font: '14px', padding: '8px', fontWeight: 500, lineHeight: '1.25rem' }}>
               <ListItemIcon><HomeIcon /></ListItemIcon>
               <ListItemText primary="Client Pages" />
             </ListItem>
@@ -33,17 +33,76 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole, onClose }) => {
 
       case 'professional':
         return (
+          // <>
+          //   <ListItem component={Link} href="/professional/" onClick={onClose}sx={{width:'231px', font:'14px',padding:'8px', fontWeight:500, lineHeight:'1.25rem'}}>
+          //     <ListItemIcon><HomeIcon /></ListItemIcon>
+          //     <ListItemText primary="Professional Page" />
+          //   </ListItem>
+          //   <ListItem component={Link} href="/professional/projects" onClick={onClose} sx={{width:'231px', font:'14px',padding:'8px', fontWeight:500, lineHeight:'1.25rem'}}>
+          //     <ListItemIcon><InfoIcon /></ListItemIcon>
+          //     <ListItemText primary="My Projects" />
+          //   </ListItem>
+          //   {/* Add more professional-specific links here */}
+          // </>
+
           <>
-            <ListItem component={Link} href="/professional/" onClick={onClose}>
-              <ListItemIcon><HomeIcon /></ListItemIcon>
-              <ListItemText primary="Professional Page" />
+            <ListItem
+              component={Link}
+              href="/professional/"
+              onClick={onClose}
+              sx={{
+                width: '231px',
+                fontSize: '14px', 
+                padding: '8px',
+                fontWeight: 500,
+                lineHeight: '1.25rem',
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: '40px', // Adjust the space for the icon
+                  color: 'primary.main', // Optional: change icon color
+                }}
+              >
+                <HomeIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Professional Page"
+                sx={{
+                  color: 'text.primary', // Optional: set text color
+                }}
+              />
             </ListItem>
-            <ListItem component={Link} href="/professional/projects" onClick={onClose}>
-              <ListItemIcon><InfoIcon /></ListItemIcon>
-              <ListItemText primary="My Projects" />
+
+            <ListItem
+              component={Link}
+              href="/professional/projects"
+              onClick={onClose}
+              sx={{
+                width: '231px',
+                fontSize: '14px', // Changed 'font' to 'fontSize'
+                padding: '8px',
+                fontWeight: 500,
+                lineHeight: '1.25rem',
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: '40px', // Adjust the space for the icon
+                  color: 'primary.main', // Optional: change icon color
+                }}
+              >
+                <InfoIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="My Projects"
+                sx={{
+                  color: 'text.primary', // Optional: set text color
+                }}
+              />
             </ListItem>
-            {/* Add more professional-specific links here */}
           </>
+
         );
 
       case 'company':
@@ -67,7 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole, onClose }) => {
   };
 
   return (
-    <Box sx={{ width: 250, borderRight: '1px solid #ccc', height: '100%' }}>
+    <Box sx={{ width: 220, borderRight: '1px solid #92E000', height: '100%' }}>
       <List sx={{ width: 250 }}>
         {renderSidebarContent()}
       </List>

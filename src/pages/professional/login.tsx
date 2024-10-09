@@ -7,7 +7,6 @@ import { useRouter } from 'next/router'
 // ** MUI Components
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
@@ -23,7 +22,6 @@ import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
 // ** Context
-import FormControlLabel from '@mui/material/FormControlLabel'
 import AuthLayout from '../../layouts/AuthLayout'
 import { API_BASE_URL } from '../api/http.api'
 import { useUser } from 'src/context/UserContext'
@@ -37,12 +35,12 @@ interface State {
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   width: '100%',
-  maxWidth: '100%', 
+  maxWidth: '100%',
   [theme.breakpoints.up('sm')]: {
-    maxWidth: '1000px',  
+    maxWidth: '28rem',
   },
   margin: '0 auto',
-  padding: theme.spacing(4),
+  padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius * 2,
   boxShadow: theme.shadows[3],
   backgroundColor: theme.palette.background.paper
@@ -115,16 +113,15 @@ const LoginPage = () => {
         backgroundColor: theme.palette.background.default
       }}
     >
-      {/* Logo centered above the login card */}
-      <Box sx={{ mb:2 , mt:6}}>
+      <Box sx={{ mb: 2, mt: 6 }}>
         <img src='/images/LOGO.png' alt='LOGO' width={100} />
       </Box>
-      
-      <Card>
-        <Typography variant='h5' sx={{ mb: 1, textAlign: 'center', fontWeight: 600 }}>
+
+      <Card sx={{maxWidth:'28rem', backgroundColor:theme.palette.common.white, maxHeight:'350px' , padding:'32px'}}>
+        <Typography variant='h5' sx={{ textAlign: 'center', fontWeight: 700 , font:'24px', lineHeight:'2rem'}}>
           Sign In
         </Typography>
-        <Typography variant='body2' sx={{ textAlign: 'center', mb: 2, color: '#6c757d' }}>
+        <Typography variant='body2' sx={{ textAlign: 'center', color: '#6c757d',font:'16px', margin:'0px 0px 8px' }}>
           Enter your username and password to sign in
         </Typography>
 
@@ -136,18 +133,25 @@ const LoginPage = () => {
             fullWidth
             value={values.email}
             onChange={handleChange('email')}
-            sx={{ mb: 2, height: '40px' }}  // Reduced field height
-            InputProps={{ sx: { height: '40px' } }}  // Input height
+            sx={{ mb: 2, height: '35px' }}  
+            InputProps={{
+              sx: {
+                height: '35px',  
+                padding:'8px',
+                width:'384px',
+                backgroundColor: theme.palette.common.white 
+              }
+            }}
           />
 
-          <InputLabel htmlFor='auth-login-password' sx={{ mb: 1, fontWeight: 600 }}>Password</InputLabel>
-          <FormControl fullWidth sx={{ mb: 2, height: '40px' }}>
+          <InputLabel htmlFor='auth-login-password' sx={{ fontWeight: 600 }}>Password</InputLabel>
+          <FormControl fullWidth sx={{ mb: 2, height: '35px' }}>
             <OutlinedInput
               id='auth-login-password'
               value={values.password}
               onChange={handleChange('password')}
               type={values.showPassword ? 'text' : 'password'}
-              sx={{ height: '40px' }}  // Reduced input field height
+              sx={{ height: '35px', backgroundColor: theme.palette.common.white,width:'384px' }}
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
@@ -169,10 +173,13 @@ const LoginPage = () => {
             sx={{
               backgroundColor: theme.palette.primary.main,
               color: theme.palette.primary.contrastText,
+              font:'12px',
+              padding:'8px 20px',
               textTransform: 'none',
-              height: '40px',  // Match input field height
+              height: '35px',  
               borderRadius: '8px',
-              mb: 3,
+              margin:'5px 0px 0px',
+              width:'384px',
               '&:hover': {
                 backgroundColor: theme.palette.secondary.main
               }
@@ -181,22 +188,22 @@ const LoginPage = () => {
           >
             Sign In
           </Button>
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-            <FormControlLabel control={<Checkbox />} label='Remember Me' />
-            <Link href='/forgot-password' passHref>
+
+          {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}> */}
+            {/* <FormControlLabel control={<Checkbox />} label='Remember Me' /> */}
+            {/* <Link href='/forgot-password' passHref>
               <Typography variant='body2' sx={{ color: theme.palette.primary.main, cursor: 'pointer' }}>
                 Forgot Password?
               </Typography>
-            </Link>
-          </Box>
+            </Link> */}
+          {/* </Box> */}
 
-          <Box sx={{ textAlign: 'center', mt: 3 }}>
+          <Box sx={{ mt:1, textAlign: 'center'}}>
             <Typography variant='body2' sx={{ color: '#6c757d', mb: 1 }}>
               Don't have an account?
             </Typography>
             <Link href='/professional/signup' passHref>
-              <Typography variant='body2' sx={{ color: theme.palette.primary.main, fontWeight: 600, cursor: 'pointer' }}>
+              <Typography variant='body2' sx={{ color: theme.palette.primary.main, fontWeight: 700, cursor: 'pointer' }} style={{ textDecoration: 'none !important' }} >
                 Sign Up Here
               </Typography>
             </Link>
@@ -210,3 +217,4 @@ const LoginPage = () => {
 LoginPage.getLayout = (page: ReactNode) => <AuthLayout>{page}</AuthLayout>
 
 export default LoginPage
+

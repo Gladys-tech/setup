@@ -48,10 +48,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {/* Sidebar on larger screens */}
           <Box
             sx={{
-              width: 250,
+              width: 220,
               display: { xs: 'none', md: 'block' }, // Hidden on small screens
-              borderRight: '1px solid #ccc',
+              borderRight: '1px solid #92E000',
               maxHeight: '100%', // Make the sidebar occupy the full height of the parent
+              fontSize: '14px', 
             }}
           >
             <Sidebar userRole={'professional'} />
@@ -64,7 +65,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             onClose={toggleSidebar}
             sx={{
               display: { xs: 'block', md: 'none' }, // Only show on small screens
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 220 },
             }}
           >
             <Sidebar onClose={toggleSidebar} userRole={'client'} /> 
