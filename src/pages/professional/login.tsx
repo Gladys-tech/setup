@@ -195,7 +195,7 @@ const LoginPage = () => {
             <Typography variant='body2' sx={{ color: '#6c757d', mb: 1 }}>
               Don't have an account?
             </Typography>
-            <Link href='/signup' passHref>
+            <Link href='/professional/signup' passHref>
               <Typography variant='body2' sx={{ color: theme.palette.primary.main, fontWeight: 600, cursor: 'pointer' }}>
                 Sign Up Here
               </Typography>

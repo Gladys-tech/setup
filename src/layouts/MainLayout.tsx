@@ -54,7 +54,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               maxHeight: '100%', // Make the sidebar occupy the full height of the parent
             }}
           >
-            <Sidebar />
+            <Sidebar userRole={'professional'} />
           </Box>
 
           {/* Sidebar drawer for small screens */}
@@ -67,7 +67,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
             }}
           >
-            <Sidebar onClose={toggleSidebar} /> 
+            <Sidebar onClose={toggleSidebar} userRole={'client'} /> 
           </Drawer>
 
           {/* Page content */}

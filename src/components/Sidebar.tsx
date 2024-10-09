@@ -1,49 +1,77 @@
 import React from 'react';
-import { List, ListItem, ListItemIcon, ListItemText, Box } from '@mui/material';
+import { List, ListItem, ListItemIcon, ListItemText, Box, Divider } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
 import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 
-
 interface SidebarProps {
+  userRole: 'client' | 'professional' | 'company'; // Define user roles
   onClose?: () => void; 
 }
-// const Sidebar = () => {
-  const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
+
+const Sidebar: React.FC<SidebarProps> = ({ userRole, onClose }) => {
   const theme = useTheme();
 
-  const sidebarContent = (
-    <List sx={{ width: 250 }}>
-      {/* Home link */}
-      <ListItem component={Link} href="/" sx={{ textDecoration: 'none', color: theme.palette.common.black }} onClick={onClose}>
-        <ListItemIcon>
-          <HomeIcon />
-        </ListItemIcon>
-        <ListItemText primary="Home" />
-      </ListItem>
+  // Function to render sidebar content based on user role
+  const renderSidebarContent = () => {
+    switch (userRole) {
+      case 'client':
+        return (
+          <>
+            <ListItem component={Link} href="/client/" onClick={onClose}>
+              <ListItemIcon><HomeIcon /></ListItemIcon>
+              <ListItemText primary="Client Pages" />
+            </ListItem>
+            <ListItem component={Link} href="/client/projects" onClick={onClose}>
+              <ListItemIcon><InfoIcon /></ListItemIcon>
+              <ListItemText primary="My Projects" />
+            </ListItem>
+            {/* Add more client-specific links here */}
+          </>
+        );
 
-      {/* Information link */}
-      <ListItem component={Link} href="/info" sx={{ textDecoration: 'none', color: theme.palette.common.black }}onClick={onClose}>
-        <ListItemIcon>
-          <InfoIcon />
-        </ListItemIcon>
-        <ListItemText primary="Information" />
-      </ListItem>
+      case 'professional':
+        return (
+          <>
+            <ListItem component={Link} href="/professional/" onClick={onClose}>
+              <ListItemIcon><HomeIcon /></ListItemIcon>
+              <ListItemText primary="Professional Page" />
+            </ListItem>
+            <ListItem component={Link} href="/professional/projects" onClick={onClose}>
+              <ListItemIcon><InfoIcon /></ListItemIcon>
+              <ListItemText primary="My Projects" />
+            </ListItem>
+            {/* Add more professional-specific links here */}
+          </>
+        );
 
-      {/* Projects link */}
-      <ListItem component={Link} href="/projects" sx={{ textDecoration: 'none', color: theme.palette.common.black }} onClick={onClose}>
-        <ListItemIcon>
-          <InfoIcon />
-        </ListItemIcon>
-        <ListItemText primary="Projects" />
-      </ListItem>
-    </List>
-  );
+      case 'company':
+        return (
+          <>
+            <ListItem component={Link} href="/company/" onClick={onClose}>
+              <ListItemIcon><HomeIcon /></ListItemIcon>
+              <ListItemText primary="Company Dashboard" />
+            </ListItem>
+            <ListItem component={Link} href="/company/projects" onClick={onClose}>
+              <ListItemIcon><InfoIcon /></ListItemIcon>
+              <ListItemText primary="My Projects" />
+            </ListItem>
+            {/* Add more company-specific links here */}
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <Box sx={{ width: 250, backgroundColor: '#fff', borderRight: '1px solid #ccc', height: '100%' }}>
-      {sidebarContent}
+    <Box sx={{ width: 250, borderRight: '1px solid #ccc', height: '100%' }}>
+      <List sx={{ width: 250 }}>
+        {renderSidebarContent()}
+      </List>
+      <Divider sx={{ my: 2, mx: 'auto', width: '90%' }} />
     </Box>
   );
 };

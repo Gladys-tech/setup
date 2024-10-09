@@ -352,7 +352,7 @@ const RegisterPage = () => {
                 <Box sx={{ textAlign: 'center' }}>
                     <Typography variant='body2' sx={{ mb: 2 }}>
                         Already have an account?{' '}
-                        <Link href='/login' passHref>
+                        <Link href='/professional/login' passHref>
                             <LinkStyled>Sign in</LinkStyled>
                         </Link>
                     </Typography>
