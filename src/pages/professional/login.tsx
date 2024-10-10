@@ -1,77 +1,76 @@
-import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react'
+import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react';
 
 // ** Next Imports
-import Link from 'next/link'
-import { useRouter } from 'next/router'
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 // ** MUI Components
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import FormControl from '@mui/material/FormControl'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import { styled, useTheme } from '@mui/material/styles'
-import MuiCard, { CardProps } from '@mui/material/Card'
-import InputAdornment from '@mui/material/InputAdornment'
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import FormControl from '@mui/material/FormControl';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import { styled, useTheme } from '@mui/material/styles';
+import MuiCard, { CardProps } from '@mui/material/Card';
+import InputAdornment from '@mui/material/InputAdornment';
 
 // ** Icons Imports
-import EyeOutline from 'mdi-material-ui/EyeOutline'
-import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+import EyeOutline from 'mdi-material-ui/EyeOutline';
+import EyeOffOutline from 'mdi-material-ui/EyeOffOutline';
 
 // ** Context
-import AuthLayout from '../../layouts/AuthLayout'
-import { API_BASE_URL } from '../api/http.api'
-import { useUser } from 'src/context/UserContext'
+import AuthLayout from '../../layouts/AuthLayout';
+import { API_BASE_URL } from '../api/http.api';
+import { useUser } from 'src/context/UserContext';
 
 interface State {
-  email: string
-  password: string
-  showPassword: boolean
+  email: string;
+  password: string;
+  showPassword: boolean;
 }
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   width: '100%',
-  maxWidth: '100%',
-  [theme.breakpoints.up('sm')]: {
-    maxWidth: '28rem',
-  },
+  maxWidth: '28rem',
   margin: '0 auto',
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius * 2,
   boxShadow: theme.shadows[3],
-  backgroundColor: theme.palette.background.paper
-}))
-
+  backgroundColor: theme.palette.background.paper,
+  [theme.breakpoints.down('sm')]: {
+    width: '90%', // Adjust card width for smaller screens
+  },
+}));
 
 const LoginPage = () => {
   const [values, setValues] = useState<State>({
     email: '',
     password: '',
-    showPassword: false
-  })
+    showPassword: false,
+  });
 
-  const theme = useTheme()
-  const router = useRouter()
-  const { setUser } = useUser()
+  const theme = useTheme();
+  const router = useRouter();
+  const { setUser } = useUser();
 
   const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [prop]: event.target.value })
-  }
+    setValues({ ...values, [prop]: event.target.value });
+  };
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword })
-  }
+    setValues({ ...values, showPassword: !values.showPassword });
+  };
 
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-  }
+    event.preventDefault();
+  };
 
   const handleSubmit = async (event: { preventDefault: () => void }) => {
-    event.preventDefault()
+    event.preventDefault();
 
     try {
       const response = await fetch(`${API_BASE_URL}/login-professional`, {
@@ -83,24 +82,23 @@ const LoginPage = () => {
           email: values.email,
           password: values.password,
         }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('Login failed')
+        throw new Error('Login failed');
       }
 
-      const responseData = await response.json()
-      const { user, token } = responseData
-      setUser(user)
-      router.push('/pages/dashboard')
-      localStorage.setItem('user', JSON.stringify(user))
-      localStorage.setItem('token', token)
-
+      const responseData = await response.json();
+      const { user, token } = responseData;
+      setUser(user);
+      router.push('/pages/dashboard');
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', token);
     } catch (error) {
-      console.error('Login failed:', error instanceof Error ? error.message : 'Unknown error')
-      alert('Login failed. Please try again.')
+      console.error('Login failed:', error instanceof Error ? error.message : 'Unknown error');
+      alert('Login failed. Please try again.');
     }
-  }
+  };
 
   return (
     <Box
@@ -110,48 +108,48 @@ const LoginPage = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.palette.background.default
+        backgroundColor: theme.palette.background.default,
       }}
     >
       <Box sx={{ mb: 2, mt: 6 }}>
         <img src='/images/LOGO.png' alt='LOGO' width={100} />
       </Box>
 
-      <Card sx={{maxWidth:'28rem', backgroundColor:theme.palette.common.white, maxHeight:'350px' , padding:'32px'}}>
-        <Typography variant='h5' sx={{ textAlign: 'center', fontWeight: 700 , font:'24px', lineHeight:'2rem'}}>
+      <Card sx={{ maxHeight: '24rem', padding: '32px' }}>
+        <Typography
+          variant='h5'
+          sx={{ textAlign: 'center', fontWeight: 700, fontSize: '24px', lineHeight: '2rem' }}
+        >
           Sign In
         </Typography>
-        <Typography variant='body2' sx={{ textAlign: 'center', color: '#6c757d',font:'16px', margin:'0px 0px 8px' }}>
+        <Typography variant='body2' sx={{ textAlign: 'center', color: '#6c757d', fontSize: '16px', margin: '0 0 8px' }}>
           Enter your username and password to sign in
         </Typography>
 
         <form noValidate autoComplete='off' onSubmit={handleSubmit}>
-          {/* Headers above input fields */}
           <InputLabel htmlFor='auth-login-email' sx={{ mb: 1, fontWeight: 600 }}>Username</InputLabel>
           <TextField
             id='auth-login-email'
             fullWidth
             value={values.email}
             onChange={handleChange('email')}
-            sx={{ mb: 2, height: '35px' }}  
+            sx={{ mb: 2 }}
             InputProps={{
               sx: {
-                height: '35px',  
-                padding:'8px',
-                width:'384px',
-                backgroundColor: theme.palette.common.white 
+                height: '35px',
+                backgroundColor: theme.palette.common.white,
               }
             }}
           />
 
           <InputLabel htmlFor='auth-login-password' sx={{ fontWeight: 600 }}>Password</InputLabel>
-          <FormControl fullWidth sx={{ mb: 2, height: '35px' }}>
+          <FormControl fullWidth sx={{ mb: 2 }}>
             <OutlinedInput
               id='auth-login-password'
               value={values.password}
               onChange={handleChange('password')}
               type={values.showPassword ? 'text' : 'password'}
-              sx={{ height: '35px', backgroundColor: theme.palette.common.white,width:'384px' }}
+              sx={{ height: '35px', backgroundColor: theme.palette.common.white }}
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
@@ -173,37 +171,26 @@ const LoginPage = () => {
             sx={{
               backgroundColor: theme.palette.primary.main,
               color: theme.palette.primary.contrastText,
-              font:'12px',
-              padding:'8px 20px',
+              padding: '8px 20px',
               textTransform: 'none',
-              height: '35px',  
+              height: '35px',
               borderRadius: '8px',
-              margin:'5px 0px 0px',
-              width:'384px',
-              '&:hover': {
-                backgroundColor: theme.palette.secondary.main
-              }
+              margin: '5px 0',
             }}
             type='submit'
           >
             Sign In
           </Button>
 
-          {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}> */}
-            {/* <FormControlLabel control={<Checkbox />} label='Remember Me' /> */}
-            {/* <Link href='/forgot-password' passHref>
-              <Typography variant='body2' sx={{ color: theme.palette.primary.main, cursor: 'pointer' }}>
-                Forgot Password?
-              </Typography>
-            </Link> */}
-          {/* </Box> */}
-
-          <Box sx={{ mt:1, textAlign: 'center'}}>
+          <Box sx={{ mt: 1, textAlign: 'center' }}>
             <Typography variant='body2' sx={{ color: '#6c757d', mb: 1 }}>
               Don't have an account?
             </Typography>
             <Link href='/professional/signup' passHref>
-              <Typography variant='body2' sx={{ color: theme.palette.primary.main, fontWeight: 700, cursor: 'pointer' }} style={{ textDecoration: 'none !important' }} >
+              <Typography
+                variant='body2'
+                sx={{ color: theme.palette.primary.main, fontWeight: 700, cursor: 'pointer' }}
+              >
                 Sign Up Here
               </Typography>
             </Link>
@@ -211,10 +198,9 @@ const LoginPage = () => {
         </form>
       </Card>
     </Box>
-  )
-}
+  );
+};
 
-LoginPage.getLayout = (page: ReactNode) => <AuthLayout>{page}</AuthLayout>
+LoginPage.getLayout = (page: ReactNode) => <AuthLayout>{page}</AuthLayout>;
 
-export default LoginPage
-
+export default LoginPage;

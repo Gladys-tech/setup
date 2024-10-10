@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from 'react';
 import { Box, IconButton, Drawer } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu'; 
+import MenuIcon from '@mui/icons-material/Menu';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 
@@ -16,10 +16,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   return (
-    <Box 
-      sx={{ 
-        display: 'flex', 
-        height: '100vh',
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        width: '100%',
+        overflowX: 'auto',
+        backgroundSize: 'cover',
+        backgroundAttachment: 'fixed',
         background: 'linear-gradient(to top, rgba(146, 224, 0, 1) 5%, rgba(146, 224, 0, 0.5) 10%, rgba(146, 224, 0, 0) 20%, #FFFFFF 90%)',
       }}
     >
@@ -33,11 +37,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {!isSidebarOpen && (
             <IconButton
               sx={{
-                display: { xs: 'block', md: 'none' }, 
+                display: { xs: 'block', md: 'none' },
                 position: 'absolute',
-                top: '15px', 
-                left: '15px', 
-                zIndex: 1300, 
+                top: '15px',
+                left: '15px',
+                zIndex: 1300,
               }}
               onClick={toggleSidebar}
             >
@@ -52,7 +56,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               display: { xs: 'none', md: 'block' }, // Hidden on small screens
               borderRight: '1px solid #92E000',
               maxHeight: '100%', // Make the sidebar occupy the full height of the parent
-              fontSize: '14px', 
+              fontSize: '14px',
             }}
           >
             <Sidebar userRole={'professional'} />
@@ -68,7 +72,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 220 },
             }}
           >
-            <Sidebar onClose={toggleSidebar} userRole={'client'} /> 
+            <Sidebar onClose={toggleSidebar} userRole={'client'} />
           </Drawer>
 
           {/* Page content */}
@@ -76,11 +80,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             sx={{
               flex: 1,
               padding: 2,
+              overflowX: 'auto',
               width: { xs: '100%', md: 'calc(100% - 250px)' }, // Full width on small screens
             }}
           >
             {children}
           </Box>
+
         </Box>
       </Box>
     </Box>

@@ -19,9 +19,9 @@ interface Project {
 
 // Sample projects data
 const projects: Project[] = [
-    { id: 1, name: 'Mulago Bangalo', amount: 'Ugx 430,000', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
-    { id: 2, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
-    { id: 3, name: 'Mulago Bangalo', amount: 'Ugx 430,000', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
+    { id: 1, name: 'Mulago Bangalo', amount: 'Ugx 430,000', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Foundation' },
+    { id: 2, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Spring beam' },
+    { id: 3, name: 'Mulago Bangalo', amount: 'Ugx 430,000', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Roofing' },
     { id: 4, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
     { id: 5, name: 'Mulago Bangalo', amount: 'Ugx 430,000', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
     // { id: 2, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
@@ -83,8 +83,20 @@ const Projects = () => {
             {/* <Typography variant="h5" gutterBottom>Buildsmart Constructors</Typography>  p={3} */}
             <Grid container spacing={3} justifyContent="center">
                 {/* First Card: Home Icon */}
-                <Grid item xs={3}>
-                    <Card sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2, width: '150px', height: '120px', textAlign: 'center', boxShadow: 3, transition: '0.3s', '&:hover': { boxShadow: 6 } }}>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Card sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        padding: 2,
+                        // width: '100%', 150px
+                        // height: '120px',
+                        textAlign: 'center',
+                        boxShadow: 3,
+                        transition: '0.3s',
+                        '&:hover': { boxShadow: 6 },
+                    }}>
                         <Box sx={{
                             backgroundColor: theme.palette.primary.main,
                             borderRadius: 1,
@@ -101,9 +113,22 @@ const Projects = () => {
                     </Card>
                 </Grid>
 
+
                 {/* Second Card: Plus Icon */}
-                <Grid item xs={3}>
-                    <Card onClick={handleClickOpen} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2, width: '150px', height: '120px', textAlign: 'center', boxShadow: 3, transition: '0.3s', '&:hover': { boxShadow: 6 } }}>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Card onClick={handleClickOpen} sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        padding: 2,
+                        // width: '100%',
+                        // height: '120px',
+                        textAlign: 'center',
+                        boxShadow: 3,
+                        transition: '0.3s',
+                        '&:hover': { boxShadow: 6 },
+                    }}>
                         <Box sx={{
                             backgroundColor: theme.palette.secondary.main,
                             borderRadius: 1,
@@ -127,8 +152,8 @@ const Projects = () => {
                     <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16PX' }}>My Projects</Typography>
                 </Box>
 
-                <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
-                    <Table>
+                <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', width: '100%', maxWidth: '100%' }}>
+                    <Table sx={{ minWidth: 750 }} aria-label="simple table">
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Name</TableCell>
@@ -148,7 +173,31 @@ const Projects = () => {
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.client}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.location}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.payDueDate}</TableCell>
-                                    <TableCell sx={{ padding: '4px 8px' }}>{project.status}</TableCell>
+                                    <TableCell sx={{ padding: '4px 8px', }}>
+                                        <Box
+                                            sx={{
+                                                minWidth: '100px',
+                                                padding: '4px 8px',
+                                                backgroundColor:
+                                                    project.status === 'Foundation'
+                                                        ? 'rgba(0, 123, 255, 0.1)' // light blue
+                                                        : project.status === 'Spring beam'
+                                                            ? 'rgba(255, 193, 7, 0.1)' // light yellow
+                                                            : project.status === 'Roofing'
+                                                                ? 'rgba(40, 167, 69, 0.1)' // light green
+                                                                : project.status === 'Complete'
+                                                                    ? 'rgba(108, 117, 125, 0.1)' // light gray
+                                                                    : project.status === 'In Progress'
+                                                                        ? 'rgba(220, 53, 69, 0.1)' // light red
+                                                                        : 'rgba(0, 0, 0, 0.05)', // default light black for unknown status
+                                                color:
+                                                    project.status === 'Complete' ? '#6c757d' : '#333', // darker color for complete
+                                                borderRadius: '4px',
+                                                display: 'inline-block',
+                                            }}>
+                                            {project.status}
+                                        </Box>
+                                    </TableCell>
                                     <TableCell sx={{ display: 'flex', justifyContent: 'center', padding: '4px 8px' }}>
                                         <Box display="flex" gap={1} justifyContent="center">
                                             <Button
@@ -187,11 +236,13 @@ const Projects = () => {
                     </Table>
                 </TableContainer>
 
+
                 {/* Pagination */}
                 <Box display="flex" justifyContent="flex-end" mt={2}>
                     <Pagination count={10} color="primary" />
                 </Box>
             </Box>
+
 
             {/* Modal for Create Project */}
             <Dialog open={open} onClose={handleClose}>
@@ -200,7 +251,7 @@ const Projects = () => {
                     <Box display="flex" flexDirection="column" gap={2}>
                         <Box display="flex" justifyContent="space-between">
                             <FormControl variant="outlined" size="small" sx={{ width: '48%' }}>
-                                <Typography variant='body1'>Project Name</Typography>
+                                <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '500' }}>Project Name</Typography>
                                 <TextField
                                     variant="outlined"
                                     value={projectName}
@@ -210,7 +261,7 @@ const Projects = () => {
                                 />
                             </FormControl>
                             <FormControl variant="outlined" size="small" sx={{ width: '48%' }}>
-                                <Typography variant='body1'>Client Name</Typography>
+                                <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '500' }}>Client Name</Typography>
                                 <TextField
                                     variant="outlined"
                                     value={clientName}
@@ -222,7 +273,7 @@ const Projects = () => {
                         </Box>
                         <Box display="flex" justifyContent="space-between">
                             <FormControl variant="outlined" size="small" sx={{ width: '48%' }}>
-                                <Typography variant='body1'>Location</Typography>
+                                <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '500' }}>Location</Typography>
                                 <TextField
                                     variant="outlined"
                                     value={location}
@@ -232,7 +283,7 @@ const Projects = () => {
                                 />
                             </FormControl>
                             <Box sx={{ width: '48%' }}>
-                                <Typography variant='body1'>Project Image</Typography>
+                                <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '500' }}>Project Image</Typography>
                                 <Button
                                     variant="outlined"
                                     component="label"
@@ -250,7 +301,7 @@ const Projects = () => {
                             </Box>
                         </Box>
                         <FormControl variant="outlined" size="small" sx={{ width: '100%' }}>
-                            <Typography variant='body1'>Phases</Typography>
+                            <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '500' }}>Phases</Typography>
                             <Select
                                 value={phaseId}
                                 onChange={(e) => setPhaseId(e.target.value)}
@@ -265,8 +316,32 @@ const Projects = () => {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">Cancel</Button>
-                    <Button onClick={handleCreateProject} color="primary">Create</Button>
+                    <Button onClick={handleClose} variant='contained'
+                        sx={{
+                            backgroundColor: theme.palette.error.main,
+                            color: theme.palette.primary.contrastText,
+                            font: '12px',
+                            textTransform: 'none',
+                            height: '35px',
+                            borderRadius: '10px',
+                            '&:hover': {
+                                backgroundColor: theme.palette.error.dark
+                            }
+                        }}>Cancel</Button>
+                    <Button onClick={handleCreateProject}
+                        variant='contained'
+                        sx={{
+                            backgroundColor: theme.palette.primary.main,
+                            color: theme.palette.primary.contrastText,
+                            font: '12px',
+                            textTransform: 'none',
+                            height: '35px',
+                            borderRadius: '10px',
+                            '&:hover': {
+                                backgroundColor: theme.palette.secondary.main
+                            }
+                        }}
+                    >Create</Button>
                 </DialogActions>
             </Dialog>
 

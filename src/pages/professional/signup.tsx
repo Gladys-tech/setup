@@ -1,4 +1,3 @@
-
 import { useState, Fragment, ChangeEvent, ReactNode } from 'react'
 
 // ** Next Imports
@@ -29,7 +28,7 @@ interface Address {
     street: string;
     city: string;
     country: string;
-    telephone: number;
+    telephone: string; // Changed to string to handle input correctly
 }
 
 interface State {
@@ -50,7 +49,11 @@ const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
     padding: theme.spacing(2),
     borderRadius: theme.shape.borderRadius * 2,
     boxShadow: theme.shadows[3],
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
+    // Added responsive styles
+    '@media (max-width: 480px)': {
+        padding: theme.spacing(1),
+    }
 }))
 
 const LinkStyled = styled('a')(({ theme }) => ({
@@ -80,7 +83,7 @@ const RegisterPage = () => {
             street: '',
             city: '',
             country: '',
-            telephone: 0
+            telephone: ''
         }
     })
 
@@ -156,173 +159,51 @@ const RegisterPage = () => {
                 <img src='/images/LOGO.png' alt='LOGO' width={100} />
             </Box>
 
-            <Card sx={{ maxWidth: '28rem', backgroundColor: theme.palette.common.white, padding: '32px' }}>
+            <Card sx={{ maxWidth: '28rem', backgroundColor: theme.palette.common.white }}>
                 <Typography variant='h5' sx={{ mb: 2, textAlign: 'center', fontWeight: 600 }}>
                     Create an Account
                 </Typography>
 
                 <form noValidate autoComplete='off' onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ padding: '2px' }}>First Name</Typography>
-                            <TextField
-                                fullWidth
-                                name='firstName'
-                                value={signupDetails.firstName}
-                                onChange={handleChange('firstName')}
-                                sx={{
-                                    height: '20px',
-                                    marginBottom: 1,
-                                    padding: '2px',
-                                    width: '384px',
-                                    '& .MuiInputBase-input': {
-                                        padding: '10px 14px',
-                                    }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ padding: '2px' }}>Last Name</Typography>
-                            <TextField
-                                fullWidth
-                                name='lastName'
-                                value={signupDetails.lastName}
-                                onChange={handleChange('lastName')}
-                                sx={{
-                                    height: '20px',
-                                    marginBottom: 1,
-                                    padding: '2px',
-                                    width: '384px',
-                                    '& .MuiInputBase-input': {
-                                        padding: '10px 14px',
-                                    }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ padding: '2px' }}>Email</Typography>
-                            <TextField
-                                fullWidth
-                                name='email'
-                                value={signupDetails.email}
-                                onChange={handleChange('email')}
-                                sx={{
-                                    height: '20px',
-                                    marginBottom: 1,
-                                    padding: '2px',
-                                    width: '384px',
-                                    '& .MuiInputBase-input': {
-                                        padding: '10px 14px',
-                                    }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ padding: '2px' }}>Password</Typography>
-                            <TextField
-                                fullWidth
-                                type={showPassword ? 'text' : 'password'}
-                                name='password'
-                                value={signupDetails.password}
-                                onChange={handleChange('password')}
-                                sx={{
-                                    height: '20px',
-                                    marginBottom: 1,
-                                    padding: '2px',
-                                    width: '384px',
-                                    '& .MuiInputBase-input': {
-                                        padding: '10px 14px',
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position='end'>
-                                            <IconButton onClick={togglePasswordVisibility} edge='end'>
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    )
-                                }}
-                            />
-                        </Grid>
-
-                        {/* Address Fields */}
-                        <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ padding: '2px' }}>Street</Typography>
-                            <TextField
-                                fullWidth
-                                name='street'
-                                value={signupDetails.address.street}
-                                onChange={handleAddressChange('street')}
-                                sx={{
-                                    height: '20px',
-                                    marginBottom: 1,
-                                    padding: '2px',
-                                    width: '384px',
-                                    '& .MuiInputBase-input': {
-                                        padding: '10px 14px',
-                                    }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ padding: '2px' }}>City</Typography>
-                            <TextField
-                                fullWidth
-                                name='city'
-                                value={signupDetails.address.city}
-                                onChange={handleAddressChange('city')}
-                                sx={{
-                                    mheight: '20px',
-                                    marginBottom: 1,
-                                    padding: '2px',
-                                    width: '384px',
-                                    '& .MuiInputBase-input': {
-                                        padding: '10px 14px',
-                                    }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ padding: '2px' }}>Country</Typography>
-                            <TextField
-                                fullWidth
-                                name='country'
-                                value={signupDetails.address.country}
-                                onChange={handleAddressChange('country')}
-                                sx={{
-                                    height: '20px',
-                                    marginBottom: 1,
-                                    padding: '2px',
-                                    width: '384px',
-                                    '& .MuiInputBase-input': {
-                                        padding: '10px 14px',
-                                    }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ padding: '2px' }}>Telephone</Typography>
-                            <TextField
-                                fullWidth
-                                name='telephone'
-                                value={signupDetails.address.telephone}
-                                onChange={handleAddressChange('telephone')}
-                                sx={{
-                                    height: '20px',
-                                    marginBottom: 1,
-                                    padding: '2px',
-                                    width: '384px',
-                                    '& .MuiInputBase-input': {
-                                        padding: '10px 14px',
-                                    }
-                                }}
-                            />
-                        </Grid>
+                        {['firstName', 'lastName', 'email', 'password', 'street', 'city', 'country', 'telephone'].map((field, index) => (
+                            <Grid item xs={12} key={index}>
+                                <Typography variant='body1' sx={{ padding: '2px' }}>
+                                    {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    name={field}
+                                    value={field.includes('address.') ? signupDetails.address[field.split('.')[1] as keyof Address] : signupDetails[field as keyof State]}
+                                    onChange={field.includes('address.') ? handleAddressChange(field.split('.')[1] as keyof Address) : handleChange(field as keyof State)}
+                                    sx={{
+                                        height: '20px',
+                                        marginBottom: 1,
+                                        padding: '2px',
+                                        '& .MuiInputBase-input': {
+                                            padding: '10px 14px',
+                                        },
+                                        '@media (max-width: 480px)': {
+                                            width: '100%', // Full width on small screens
+                                        }
+                                    }}
+                                    type={field === 'password' ? (showPassword ? 'text' : 'password') : 'text'}
+                                    InputProps={field === 'password' ? {
+                                        endAdornment: (
+                                            <InputAdornment position='end'>
+                                                <IconButton onClick={togglePasswordVisibility} edge='end'>
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    } : undefined}
+                                />
+                            </Grid>
+                        ))}
 
                         <Grid item xs={12}>
                             <FormControlLabel
-                                control={<Checkbox />}
+                                control={<Checkbox checked={signupDetails.agreeToTerms} onChange={handleChange('agreeToTerms')} />}
                                 label={
                                     <Fragment>
                                         <span>I agree to </span>
@@ -363,7 +244,6 @@ const RegisterPage = () => {
                                     height: '35px',
                                     borderRadius: '8px',
                                     margin: '5px 0px 0px',
-                                    width: '384px',
                                     '&:hover': {
                                         backgroundColor: theme.palette.secondary.main
                                     }
@@ -375,7 +255,7 @@ const RegisterPage = () => {
                     </Grid>
                 </form>
 
-                <Divider sx={{ my: 3}} />
+                <Divider sx={{ my: 3 }} />
                 <Box sx={{ textAlign: 'center' }}>
                     <Typography variant='body2' sx={{ mb: 2 }}>
                         Already have an account?{' '}
