@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useTheme } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import AddIcon from '@mui/icons-material/Add';
 import ShareIcon from '@mui/icons-material/Share';
@@ -200,38 +200,39 @@ const Projects = () => {
                     <Box display="flex" flexDirection="column" gap={2}>
                         <Box display="flex" justifyContent="space-between">
                             <FormControl variant="outlined" size="small" sx={{ width: '48%' }}>
-                                <InputLabel>Project Name</InputLabel>
+                                <Typography variant='body1'>Project Name</Typography>
                                 <TextField
                                     variant="outlined"
                                     value={projectName}
                                     onChange={(e) => setProjectName(e.target.value)}
-                                    size="small" // Ensure TextField is small
-                                    sx={{ height: '40px' }} // Custom height for TextField
+                                    size="small"
+                                    sx={{ height: '40px' }}
                                 />
                             </FormControl>
                             <FormControl variant="outlined" size="small" sx={{ width: '48%' }}>
-                                <InputLabel>Client Name</InputLabel>
+                                <Typography variant='body1'>Client Name</Typography>
                                 <TextField
                                     variant="outlined"
                                     value={clientName}
                                     onChange={(e) => setClientName(e.target.value)}
-                                    size="small" // Ensure TextField is small
-                                    sx={{ height: '40px' }} // Custom height for TextField
+                                    size="small"
+                                    sx={{ height: '40px' }}
                                 />
                             </FormControl>
                         </Box>
                         <Box display="flex" justifyContent="space-between">
                             <FormControl variant="outlined" size="small" sx={{ width: '48%' }}>
-                                <InputLabel>Location</InputLabel>
+                                <Typography variant='body1'>Location</Typography>
                                 <TextField
                                     variant="outlined"
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
-                                    size="small" // Ensure TextField is small
-                                    sx={{ height: '40px' }} // Custom height for TextField
+                                    size="small"
+                                    sx={{ height: '40px' }}
                                 />
                             </FormControl>
                             <Box sx={{ width: '48%' }}>
+                                <Typography variant='body1'>Project Image</Typography>
                                 <Button
                                     variant="outlined"
                                     component="label"
@@ -249,7 +250,7 @@ const Projects = () => {
                             </Box>
                         </Box>
                         <FormControl variant="outlined" size="small" sx={{ width: '100%' }}>
-                            <InputLabel>Phase</InputLabel>
+                            <Typography variant='body1'>Phases</Typography>
                             <Select
                                 value={phaseId}
                                 onChange={(e) => setPhaseId(e.target.value)}

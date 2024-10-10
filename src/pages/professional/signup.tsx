@@ -45,9 +45,9 @@ interface State {
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
     width: '100%',
-    maxWidth: '1000px',
+    maxWidth: '100%',
     margin: '0 auto',
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
     borderRadius: theme.shape.borderRadius * 2,
     boxShadow: theme.shadows[3],
     backgroundColor: theme.palette.background.paper
@@ -156,7 +156,7 @@ const RegisterPage = () => {
                 <img src='/images/LOGO.png' alt='LOGO' width={100} />
             </Box>
 
-            <Card>
+            <Card sx={{ maxWidth: '28rem', backgroundColor: theme.palette.common.white, padding: '32px' }}>
                 <Typography variant='h5' sx={{ mb: 2, textAlign: 'center', fontWeight: 600 }}>
                     Create an Account
                 </Typography>
@@ -164,14 +164,17 @@ const RegisterPage = () => {
                 <form noValidate autoComplete='off' onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ mb: 1 }}>First Name</Typography>
+                            <Typography variant='body1' sx={{ padding: '2px' }}>First Name</Typography>
                             <TextField
                                 fullWidth
                                 name='firstName'
                                 value={signupDetails.firstName}
                                 onChange={handleChange('firstName')}
                                 sx={{
+                                    height: '20px',
                                     marginBottom: 1,
+                                    padding: '2px',
+                                    width: '384px',
                                     '& .MuiInputBase-input': {
                                         padding: '10px 14px',
                                     }
@@ -179,14 +182,17 @@ const RegisterPage = () => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ mb: 1 }}>Last Name</Typography>
+                            <Typography variant='body1' sx={{ padding: '2px' }}>Last Name</Typography>
                             <TextField
                                 fullWidth
                                 name='lastName'
                                 value={signupDetails.lastName}
                                 onChange={handleChange('lastName')}
                                 sx={{
+                                    height: '20px',
                                     marginBottom: 1,
+                                    padding: '2px',
+                                    width: '384px',
                                     '& .MuiInputBase-input': {
                                         padding: '10px 14px',
                                     }
@@ -194,14 +200,17 @@ const RegisterPage = () => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ mb: 1 }}>Email</Typography>
+                            <Typography variant='body1' sx={{ padding: '2px' }}>Email</Typography>
                             <TextField
                                 fullWidth
                                 name='email'
                                 value={signupDetails.email}
                                 onChange={handleChange('email')}
                                 sx={{
+                                    height: '20px',
                                     marginBottom: 1,
+                                    padding: '2px',
+                                    width: '384px',
                                     '& .MuiInputBase-input': {
                                         padding: '10px 14px',
                                     }
@@ -209,7 +218,7 @@ const RegisterPage = () => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ mb: 1 }}>Password</Typography>
+                            <Typography variant='body1' sx={{ padding: '2px' }}>Password</Typography>
                             <TextField
                                 fullWidth
                                 type={showPassword ? 'text' : 'password'}
@@ -217,7 +226,10 @@ const RegisterPage = () => {
                                 value={signupDetails.password}
                                 onChange={handleChange('password')}
                                 sx={{
+                                    height: '20px',
                                     marginBottom: 1,
+                                    padding: '2px',
+                                    width: '384px',
                                     '& .MuiInputBase-input': {
                                         padding: '10px 14px',
                                     }
@@ -236,14 +248,17 @@ const RegisterPage = () => {
 
                         {/* Address Fields */}
                         <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ mb: 1 }}>Street</Typography>
+                            <Typography variant='body1' sx={{ padding: '2px' }}>Street</Typography>
                             <TextField
                                 fullWidth
                                 name='street'
                                 value={signupDetails.address.street}
                                 onChange={handleAddressChange('street')}
                                 sx={{
+                                    height: '20px',
                                     marginBottom: 1,
+                                    padding: '2px',
+                                    width: '384px',
                                     '& .MuiInputBase-input': {
                                         padding: '10px 14px',
                                     }
@@ -251,14 +266,17 @@ const RegisterPage = () => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ mb: 1 }}>City</Typography>
+                            <Typography variant='body1' sx={{ padding: '2px' }}>City</Typography>
                             <TextField
                                 fullWidth
                                 name='city'
                                 value={signupDetails.address.city}
                                 onChange={handleAddressChange('city')}
                                 sx={{
+                                    mheight: '20px',
                                     marginBottom: 1,
+                                    padding: '2px',
+                                    width: '384px',
                                     '& .MuiInputBase-input': {
                                         padding: '10px 14px',
                                     }
@@ -266,14 +284,17 @@ const RegisterPage = () => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ mb: 1 }}>Country</Typography>
+                            <Typography variant='body1' sx={{ padding: '2px' }}>Country</Typography>
                             <TextField
                                 fullWidth
                                 name='country'
                                 value={signupDetails.address.country}
                                 onChange={handleAddressChange('country')}
                                 sx={{
+                                    height: '20px',
                                     marginBottom: 1,
+                                    padding: '2px',
+                                    width: '384px',
                                     '& .MuiInputBase-input': {
                                         padding: '10px 14px',
                                     }
@@ -281,14 +302,17 @@ const RegisterPage = () => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography variant='body1' sx={{ mb: 1 }}>Telephone</Typography>
+                            <Typography variant='body1' sx={{ padding: '2px' }}>Telephone</Typography>
                             <TextField
                                 fullWidth
                                 name='telephone'
                                 value={signupDetails.address.telephone}
                                 onChange={handleAddressChange('telephone')}
                                 sx={{
+                                    height: '20px',
                                     marginBottom: 1,
+                                    padding: '2px',
+                                    width: '384px',
                                     '& .MuiInputBase-input': {
                                         padding: '10px 14px',
                                     }
@@ -328,18 +352,21 @@ const RegisterPage = () => {
                             <Button
                                 fullWidth
                                 type='submit'
+                                size='large'
                                 variant='contained'
                                 sx={{
                                     backgroundColor: theme.palette.primary.main,
                                     color: theme.palette.primary.contrastText,
+                                    font: '12px',
+                                    padding: '8px 20px',
                                     textTransform: 'none',
+                                    height: '35px',
+                                    borderRadius: '8px',
+                                    margin: '5px 0px 0px',
+                                    width: '384px',
                                     '&:hover': {
                                         backgroundColor: theme.palette.secondary.main
-                                    },
-                                    height: '50px',
-                                    borderRadius: '8px',
-                                    marginTop: '20px',
-                                    fontSize: '1rem',
+                                    }
                                 }}
                             >
                                 Sign Up
@@ -348,7 +375,7 @@ const RegisterPage = () => {
                     </Grid>
                 </form>
 
-                <Divider sx={{ my: 3 }} />
+                <Divider sx={{ my: 3}} />
                 <Box sx={{ textAlign: 'center' }}>
                     <Typography variant='body2' sx={{ mb: 2 }}>
                         Already have an account?{' '}
