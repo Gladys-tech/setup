@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ShareIcon from '@mui/icons-material/Share';
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { useRouter } from 'next/router';
 
 // Define project interface
 interface Project {
@@ -16,6 +17,7 @@ interface Project {
     payDueDate: string;
     status: string;
 }
+
 
 // Sample projects data
 const projects: Project[] = [
@@ -77,6 +79,14 @@ const Projects = () => {
             setImage(null); // Set to null if no files are selected
         }
     };
+
+
+const router = useRouter();
+
+const handleProjectClick = (projectId: number) => {
+    router.push(`/professional/projects/${projectId}`);
+};
+
 
     return (
         <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
@@ -167,7 +177,7 @@ const Projects = () => {
                         </TableHead>
                         <TableBody>
                             {projects.map((project) => (
-                                <TableRow key={project.id} sx={{ height: '20px' }}>
+                                <TableRow key={project.id} sx={{ height: '20px',cursor: 'pointer' }} onClick={() => handleProjectClick(project.id)}>
                                     <TableCell sx={{ fontWeight: 'bold', color: theme.palette.primary.main, padding: '4px 8px' }}>{project.name}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.amount}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.client}</TableCell>
