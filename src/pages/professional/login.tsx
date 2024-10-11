@@ -127,9 +127,9 @@ const LoginPage = () => {
         </Typography>
 
         <form noValidate autoComplete='off' onSubmit={handleSubmit}>
-          <InputLabel htmlFor='auth-login-email' sx={{ mb: 1, fontWeight: 600 }}>Username</InputLabel>
+          <InputLabel htmlFor='auth-login-email' sx={{fontSize: '13px', mb: 1, fontWeight: 600 }}>Username</InputLabel>
           <TextField
-            id='auth-login-email'
+            // id='auth-login-email'
             fullWidth
             value={values.email}
             onChange={handleChange('email')}
@@ -142,10 +142,10 @@ const LoginPage = () => {
             }}
           />
 
-          <InputLabel htmlFor='auth-login-password' sx={{ fontWeight: 600 }}>Password</InputLabel>
+          <InputLabel htmlFor='auth-login-password' sx={{ fontSize: '13px',fontWeight: 600 }}>Password</InputLabel>
           <FormControl fullWidth sx={{ mb: 2 }}>
             <OutlinedInput
-              id='auth-login-password'
+              // id='auth-login-password'
               value={values.password}
               onChange={handleChange('password')}
               type={values.showPassword ? 'text' : 'password'}

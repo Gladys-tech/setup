@@ -100,7 +100,8 @@ const handleProjectClick = (projectId: number) => {
                         alignItems: 'center',
                         cursor: 'pointer',
                         padding: 2,
-                        // width: '100%', 150px
+                        minWidth:'150px',
+                        //  width: '100%', 
                         // height: '120px',
                         textAlign: 'center',
                         boxShadow: 3,
@@ -132,7 +133,8 @@ const handleProjectClick = (projectId: number) => {
                         alignItems: 'center',
                         cursor: 'pointer',
                         padding: 2,
-                        // width: '100%',
+                        minWidth:'150px',
+                        //  width: '100%',
                         // height: '120px',
                         textAlign: 'center',
                         boxShadow: 3,
@@ -162,8 +164,9 @@ const handleProjectClick = (projectId: number) => {
                     <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16PX' }}>My Projects</Typography>
                 </Box>
 
-                <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', width: '100%', maxWidth: '100%' }}>
-                    <Table sx={{ minWidth: 750 }} aria-label="simple table">
+                <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto',  minWidth: 300}}>
+                    <Table 
+                    aria-label="simple table">
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Name</TableCell>

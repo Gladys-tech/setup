@@ -86,7 +86,7 @@ const ProjectDetails = () => {
 
                 {/* Inputs for each phase */}
                 <Grid item xs={12} md={4}>
-                    <Box sx={{mt:'20px', mb:'0'}}>
+                    <Box sx={{mt:'40px', mb:'0'}}>
                         {phases
                             .slice()
                             .reverse()

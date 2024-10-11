@@ -168,7 +168,7 @@ const RegisterPage = () => {
                     <Grid container spacing={2}>
                         {['firstName', 'lastName', 'email', 'password', 'street', 'city', 'country', 'telephone'].map((field, index) => (
                             <Grid item xs={12} key={index}>
-                                <Typography variant='body1' sx={{ padding: '2px' }}>
+                                <Typography variant='body1'  sx={{ fontSize: '13px', fontWeight: '600' }}>
                                     {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
                                 </Typography>
                                 <TextField
