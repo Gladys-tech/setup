@@ -14,14 +14,14 @@ const ProjectDetails = () => {
 
     // Define phases and their totals in state
     const [phases, setPhases] = useState([
-        { name: 'Phase 1', total: 0 },
-        { name: 'Phase 2', total: 0 },
-        { name: 'Phase 3', total: 0 },
-        { name: 'Phase 4', total: 0 },
-        { name: 'Phase 5', total: 60000 },
-        { name: 'Phase 6', total: 0 },
-        { name: 'Phase 7', total: 0 },
-        { name: 'Phase 8', total: 40000 },
+        { name: 'Foundation', total: 10000 },
+        { name: 'Ring beam', total: 20000 },
+        { name: 'Roofing', total: 30000 },
+        { name: 'Window + Doors', total: 345000 },
+        { name: 'Electrical', total: 60000 },
+        { name: 'Interior', total: 567000 },
+        { name: 'Fittings', total: 23000 },
+        { name: 'Exterior', total: 40000 },
     ]);
 
     useEffect(() => {
@@ -38,10 +38,15 @@ const ProjectDetails = () => {
         setPhases(updatedPhases);
     };
 
+    // Navigate to material schedule page with phase info
+    const handleEditClick = (phaseName: string) => {
+        router.push(`/professional/materialschedule/${phaseName}`);
+    };
+
+
     // Handle modal open/close
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-
 
     if (!project) {
         return <Typography>Loading...</Typography>;
@@ -51,12 +56,27 @@ const ProjectDetails = () => {
         <Box p={4} position="relative">
             <Button
                 variant="contained"
-                color="primary"
+                // color="primary"
                 onClick={handleOpen}
+                // sx={{
+                //     position: 'absolute',
+                //     top: 5,
+                //     right: 16,
+                // }}
                 sx={{
                     position: 'absolute',
                     top: 5,
                     right: 16,
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                    font: '12px',
+                    textTransform: 'none',
+                    height: '30px',
+                    ml: 2,
+                    borderRadius: '6px',
+                    '&:hover': {
+                        backgroundColor: theme.palette.secondary.main
+                    }
                 }}
             >
                 Edit Project
@@ -84,14 +104,14 @@ const ProjectDetails = () => {
                     </Box>
                 </Grid>
 
-                {/* Inputs for each phase */}
+                {/* Inputs and edit buttons for each phase */}
                 <Grid item xs={12} md={4}>
-                    <Box sx={{mt:'40px', mb:'0'}}>
+                    <Box sx={{ mt: '40px', mb: '0' }}>
                         {phases
                             .slice()
                             .reverse()
                             .map((phase, index) => (
-                                <Box key={index} mb={3}>
+                                <Box key={index} mb={3} display="flex" alignItems="center">
                                     <TextField
                                         type="number"
                                         label={`Total for ${phase.name}`}
@@ -104,12 +124,30 @@ const ProjectDetails = () => {
                                             }
                                         }}
                                     />
+                                    <Button
+                                        variant="contained"
+                                        // sx={{ ml: 2, height: '30px' }}
+                                        sx={{
+                                            backgroundColor: theme.palette.primary.main,
+                                            color: theme.palette.primary.contrastText,
+                                            font: '12px',
+                                            textTransform: 'none',
+                                            height: '30px',
+                                            ml: 2,
+                                            borderRadius: '6px',
+                                            '&:hover': {
+                                                backgroundColor: theme.palette.secondary.main
+                                            }
+                                        }}
+                                        onClick={() => handleEditClick(phase.name)}
+                                    >
+                                        Edit
+                                    </Button>
                                 </Box>
                             ))}
                     </Box>
                 </Grid>
             </Grid>
-
 
             {/* Popup Modal for editing project details */}
             <Dialog open={open} onClose={handleClose}>

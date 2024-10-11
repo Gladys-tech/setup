@@ -11,7 +11,6 @@ import { useRouter } from 'next/router';
 interface Project {
     id: number;
     name: string;
-    amount: string;
     client: string;
     location: string;
     payDueDate: string;
@@ -21,11 +20,11 @@ interface Project {
 
 // Sample projects data
 const projects: Project[] = [
-    { id: 1, name: 'Mulago Bangalo', amount: 'Ugx 430,000', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Foundation' },
-    { id: 2, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Spring beam' },
-    { id: 3, name: 'Mulago Bangalo', amount: 'Ugx 430,000', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Roofing' },
-    { id: 4, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
-    { id: 5, name: 'Mulago Bangalo', amount: 'Ugx 430,000', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
+    { id: 1, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Foundation' },
+    { id: 2, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Spring beam' },
+    { id: 3, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Roofing' },
+    { id: 4, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
+    { id: 5, name: 'Mulago Bangalo',  client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
     // { id: 2, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
 ];
 
@@ -81,80 +80,85 @@ const Projects = () => {
     };
 
 
-const router = useRouter();
+    const router = useRouter();
 
-const handleProjectClick = (projectId: number) => {
-    router.push(`/professional/projects/${projectId}`);
-};
+    const handleProjectClick = (projectId: number) => {
+        router.push(`/professional/projects/${projectId}`);
+    };
 
 
     return (
         <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
-            {/* <Typography variant="h5" gutterBottom>Buildsmart Constructors</Typography>  p={3} */}
             <Grid container spacing={3} justifyContent="center">
-                {/* First Card: Home Icon */}
+                {/* First Box: Home Icon */}
                 <Grid item xs={12} sm={6} md={3}>
-                    <Card sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        padding: 2,
-                        minWidth:'150px',
-                        //  width: '100%', 
-                        // height: '120px',
-                        textAlign: 'center',
-                        boxShadow: 3,
-                        transition: '0.3s',
-                        '&:hover': { boxShadow: 6 },
-                    }}>
-                        <Box sx={{
-                            backgroundColor: theme.palette.primary.main,
-                            borderRadius: 1,
-                            width: 64,
-                            height: 64,
+                    <Box
+                        sx={{
                             display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginBottom: 1
-                        }}>
+                            flexDirection: 'column',
+                            alignItems: 'center', // Center the icon and typography
+                            textAlign: 'center',
+                            padding: 2,
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                backgroundColor: theme.palette.primary.main,
+                                borderRadius: 1,
+                                width: 64,
+                                height: 64,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 1,
+                                boxShadow: 3,
+                                transition: '0.3s',
+                                '&:hover': { boxShadow: 6 },
+                                cursor: 'pointer',
+                            }}
+                        >
                             <HomeIcon sx={{ fontSize: 40, color: 'white' }} />
                         </Box>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Sample Project</Typography>
-                    </Card>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                            Sample Project
+                        </Typography>
+                    </Box>
                 </Grid>
 
-
-                {/* Second Card: Plus Icon */}
+                {/* Second Box: Plus Icon */}
                 <Grid item xs={12} sm={6} md={3}>
-                    <Card onClick={handleClickOpen} sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        padding: 2,
-                        minWidth:'150px',
-                        //  width: '100%',
-                        // height: '120px',
-                        textAlign: 'center',
-                        boxShadow: 3,
-                        transition: '0.3s',
-                        '&:hover': { boxShadow: 6 },
-                    }}>
-                        <Box sx={{
-                            backgroundColor: theme.palette.secondary.main,
-                            borderRadius: 1,
-                            width: 64,
-                            height: 64,
+                    <Box
+                        onClick={handleClickOpen}
+                        sx={{
                             display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginBottom: 1
-                        }}>
+                            flexDirection: 'column',
+                            alignItems: 'center', // Center the icon and typography
+                            textAlign: 'center',
+                            padding: 2,
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                backgroundColor: theme.palette.secondary.main,
+                                borderRadius: 1,
+                                width: 64,
+                                height: 64,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 1,
+                                boxShadow: 3,
+                                transition: '0.3s',
+                                '&:hover': { boxShadow: 6 },
+                                cursor: 'pointer',
+                            }}
+                        >
                             <AddIcon sx={{ fontSize: 40, color: 'white' }} />
                         </Box>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Create Project</Typography>
-                    </Card>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                            Create Project
+                        </Typography>
+                    </Box>
                 </Grid>
             </Grid>
 
@@ -164,13 +168,13 @@ const handleProjectClick = (projectId: number) => {
                     <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16PX' }}>My Projects</Typography>
                 </Box>
 
-                <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto',  minWidth: 300}}>
-                    <Table 
-                    aria-label="simple table">
+                <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300 }}>
+                    <Table
+                        aria-label="simple table">
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Name</TableCell>
-                                <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Amount</TableCell>
+                                {/* <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Amount</TableCell> */}
                                 <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Client</TableCell>
                                 <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Location</TableCell>
                                 <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Pay Due Date</TableCell>
@@ -180,9 +184,9 @@ const handleProjectClick = (projectId: number) => {
                         </TableHead>
                         <TableBody>
                             {projects.map((project) => (
-                                <TableRow key={project.id} sx={{ height: '20px',cursor: 'pointer' }} onClick={() => handleProjectClick(project.id)}>
+                                <TableRow key={project.id} sx={{ height: '20px', cursor: 'pointer' }} onClick={() => handleProjectClick(project.id)}>
                                     <TableCell sx={{ fontWeight: 'bold', color: theme.palette.primary.main, padding: '4px 8px' }}>{project.name}</TableCell>
-                                    <TableCell sx={{ padding: '4px 8px' }}>{project.amount}</TableCell>
+                                    {/* <TableCell sx={{ padding: '4px 8px' }}>{project.amount}</TableCell> */}
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.client}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.location}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.payDueDate}</TableCell>
@@ -248,12 +252,6 @@ const handleProjectClick = (projectId: number) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-
-
-                {/* Pagination */}
-                <Box display="flex" justifyContent="flex-end" mt={2}>
-                    <Pagination count={10} color="primary" />
-                </Box>
             </Box>
 
 
