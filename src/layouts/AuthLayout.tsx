@@ -13,8 +13,6 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
       justifyContent="center"
       alignItems="center"
       sx={{
-        //  width: '100%',
-        // overflowX: 'auto',
         backgroundSize: 'cover',
         backgroundAttachment: 'fixed',
         background: 'linear-gradient(to top, rgba(146, 224, 0, 1) 5%, rgba(146, 224, 0, 0.5) 10%, rgba(146, 224, 0, 0) 20%, #FFFFFF 90%)',

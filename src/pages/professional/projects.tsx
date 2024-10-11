@@ -20,11 +20,16 @@ interface Project {
 
 // Sample projects data
 const projects: Project[] = [
-    { id: 1, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Foundation' },
-    { id: 2, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Spring beam' },
-    { id: 3, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Roofing' },
+    { id: 1, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Complete' },
+    { id: 2, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
+    { id: 3, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
     { id: 4, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
     { id: 5, name: 'Mulago Bangalo',  client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
+    { id: 6, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Complete' },
+    { id: 7, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'In Progress' },
+    { id: 8, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
+    { id: 9, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
+    { id: 10, name: 'Mulago Bangalo',  client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
     // { id: 2, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
 ];
 
@@ -89,16 +94,17 @@ const Projects = () => {
 
     return (
         <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
-            <Grid container spacing={3} justifyContent="center">
+            <Grid container spacing={3}>
                 {/* First Box: Home Icon */}
                 <Grid item xs={12} sm={6} md={3}>
                     <Box
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'center', // Center the icon and typography
+                            alignItems: 'flex-start',
                             textAlign: 'center',
-                            padding: 2,
+                            // padding: 2,
+                            // width:'150px'
                         }}
                     >
                         <Box
@@ -132,9 +138,10 @@ const Projects = () => {
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'center', // Center the icon and typography
+                            alignItems: 'flex-start',
                             textAlign: 'center',
-                            padding: 2,
+                            // padding: 2,
+                            // width:'150px'
                         }}
                     >
                         <Box
