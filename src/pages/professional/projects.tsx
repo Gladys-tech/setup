@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputAdornment, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useTheme } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import AddIcon from '@mui/icons-material/Add';
 import ShareIcon from '@mui/icons-material/Share';
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useRouter } from 'next/router';
+import SearchIcon from '@mui/icons-material/Search';
 
 // Define project interface
 interface Project {
@@ -24,12 +25,12 @@ const projects: Project[] = [
     { id: 2, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
     { id: 3, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
     { id: 4, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
-    { id: 5, name: 'Mulago Bangalo',  client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
+    { id: 5, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
     { id: 6, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'Complete' },
     { id: 7, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'In Progress' },
     { id: 8, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
     { id: 9, name: 'Buziga 2 bed room', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
-    { id: 10, name: 'Mulago Bangalo',  client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
+    { id: 10, name: 'Mulago Bangalo', client: 'Mr. Jackson', location: 'Mulago', payDueDate: '11/12/22', status: 'In Progress' },
     // { id: 2, name: 'Buziga 2 bed room', amount: 'Ugx 257,000', client: 'Bob Mercy', location: 'Buziga', payDueDate: '2/12/22', status: 'Complete' },
 ];
 
@@ -96,15 +97,13 @@ const Projects = () => {
         <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
             <Grid container spacing={3}>
                 {/* First Box: Home Icon */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={4} md={4}>
                     <Box
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'flex-start',
                             textAlign: 'center',
-                            // padding: 2,
-                            // width:'150px'
                         }}
                     >
                         <Box
@@ -131,8 +130,8 @@ const Projects = () => {
                     </Box>
                 </Grid>
 
-                {/* Second Box: Plus Icon */}
-                <Grid item xs={12} sm={6} md={3}>
+                {/* Second Box: Create Project */}
+                <Grid item xs={12} sm={4} md={4}>
                     <Box
                         onClick={handleClickOpen}
                         sx={{
@@ -140,8 +139,6 @@ const Projects = () => {
                             flexDirection: 'column',
                             alignItems: 'flex-start',
                             textAlign: 'center',
-                            // padding: 2,
-                            // width:'150px'
                         }}
                     >
                         <Box
@@ -167,6 +164,40 @@ const Projects = () => {
                         </Typography>
                     </Box>
                 </Grid>
+
+                {/* Third Box: Search TextField */}
+                <Grid item xs={12} sm={4} md={4}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', }}>
+                        <TextField
+                            placeholder="Search projects..."
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                                width: '100%',
+                                boxShadow: 1,
+                                borderRadius: 2, // Smooth border radius
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: theme.palette.grey[300],
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: theme.palette.grey[400],
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: theme.palette.primary.main,
+                                    },
+                                },
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <SearchIcon sx={{ color: theme.palette.primary.main }} />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Box>
+                </Grid>
             </Grid>
 
             {/* Projects Table */}
@@ -175,25 +206,65 @@ const Projects = () => {
                     <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16PX' }}>My Projects</Typography>
                 </Box>
 
-                <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300 }}>
-                    <Table
+                <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 250, overflowY: 'auto', }}>
+                    <Table stickyHeader
                         aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Name</TableCell>
-                                {/* <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Amount</TableCell> */}
-                                <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Client</TableCell>
-                                <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Location</TableCell>
-                                <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Pay Due Date</TableCell>
-                                <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Status</TableCell>
-                                <TableCell sx={{ fontWeight: 600, padding: '6px 10px' }}>Actions</TableCell>
+                                <TableCell sx={{
+                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                    top: 0,
+                                    backgroundColor: theme.palette.background.paper,
+                                    zIndex: 1,
+                                }}>
+                                    Name
+                                </TableCell>
+                                <TableCell sx={{
+                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                    top: 0,
+                                    backgroundColor: theme.palette.background.paper,
+                                    zIndex: 1,
+                                }}>
+                                    Client
+                                </TableCell>
+                                <TableCell sx={{
+                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                    top: 0,
+                                    backgroundColor: theme.palette.background.paper,
+                                    zIndex: 1,
+                                }}>
+                                    Location
+                                </TableCell>
+                                <TableCell sx={{
+                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                    top: 0,
+                                    backgroundColor: theme.palette.background.paper,
+                                    zIndex: 1,
+                                }}>
+                                    Pay Due Date
+                                </TableCell>
+                                <TableCell sx={{
+                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                    top: 0,
+                                    backgroundColor: theme.palette.background.paper,
+                                    zIndex: 1,
+                                }}>
+                                    Status
+                                </TableCell>
+                                <TableCell sx={{
+                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                    top: 0,
+                                    backgroundColor: theme.palette.background.paper,
+                                    zIndex: 1,
+                                }}>
+                                    Actions
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {projects.map((project) => (
                                 <TableRow key={project.id} sx={{ height: '20px', cursor: 'pointer' }} onClick={() => handleProjectClick(project.id)}>
                                     <TableCell sx={{ fontWeight: 'bold', color: theme.palette.primary.main, padding: '4px 8px' }}>{project.name}</TableCell>
-                                    {/* <TableCell sx={{ padding: '4px 8px' }}>{project.amount}</TableCell> */}
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.client}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.location}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.payDueDate}</TableCell>
@@ -203,17 +274,11 @@ const Projects = () => {
                                                 minWidth: '100px',
                                                 padding: '4px 8px',
                                                 backgroundColor:
-                                                    project.status === 'Foundation'
-                                                        ? 'rgba(0, 123, 255, 0.1)' // light blue
-                                                        : project.status === 'Spring beam'
-                                                            ? 'rgba(255, 193, 7, 0.1)' // light yellow
-                                                            : project.status === 'Roofing'
-                                                                ? 'rgba(40, 167, 69, 0.1)' // light green
-                                                                : project.status === 'Complete'
-                                                                    ? 'rgba(108, 117, 125, 0.1)' // light gray
-                                                                    : project.status === 'In Progress'
-                                                                        ? 'rgba(220, 53, 69, 0.1)' // light red
-                                                                        : 'rgba(0, 0, 0, 0.05)', // default light black for unknown status
+                                                    project.status === 'Complete'
+                                                        ? 'rgba(108, 117, 125, 0.1)' // light gray
+                                                        : project.status === 'In Progress'
+                                                            ? 'rgba(220, 53, 69, 0.1)' // light red
+                                                            : 'rgba(0, 0, 0, 0.05)', // default light black for unknown status
                                                 color:
                                                     project.status === 'Complete' ? '#6c757d' : '#333', // darker color for complete
                                                 borderRadius: '4px',
@@ -222,38 +287,55 @@ const Projects = () => {
                                             {project.status}
                                         </Box>
                                     </TableCell>
-                                    <TableCell sx={{ display: 'flex', justifyContent: 'center', padding: '4px 8px' }}>
-                                        <Box display="flex" gap={1} justifyContent="center">
+                                    <TableCell sx={{
+                                        display: 'flex', justifyContent: 'center', padding: '4px 8px', flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                    }}>
+                                        <Box display="flex" gap={1} justifyContent="center" >
                                             <Button
                                                 variant="contained"
                                                 color="primary"
                                                 size="small"
                                                 sx={{
-                                                    minWidth: '40px',
-                                                    padding: 1,
+                                                    minWidth: '34px',
+                                                    minHeight: '34px',
+                                                    padding: 0,
+                                                    borderRadius: '8px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
                                                     color: 'white',
                                                     '&:hover': {
                                                         backgroundColor: theme => theme.palette.primary.dark,
                                                     },
                                                 }}
-                                                startIcon={<ShareIcon sx={{ color: 'white' }} />}
-                                            />
+                                            >
+                                                <ShareIcon sx={{ color: 'white' }} />
+                                            </Button>
+
                                             <Button
                                                 variant="contained"
                                                 color="primary"
                                                 size="small"
                                                 sx={{
-                                                    minWidth: '40px',
-                                                    padding: 1,
+                                                    minWidth: '34px',
+                                                    minHeight: '34px',
+                                                    padding: 0,
+                                                    borderRadius: '8px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
                                                     color: 'white',
                                                     '&:hover': {
                                                         backgroundColor: theme => theme.palette.primary.dark,
                                                     },
                                                 }}
-                                                startIcon={<DownloadIcon sx={{ color: 'white' }} />}
-                                            />
+                                            >
+                                                <DownloadIcon sx={{ color: 'white' }} />
+                                            </Button>
                                         </Box>
                                     </TableCell>
+
                                 </TableRow>
                             ))}
                         </TableBody>

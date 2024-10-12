@@ -53,33 +53,21 @@ const ProjectDetails = () => {
     }
 
     return (
-        <Box p={4} position="relative">
+        <Box p={4} position="relative"  sx={{
+            minHeight: '100vh', // Make the container take full viewport height
+            overflow: 'hidden', // Prevent scrolling
+        }}>
             <Button
-                variant="contained"
-                // color="primary"
+                variant="outlined"
+                 color="primary"
                 onClick={handleOpen}
-                // sx={{
-                //     position: 'absolute',
-                //     top: 5,
-                //     right: 16,
-                // }}
                 sx={{
                     position: 'absolute',
                     top: 5,
                     right: 16,
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
-                    font: '12px',
-                    textTransform: 'none',
-                    height: '30px',
-                    ml: 2,
-                    borderRadius: '6px',
-                    '&:hover': {
-                        backgroundColor: theme.palette.secondary.main
-                    }
                 }}
             >
-                Edit Project
+                Project Details
             </Button>
 
             {/* Responsive SVG Image and phase inputs */}
@@ -92,6 +80,7 @@ const ProjectDetails = () => {
                             margin: '0 auto',
                             display: 'flex',
                             justifyContent: 'center',
+                            maxHeight:'500px',
                         }}
                     >
                         <Image
