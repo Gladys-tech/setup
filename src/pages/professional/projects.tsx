@@ -7,6 +7,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import EmailIcon from '@mui/icons-material/Email';
 
 // Define project interface
 interface Project {
@@ -49,6 +51,8 @@ const Projects = () => {
     const [location, setLocation] = useState('');
     const [image, setImage] = useState<File | null>(null);
     const [phaseId, setPhaseId] = useState('');
+    const [shareOpen, setShareOpen] = useState(false); // For share link modal
+    const [shareLink, setShareLink] = useState(''); // Share link state
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -88,10 +92,37 @@ const Projects = () => {
 
     const router = useRouter();
 
-    const handleProjectClick = (projectId: number) => {
+    // const handleProjectClick = (projectId: number) => {
+    //     router.push(`/professional/projects/${projectId}`);
+    // };
+
+    // Handle project click, excluding action buttons
+    const handleProjectClick = (projectId: number, event: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => {
+        // Exclude clicks from buttons inside the "Actions" column
+        if ((event.target as HTMLElement).closest('.action-btns')) return;
+
         router.push(`/professional/projects/${projectId}`);
     };
 
+    // Handle download button click
+    const handleDownload = (projectName: string) => {
+        alert(`Download initiated for ${projectName}`);
+        // Simulate a file download here if needed
+    };
+
+    const handleShareOpen = () => setShareOpen(true);
+    const handleShareClose = () => setShareOpen(false);
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(shareLink);
+        alert("Link copied to clipboard!");
+    };
+
+    const handleShareViaEmail = () => {
+        const subject = encodeURIComponent(`Check out this project: `);
+        const body = encodeURIComponent(`Hi,\n\nHere is the link to the project "":\n${shareLink}\n\nBest regards.`);
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    };
 
     return (
         <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
@@ -263,7 +294,10 @@ const Projects = () => {
                         </TableHead>
                         <TableBody>
                             {projects.map((project) => (
-                                <TableRow key={project.id} sx={{ height: '20px', cursor: 'pointer' }} onClick={() => handleProjectClick(project.id)}>
+                                <TableRow key={project.id} sx={{ height: '20px', cursor: 'pointer' }}
+                                    onClick={(event) => handleProjectClick(project.id, event)}
+                                //  onClick={() => handleProjectClick(project.id)}
+                                >
                                     <TableCell sx={{ fontWeight: 'bold', color: theme.palette.primary.main, padding: '4px 8px' }}>{project.name}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.client}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.location}</TableCell>
@@ -287,7 +321,7 @@ const Projects = () => {
                                             {project.status}
                                         </Box>
                                     </TableCell>
-                                    <TableCell sx={{
+                                    <TableCell className="action-btns" sx={{
                                         display: 'flex', justifyContent: 'center', padding: '4px 8px', flexDirection: 'column',
                                         alignItems: 'flex-start',
                                     }}>
@@ -309,6 +343,7 @@ const Projects = () => {
                                                         backgroundColor: theme => theme.palette.primary.dark,
                                                     },
                                                 }}
+                                                onClick={handleShareOpen}
                                             >
                                                 <ShareIcon sx={{ color: 'white' }} />
                                             </Button>
@@ -330,12 +365,12 @@ const Projects = () => {
                                                         backgroundColor: theme => theme.palette.primary.dark,
                                                     },
                                                 }}
+                                                onClick={() => handleDownload(project.name)}
                                             >
                                                 <DownloadIcon sx={{ color: 'white' }} />
                                             </Button>
                                         </Box>
                                     </TableCell>
-
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -343,6 +378,69 @@ const Projects = () => {
                 </TableContainer>
             </Box>
 
+            {/* Share Link Popup */}
+            <Dialog open={shareOpen} onClose={handleShareClose}>
+                <DialogTitle>Share Project Link</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        label="Shareable Link"
+                        fullWidth
+                        margin="normal"
+                        value={shareLink}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                    />
+                    <Button
+                        variant="contained"
+                        startIcon={<ContentCopyIcon />}
+                        onClick={handleCopyLink}
+                        sx={{
+                            backgroundColor: theme.palette.primary.main,
+                            color: theme.palette.primary.contrastText,
+                            mt: 2,
+                            textTransform: 'none',
+                            '&:hover': {
+                                backgroundColor: theme.palette.secondary.main
+                            }
+                        }}
+                    >
+                        Copy Link
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        startIcon={<EmailIcon />}
+                        onClick={handleShareViaEmail}
+                        sx={{
+                            backgroundColor: theme.palette.primary.main,
+                            color: theme.palette.primary.contrastText,
+                            mt: 2,
+                            ml: 2,
+                            textTransform: 'none',
+                            '&:hover': {
+                                backgroundColor: theme.palette.secondary.main
+                            }
+                        }}
+                    >
+                        Share via Email
+                    </Button>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleShareClose}
+                        variant='contained'
+                        sx={{
+                            backgroundColor: theme.palette.error.main,
+                            color: theme.palette.primary.contrastText,
+                            textTransform: 'none',
+                            '&:hover': {
+                                backgroundColor: theme.palette.error.dark
+                            }
+                        }}>
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Modal for Create Project */}
             <Dialog open={open} onClose={handleClose}>
