@@ -43,7 +43,7 @@ const ProjectDetails = () => {
         updatedPhases[index].total = value;
         setPhases(updatedPhases);
     };
-    
+
 
     // Navigate to material schedule page with phase info
     const handleEditClick = (phaseName: string) => {

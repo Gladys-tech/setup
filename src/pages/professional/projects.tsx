@@ -9,6 +9,8 @@ import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EmailIcon from '@mui/icons-material/Email';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 // Define project interface
 interface Project {
@@ -53,6 +55,7 @@ const Projects = () => {
     const [phaseId, setPhaseId] = useState('');
     const [shareOpen, setShareOpen] = useState(false); // For share link modal
     const [shareLink, setShareLink] = useState(''); // Share link state
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -92,22 +95,12 @@ const Projects = () => {
 
     const router = useRouter();
 
-    // const handleProjectClick = (projectId: number) => {
-    //     router.push(`/professional/projects/${projectId}`);
-    // };
-
     // Handle project click, excluding action buttons
     const handleProjectClick = (projectId: number, event: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => {
         // Exclude clicks from buttons inside the "Actions" column
         if ((event.target as HTMLElement).closest('.action-btns')) return;
 
         router.push(`/professional/projects/${projectId}`);
-    };
-
-    // Handle download button click
-    const handleDownload = (projectName: string) => {
-        alert(`Download initiated for ${projectName}`);
-        // Simulate a file download here if needed
     };
 
     const handleShareOpen = () => setShareOpen(true);
@@ -124,6 +117,45 @@ const Projects = () => {
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
     };
 
+    // Function to generate PDF for a project
+    const handleDownload = async (projectName: string, projectId: number) => {
+        const project = projects.find((p) => p.id === projectId);
+
+        if (!project) {
+            alert("Project not found!");
+            return;
+        }
+
+        const doc = new jsPDF('portrait', 'pt', 'a4');
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const pdfHeight = doc.internal.pageSize.getHeight();
+
+        // Add project details
+        doc.text(`Project: ${project.name}`, 20, 30);
+        doc.text(`Client: ${project.client}`, 20, 50);
+        doc.text(`Location: ${project.location}`, 20, 70);
+        doc.text(`Status: ${project.status}`, 20, 90);
+        doc.text(`Pay Due Date: ${project.payDueDate}`, 20, 110);
+
+        // Capture the project table as an image (using html2canvas)
+        const tableElement = document.getElementById(`project-table-${projectId}`);
+        if (tableElement) {
+            const canvas = await html2canvas(tableElement);
+            const imgData = canvas.toDataURL('image/png');
+
+            const imgWidth = pdfWidth - 40;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            doc.addImage(imgData, 'PNG', 20, 130, imgWidth, imgHeight);
+        }
+
+        doc.save(`${projectName}_details.pdf`);
+    };
+
+    // Filter the projects based on search query
+    const filteredProjects = projects.filter((project) =>
+        project.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
             <Grid container spacing={3}>
@@ -133,7 +165,8 @@ const Projects = () => {
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'flex-start',
+                            // alignItems: 'flex-start',
+                            alignItems: 'center',
                             textAlign: 'center',
                         }}
                     >
@@ -168,7 +201,8 @@ const Projects = () => {
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'flex-start',
+                            // alignItems: 'flex-start',
+                            alignItems: 'center',
                             textAlign: 'center',
                         }}
                     >
@@ -198,13 +232,16 @@ const Projects = () => {
 
                 {/* Third Box: Search TextField */}
                 <Grid item xs={12} sm={4} md={4}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center',  alignItems: 'center', height: '100%', }}>
                         <TextField
-                            placeholder="Search projects..."
+                            placeholder="Search projects"
                             variant="outlined"
                             size="small"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             sx={{
-                                width: '100%',
+                                // width: '100%',
+                                width:'300px',
                                 boxShadow: 1,
                                 borderRadius: 2, // Smooth border radius
                                 '& .MuiOutlinedInput-root': {
@@ -293,10 +330,11 @@ const Projects = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {projects.map((project) => (
+                            {/* {projects.map((project) => ( */}
+                            {filteredProjects.map((project) => (
                                 <TableRow key={project.id} sx={{ height: '20px', cursor: 'pointer' }}
                                     onClick={(event) => handleProjectClick(project.id, event)}
-                                //  onClick={() => handleProjectClick(project.id)}
+                                    id={`project-table-${project.id}`}
                                 >
                                     <TableCell sx={{ fontWeight: 'bold', color: theme.palette.primary.main, padding: '4px 8px' }}>{project.name}</TableCell>
                                     <TableCell sx={{ padding: '4px 8px' }}>{project.client}</TableCell>
@@ -340,7 +378,7 @@ const Projects = () => {
                                                     justifyContent: 'center',
                                                     color: 'white',
                                                     '&:hover': {
-                                                        backgroundColor: theme => theme.palette.primary.dark,
+                                                        backgroundColor: theme => theme.palette.secondary.main,
                                                     },
                                                 }}
                                                 onClick={handleShareOpen}
@@ -362,10 +400,10 @@ const Projects = () => {
                                                     justifyContent: 'center',
                                                     color: 'white',
                                                     '&:hover': {
-                                                        backgroundColor: theme => theme.palette.primary.dark,
+                                                        backgroundColor: theme => theme.palette.secondary.main,
                                                     },
                                                 }}
-                                                onClick={() => handleDownload(project.name)}
+                                                onClick={() => handleDownload(project.name, project.id)}
                                             >
                                                 <DownloadIcon sx={{ color: 'white' }} />
                                             </Button>
