@@ -73,7 +73,7 @@ const LoginPage = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch(`${API_BASE_URL}/login-professional`, {
+      const response = await fetch(`${API_BASE_URL}/login/professional`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ const LoginPage = () => {
       const responseData = await response.json();
       const { user, token } = responseData;
       setUser(user);
-      router.push('/pages/dashboard');
+      router.push('/pages/professional');
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('token', token);
     } catch (error) {
@@ -127,7 +127,7 @@ const LoginPage = () => {
         </Typography>
 
         <form noValidate autoComplete='off' onSubmit={handleSubmit}>
-          <InputLabel htmlFor='auth-login-email' sx={{fontSize: '13px', mb: 1, fontWeight: 600 }}>Username</InputLabel>
+          <InputLabel htmlFor='auth-login-email' sx={{ fontSize: '13px', mb: 1, fontWeight: 600 }}>Username</InputLabel>
           <TextField
             // id='auth-login-email'
             fullWidth
@@ -142,7 +142,7 @@ const LoginPage = () => {
             }}
           />
 
-          <InputLabel htmlFor='auth-login-password' sx={{ fontSize: '13px',fontWeight: 600 }}>Password</InputLabel>
+          <InputLabel htmlFor='auth-login-password' sx={{ fontSize: '13px', fontWeight: 600 }}>Password</InputLabel>
           <FormControl fullWidth sx={{ mb: 2 }}>
             <OutlinedInput
               // id='auth-login-password'

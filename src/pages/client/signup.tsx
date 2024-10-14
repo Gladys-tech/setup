@@ -116,7 +116,7 @@ const RegisterPage = () => {
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
         try {
-            const response = await fetch(`${API_BASE_URL}/signup/professional`, {
+            const response = await fetch(`${API_BASE_URL}/signup/client`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -133,7 +133,7 @@ const RegisterPage = () => {
             if (contentType?.includes('application/json')) {
                 const data = await response.json()
                 setSuccessMessage('Registration successful! Redirecting to login page...')
-                router.push('/pages/professional/login')
+                router.push('/pages/client/login')
             } else {
                 const errorText = await response.text()
                 throw new Error(errorText || 'Unexpected response format')
@@ -259,7 +259,7 @@ const RegisterPage = () => {
                 <Box sx={{ textAlign: 'center' }}>
                     <Typography variant='body2' sx={{ mb: 2 }}>
                         Already have an account?{' '}
-                        <Link href='/professional/login' passHref>
+                        <Link href='/client/login' passHref>
                             <LinkStyled>Sign in</LinkStyled>
                         </Link>
                     </Typography>

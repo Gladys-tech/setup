@@ -87,58 +87,89 @@ const ProjectDetails = () => {
             </Button>
 
             {/* Responsive SVG Image and phase inputs */}
-            <Grid container spacing={4} alignItems="center">
-                <Grid item xs={12} md={8}>
-                    <Box
-                        sx={{
-                            width: '100%',
-                            maxWidth: '800px',
-                            margin: '0 auto',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            maxHeight: '500px',
-                        }}
-                    >
-                        <Image
-                            src="/assets/images/phases diagram.svg"
-                            alt="Phases Diagram"
-                            layout="responsive"
-                            width={800}
-                            height={600}
-                        />
-                    </Box>
-                </Grid>
-
+            {/* Responsive SVG Image and phase inputs */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    margin: '0 auto',
+                    flexWrap: 'nowrap', // Prevents wrapping on small screens
+                }}
+            >
+                {/* Image Box */}
+                <Box
+                    sx={{
+                        flexBasis: '75%', // 75% width for the image
+                        maxWidth: '75%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        maxHeight: '500px',
+                        marginRight: '20px', // Adds spacing between the image and phase totals
+                    }}
+                >
+                    <Image
+                        src="/assets/images/phases diagram.svg"
+                        alt="Phases Diagram"
+                        layout="responsive"
+                        width={800}
+                        height={600}
+                    />
+                </Box>
 
                 {/* Phase totals and edit buttons */}
-                <Grid item xs={12} md={4}>
-                    <Box sx={{ mt: '50px', mb: '10px' }}>
-                        {phases
-                            .slice()
-                            .reverse()
-                            .map((phase, index) => (
-                                <Box key={index} mb={3} display="flex" alignItems="center">
-                                    <Typography sx={{ fontWeight: 'bold', mr: 2 }}>{phase.total}</Typography>
-                                    <IconButton
-                                        sx={{
-                                            backgroundColor: theme.palette.primary.main,
-                                            color: theme.palette.primary.contrastText,
-                                            height: '30px',
-                                            ml: 2,
-                                            borderRadius: '6px',
-                                            '&:hover': {
-                                                backgroundColor: theme.palette.secondary.main
-                                            }
-                                        }}
-                                        onClick={() => handleEditClick(phase.name)}
-                                    >
-                                        <EditIcon />
-                                    </IconButton>
-                                </Box>
-                            ))}
-                    </Box>
-                </Grid>
-            </Grid>
+                <Box
+                    sx={{
+                        flexBasis: '25%', // 25% width for the phase totals and buttons
+                        maxWidth: '25%',
+                        display: 'flex',
+                        flexDirection: 'column', // Stack totals and buttons vertically
+                        justifyContent: 'center',
+                        maxHeight: {
+                            xs: '300px', // For screens 425px and below
+                            sm: '500px', // For screens larger than 425px
+                        },
+                    }}
+                >
+                    {phases
+                        .slice()
+                        .reverse()
+                        .map((phase, index) => (
+                            <Box
+                                key={index}
+                                sx={{
+                                    mt: {
+                                        xs: 1,    // 425px and below
+                                        sm: 1,    // 768px and below
+                                        md: 3,    // 1024px and above
+                                    },
+                                    display: 'flex',
+                                    justifyContent: 'flex-start',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <IconButton
+                                    sx={{
+                                        backgroundColor: theme.palette.primary.main,
+                                        color: theme.palette.primary.contrastText,
+                                        height: '30px',
+                                        borderRadius: '6px',
+                                        '&:hover': {
+                                            backgroundColor: theme.palette.secondary.main,
+                                        },
+                                    }}
+                                    onClick={() => handleEditClick(phase.name)}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                                <Typography sx={{ fontWeight: 'bold', ml: 2 }}>{phase.total}</Typography>
+                            </Box>
+                        ))}
+                </Box>
+            </Box>
+
+
 
             {/* Share Icon */}
             <IconButton

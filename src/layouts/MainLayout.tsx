@@ -10,6 +10,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <Box
       sx={{
+        fontFamily:'inter !important',
         minHeight: '100vh',
         backgroundSize: 'cover',
         backgroundAttachment: 'fixed',
