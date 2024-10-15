@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     Box,
     Typography,
@@ -9,12 +9,13 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
     Paper,
     useTheme,
-    Select,
-    MenuItem,
+    IconButton
 } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MessageIcon from '@mui/icons-material/Message';
+import CallIcon from '@mui/icons-material/Call';
 
 // Define the Material interface
 interface Material {
@@ -31,70 +32,37 @@ const MaterialSchedule = () => {
     const router = useRouter();
     const { phase } = router.query;
 
-    const itemDescriptions: { [key: string]: { description: string; rate: number }[] } = {
-        'Cement': [
-            { description: 'Simba', rate: 10 },
-            { description: 'Tororo', rate: 12 },
-            { description: 'Hima', rate: 11 },
-        ],
-    };
-
     // State to manage the materials list with initial data
-    const [materials, setMaterials] = useState<Material[]>([
+    const [materials] = useState<Material[]>([
         { item: 'Cement', description: 'Simba', unit: 'Bags', quantity: 50, rate: 10, amount: 500 },
         { item: 'Steel Rods', description: 'Reinforced Steel', unit: 'Tons', quantity: 5, rate: 200, amount: 1000 },
         { item: 'Sand', description: 'Lake Sand', unit: 'Cubic meters', quantity: 20, rate: 15, amount: 300 },
     ]);
 
-    // Update amount based on selected description
-    // useEffect(() => {
-    //     const updatedMaterials = materials.map(material => {
-    //         const selectedDescription = itemDescriptions[material.item].find(
-    //             desc => desc.description === material.description
-    //         );
-    //         const updatedRate = selectedDescription ? selectedDescription.rate : 0;
-    //         return {
-    //             ...material,
-    //             rate: updatedRate,
-    //             amount: material.quantity * updatedRate,
-    //         };
-    //     });
-    //     setMaterials(updatedMaterials);
-    // }, [materials]);
-
-
-    useEffect(() => {
-        const updatedMaterials = materials.map(material => {
-            const itemDescriptionArray = itemDescriptions[material.item];
-    
-            // Check if itemDescriptionArray is defined
-            if (itemDescriptionArray) {
-                const selectedDescription = itemDescriptionArray.find(
-                    desc => desc.description === material.description
-                );
-                const updatedRate = selectedDescription ? selectedDescription.rate : 0;
-    
-                // Return the updated material with the new rate
-                return {
-                    ...material,
-                    rate: updatedRate,
-                    amount: material.quantity * updatedRate,
-                };
-            }
-    
-            // If no descriptions found, return the material without changes
-            return material;
-        });
-    
-        setMaterials(updatedMaterials);
-    }, [materials, itemDescriptions]);
-    
     // Calculate total amount
     const totalAmount = materials.reduce((total, material) => total + material.amount, 0);
 
     return (
         <Box p={4} position="relative">
-            <Typography variant="h5">
+
+            {/* Back arrow button for easy navigation */}
+            <IconButton
+                sx={{
+                    position: 'fixed',
+                    top: 75,
+                    left: 16,
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                    borderRadius: '50%',
+                    '&:hover': {
+                        backgroundColor: theme.palette.secondary.main,
+                    },
+                }}
+                onClick={() => router.back()} // Navigates to the previous page
+            >
+                <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h5" sx={{ mb: 2 }}>
                 Material Schedule for{' '}
                 <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{phase}</span>
             </Typography>
@@ -124,87 +92,29 @@ const MaterialSchedule = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-    {materials.map((material, index) => (
-        <TableRow key={index} sx={{ height: '20px' }}>
-            <TableCell sx={{ padding: '4px 8px' }}>
-                <TextField
-                    fullWidth
-                    variant="standard"
-                    value={material.item}
-                    InputProps={{
-                        disableUnderline: true,
-                        readOnly: true,
-                    }}
-                />
-            </TableCell>
-            <TableCell sx={{ padding: '4px 8px' }}>
-                <Select
-                    fullWidth
-                    value={material.description}
-                    onChange={(e) => {
-                        const selectedDescription = e.target.value as string;
-                        const selectedRate = itemDescriptions[material.item]?.find(
-                            (desc) => desc.description === selectedDescription
-                        )?.rate || 0;
-                        setMaterials(prevMaterials => {
-                            const updatedMaterials = [...prevMaterials];
-                            updatedMaterials[index].description = selectedDescription;
-                            updatedMaterials[index].rate = selectedRate;
-                            updatedMaterials[index].amount = updatedMaterials[index].quantity * selectedRate;
-                            return updatedMaterials;
-                        });
-                    }}
-                    variant="standard"
-                >
-                    {itemDescriptions[material.item]?.map((option, i) => (
-                        <MenuItem key={i} value={option.description}>
-                            {option.description}
-                        </MenuItem>
-                    )) || (
-                        <MenuItem disabled>No options available</MenuItem>
-                    )}
-                </Select>
-            </TableCell>
-            <TableCell sx={{ padding: '4px 8px' }}>
-                <TextField
-                    fullWidth
-                    variant="standard"
-                    value={material.unit}
-                    InputProps={{
-                        disableUnderline: true,
-                        readOnly: true,
-                    }}
-                />
-            </TableCell>
-            <TableCell sx={{ padding: '4px 8px' }}>
-                <TextField
-                    type="number"
-                    fullWidth
-                    variant="standard"
-                    value={material.quantity}
-                    InputProps={{
-                        disableUnderline: true,
-                        readOnly: true,
-                    }}
-                />
-            </TableCell>
-            <TableCell sx={{ padding: '4px 8px' }}>
-                <TextField
-                    type="number"
-                    fullWidth
-                    variant="standard"
-                    value={material.rate}
-                    InputProps={{
-                        disableUnderline: true,
-                        readOnly: true,
-                    }}
-                />
-            </TableCell>
-            <TableCell sx={{ padding: '4px 8px' }}>{material.amount}</TableCell>
-        </TableRow>
-    ))}
-</TableBody>
-
+                        {materials.map((material, index) => (
+                            <TableRow key={index} sx={{ height: '20px', cursor: 'pointer' }}>
+                                <TableCell sx={{ padding: '4px 8px' }}>
+                                    <Typography>{material.item}</Typography>
+                                </TableCell>
+                                <TableCell sx={{ padding: '4px 8px' }}>
+                                    <Typography>{material.description}</Typography>
+                                </TableCell>
+                                <TableCell sx={{ padding: '4px 8px' }}>
+                                    <Typography>{material.unit}</Typography>
+                                </TableCell>
+                                <TableCell sx={{ padding: '4px 8px' }}>
+                                    <Typography>{material.quantity}</Typography>
+                                </TableCell>
+                                <TableCell sx={{ padding: '4px 8px' }}>
+                                    <Typography>{material.rate}</Typography>
+                                </TableCell>
+                                <TableCell sx={{ padding: '4px 8px' }}>
+                                    <Typography>{material.amount}</Typography>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>
 
@@ -213,6 +123,30 @@ const MaterialSchedule = () => {
                 <Typography variant="h6">
                     Total Amount: {totalAmount}
                 </Typography>
+            </Box>
+
+            {/* Fixed Call or Message Button */}
+            <Box
+                sx={{
+                    position: 'fixed',
+                    bottom: 16,
+                    right: 16,
+                    zIndex: 1000,
+                }}
+            >
+                <IconButton
+                    sx={{
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+                        '&:hover': {
+                            backgroundColor: theme.palette.secondary.main,
+                        },
+                    }}
+                    href="tel:+1234567890" // `mailto:example@mail.com` for email.
+                >
+                    <CallIcon /> {/*  <MessageIcon /> for message */}
+                </IconButton>
             </Box>
         </Box>
     );

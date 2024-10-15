@@ -17,6 +17,7 @@ import {
     MenuItem,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // Define the Material interface
 interface Material {
@@ -82,7 +83,26 @@ const MaterialSchedule = () => {
 
     return (
         <Box p={4} position="relative">
-            <Typography variant="h5">
+
+            {/* Back arrow button for easy navigation */}
+            <IconButton
+                sx={{
+                    position: 'fixed',
+                    top: 75,
+                    left: 16, // Place it on the left for easy access
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                    borderRadius: '50%',
+                    '&:hover': {
+                        backgroundColor: theme.palette.secondary.main,
+                    },
+                }}
+                onClick={() => router.back()} // Navigates to the previous page
+            >
+                <ArrowBackIcon />
+            </IconButton>
+
+            <Typography variant="h5" sx={{ mb: 2 }}>
                 Material Schedule for{' '}
                 <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{phase}</span>
             </Typography>
@@ -216,11 +236,10 @@ const MaterialSchedule = () => {
                                     alignItems: 'flex-start',
                                 }}>
                                     <Box display="flex" flexDirection="row">
-                                        <IconButton onClick={() => addMaterial(index)} color="primary">
+                                        <IconButton onClick={() => addMaterial(index)} color="secondary">
                                             <AddIcon />
                                         </IconButton>
-                                        <IconButton onClick={() => removeMaterial(index)} color="secondary">
-                                            {/* <DeleteIcon /> */}
+                                        <IconButton onClick={() => removeMaterial(index)} color="primary">
                                             -
                                         </IconButton>
                                     </Box>

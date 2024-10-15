@@ -159,49 +159,13 @@ const Projects = () => {
     return (
         <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
             <Grid container spacing={3}>
-                {/* First Box: Home Icon */}
-                <Grid item xs={12} sm={4} md={4}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            // alignItems: 'flex-start',
-                            alignItems: 'center',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                backgroundColor: theme.palette.primary.main,
-                                borderRadius: 1,
-                                width: 64,
-                                height: 64,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginBottom: 1,
-                                boxShadow: 3,
-                                transition: '0.3s',
-                                '&:hover': { boxShadow: 6 },
-                                cursor: 'pointer',
-                            }}
-                        >
-                            <HomeIcon sx={{ fontSize: 40, color: 'white' }} />
-                        </Box>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                            Sample Project
-                        </Typography>
-                    </Box>
-                </Grid>
-
-                {/* Second Box: Create Project */}
+                {/* first Box: Create Project */}
                 <Grid item xs={12} sm={4} md={4}>
                     <Box
                         onClick={handleClickOpen}
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            // alignItems: 'flex-start',
                             alignItems: 'center',
                             textAlign: 'center',
                         }}
@@ -230,9 +194,43 @@ const Projects = () => {
                     </Box>
                 </Grid>
 
+                {/* second Box: Home Icon */}
+                <Grid item xs={12} sm={4} md={4}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                backgroundColor: theme.palette.primary.main,
+                                borderRadius: 1,
+                                width: 64,
+                                height: 64,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 1,
+                                boxShadow: 3,
+                                transition: '0.3s',
+                                '&:hover': { boxShadow: 6 },
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <HomeIcon sx={{ fontSize: 40, color: 'white' }} />
+                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                            Sample Project
+                        </Typography>
+                    </Box>
+                </Grid>
+
                 {/* Third Box: Search TextField */}
                 <Grid item xs={12} sm={4} md={4}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center',  alignItems: 'center', height: '100%', }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', }}>
                         <TextField
                             placeholder="Search projects"
                             variant="outlined"
@@ -241,7 +239,7 @@ const Projects = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             sx={{
                                 // width: '100%',
-                                width:'300px',
+                                width: '300px',
                                 boxShadow: 1,
                                 borderRadius: 2, // Smooth border radius
                                 '& .MuiOutlinedInput-root': {

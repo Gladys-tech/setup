@@ -103,23 +103,36 @@ const ClientHomePage = () => {
 
           {activeTab === 0 && (
             <Box p={3} onClick={handlePhasedCostsClick} sx={{ cursor: 'pointer', }}>
-              <Typography variant="h6" sx={{fontSize:'16px'}}>Phased Costs for {projects.find(p => p.id === selectedProject)?.name}</Typography>
+              <Typography variant="h6" sx={{ fontSize: '14px', fontWeight: 500 }}>Phased Costs for {projects.find(p => p.id === selectedProject)?.name}</Typography>
             </Box>
           )}
           {activeTab === 1 && (
             <Box p={3}>
-              <Typography variant="h6" sx={{fontSize:'16px'}}>Project Management (PM) for {projects.find(p => p.id === selectedProject)?.name}</Typography>
+              <Typography variant="h6" sx={{ fontSize: '14px' ,fontWeight: 500}}>Project Management (PM) for {projects.find(p => p.id === selectedProject)?.name}</Typography>
             </Box>
           )}
           {activeTab === 2 && (
             <Box p={3}>
-              <Typography variant="h6" sx={{fontSize:'16px'}}>Finance for {projects.find(p => p.id === selectedProject)?.name}</Typography>
+              <Typography variant="h6" sx={{ fontSize: '14px', fontWeight: 500 }}>Finance for {projects.find(p => p.id === selectedProject)?.name}</Typography>
             </Box>
           )}
 
           {/* Card under the active tab */}
           {selectedProject && (
-            <Card sx={{ marginTop: '1rem', cursor: 'pointer', }} onClick={handlePhasedCostsClick}>
+            <Card
+              sx={{
+                marginTop: '1rem',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                transition: 'transform 0.2s ease-in-out',
+                cursor: 'pointer',
+                '&:hover': {
+                  transform: 'scale(1.02)', // Slight zoom effect on hover
+                },
+              }}
+              onClick={handlePhasedCostsClick}
+            >
               <CardMedia
                 component="img"
                 height="100"

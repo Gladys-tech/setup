@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ShareIcon from '@mui/icons-material/Share';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EmailIcon from '@mui/icons-material/Email';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ProjectDetails = () => {
     const theme = useTheme();
@@ -77,98 +78,87 @@ const ProjectDetails = () => {
             minHeight: '100vh', // Make the container take full viewport height
             overflow: 'hidden', // Prevent scrolling
         }}>
+
+            {/* Back arrow button for easy navigation */}
+            <IconButton
+                sx={{
+                    position: 'fixed',
+                    top: 75,
+                    left: 16, // Place it on the left for easy access
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                    borderRadius: '50%',
+                    '&:hover': {
+                        backgroundColor: theme.palette.secondary.main,
+                    },
+                }}
+                onClick={() => router.back()} // Navigates to the previous page
+            >
+                <ArrowBackIcon />
+            </IconButton>
             <Button
                 variant="outlined"
                 color="primary"
                 onClick={handleOpen}
-                sx={{ position: 'absolute', top: 5, right: 16 }}
+                sx={{ position: 'absolute', top: 5, right: 16, height: '25px' }}
             >
                 Project Details
             </Button>
 
             {/* Responsive SVG Image and phase inputs */}
-            {/* Responsive SVG Image and phase inputs */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    margin: '0 auto',
-                    flexWrap: 'nowrap', // Prevents wrapping on small screens
-                }}
-            >
-                {/* Image Box */}
-                <Box
-                    sx={{
-                        flexBasis: '75%', // 75% width for the image
-                        maxWidth: '75%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        maxHeight: '500px',
-                        marginRight: '20px', // Adds spacing between the image and phase totals
-                    }}
-                >
-                    <Image
-                        src="/assets/images/phases diagram.svg"
-                        alt="Phases Diagram"
-                        layout="responsive"
-                        width={800}
-                        height={600}
-                    />
-                </Box>
+            <Grid container spacing={4} alignItems="center">
+                <Grid item xs={12} md={8}>
+                    <Box
+                        sx={{
+                            width: '100%',
+                            maxWidth: '900px',
+                            margin: '0 auto',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            maxHeight: '500px',
+                        }}
+                    >
+                        <Image
+                            src="/assets/images/phases diagram.svg"
+                            alt="Phases Diagram"
+                            layout="responsive"
+                            width={900}
+                            height={600}
+                        />
+                    </Box>
+                </Grid>
 
-                {/* Phase totals and edit buttons */}
-                <Box
-                    sx={{
-                        flexBasis: '25%', // 25% width for the phase totals and buttons
-                        maxWidth: '25%',
-                        display: 'flex',
-                        flexDirection: 'column', // Stack totals and buttons vertically
-                        justifyContent: 'center',
-                        maxHeight: {
-                            xs: '300px', // For screens 425px and below
-                            sm: '500px', // For screens larger than 425px
-                        },
-                    }}
-                >
-                    {phases
-                        .slice()
-                        .reverse()
-                        .map((phase, index) => (
-                            <Box
-                                key={index}
-                                sx={{
-                                    mt: {
-                                        xs: 1,    // 425px and below
-                                        sm: 1,    // 768px and below
-                                        md: 3,    // 1024px and above
-                                    },
-                                    display: 'flex',
-                                    justifyContent: 'flex-start',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <IconButton
-                                    sx={{
-                                        backgroundColor: theme.palette.primary.main,
-                                        color: theme.palette.primary.contrastText,
-                                        height: '30px',
-                                        borderRadius: '6px',
-                                        '&:hover': {
-                                            backgroundColor: theme.palette.secondary.main,
-                                        },
-                                    }}
-                                    onClick={() => handleEditClick(phase.name)}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                                <Typography sx={{ fontWeight: 'bold', ml: 2 }}>{phase.total}</Typography>
-                            </Box>
-                        ))}
-                </Box>
-            </Box>
-
+                {/* Phase totals and view buttons */}
+                <Grid item xs={12} md={4} sx={{ paddingLeft: '0px !important' }}>
+                    <Box sx={{ mt: '50px', mb: '10px', }}>
+                        {phases
+                            .slice()
+                            .reverse()
+                            .map((phase, index) => (
+                                <Box key={index} mb={3} display="flex" alignItems="center" sx={{ cursor: 'pointer' }}
+                                    onClick={() => router.push(`/professional/materialschedule/${phase.name}`)}>
+                                    <IconButton
+                                        sx={{
+                                            backgroundColor: theme.palette.primary.main,
+                                            color: theme.palette.primary.contrastText,
+                                            height: '30px',
+                                            borderRadius: '6px',
+                                            '&:hover': {
+                                                backgroundColor: theme.palette.secondary.main
+                                            }
+                                        }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold', ml: 2, mr: 2 }}>{phase.total}</Typography>
+                                    <Typography sx={{ fontSize: '16px', m1: 3 }}>Total for {''}
+                                        <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{phase.name} </span>
+                                    </Typography>
+                                </Box>
+                            ))}
+                    </Box>
+                </Grid>
+            </Grid>
 
 
             {/* Share Icon */}

@@ -45,7 +45,6 @@ const ProfilePage = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 minHeight: '100vh',
-                padding: '2rem',
             }}
         >
             {/* Profile Container */}
@@ -54,7 +53,7 @@ const ProfilePage = () => {
                 sx={{
                     padding: '2rem',
                     width: { xs: '100%', sm: '75%', md: '50%' },
-                    maxWidth: '600px',
+                    maxWidth: '400px',
                     borderRadius: '10px',
                 }}
             >
