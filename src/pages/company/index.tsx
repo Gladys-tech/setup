@@ -61,7 +61,7 @@ const HomePage = () => {
                 <Grid item>
                     <Paper
                         elevation={3}
-                        onClick={() => handleNavigation('/company/manage-material')} // Navigate to Manage Project material page
+                        onClick={() => handleNavigation('/company/manage-material')}
                         sx={{
                             width: 300,
                             height: 300,
@@ -71,23 +71,24 @@ const HomePage = () => {
                             alignItems: 'center',
                             textAlign: 'center',
                             cursor: 'pointer',
-                            backgroundColor: '#E3F2FD',
+                            backgroundColor: '#FFD580', // Tangerine light
                             '&:hover': {
-                                backgroundColor: '#90CAF9',
+                                backgroundColor: '#FFA726', // Tangerine hover
                             },
                         }}
                     >
-                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1565C0' }}>
+                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#E65100' }}> {/* Dark Tangerine */}
                             M.P.I
                         </Typography>
-                        <Typography variant="h6" sx={{ marginTop: '10px', color: '#1976D2' }}>
+                        <Typography variant="h6" sx={{ marginTop: '10px', color: '#FB8C00' }}> {/* Medium Tangerine */}
                             Manage Project Items
                         </Typography>
-                        <Typography sx={{ marginTop: '10px', fontSize: '14px', color: '#2196F3' }}>
+                        <Typography sx={{ marginTop: '10px', fontSize: '14px', color: '#FFB74D' }}> {/* Light Tangerine */}
                             Click to manage items
                         </Typography>
                     </Paper>
                 </Grid>
+
             </Grid>
         </Box>
     );
