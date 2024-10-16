@@ -71,7 +71,7 @@ const ProjectsTable = () => {
 
     const handleProjectClick = (id: number, event: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => {
         // Handle project click here
-        console.log(`Clicked project with id: ${id}`);
+        router.push(`/company/projects/${id}`);
     };
 
     // Function to generate PDF for a project
@@ -225,7 +225,11 @@ const ProjectsTable = () => {
                                                 backgroundColor: theme => theme.palette.secondary.main,
                                             },
                                         }}
-                                        onClick={() => handleDownload(project.name, project.id)}
+                                        // onClick={() => handleDownload(project.name, project.id)}
+                                        onClick={(event) => {
+                                            event.stopPropagation(); // Stop row click from triggering
+                                            handleDownload(project.name, project.id);
+                                        }}
                                     >
                                         <DownloadIcon sx={{ color: 'white' }} />
                                     </Button>
