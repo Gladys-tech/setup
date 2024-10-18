@@ -25,15 +25,16 @@ import { Grid } from '@mui/material'
 import AuthLayout from 'src/layouts/AuthLayout'
 
 interface Address {
-    street: string;
+    // street: string;
     city: string;
     country: string;
-    telephone: string; // Changed to string to handle input correctly
+    telephone: string; 
 }
 
 interface State {
     firstName: string;
     lastName: string;
+    companyName: string;
     email: string;
     password: string;
     isEmailVerified: boolean;
@@ -75,12 +76,13 @@ const RegisterPage = () => {
     const [signupDetails, setSignupDetails] = useState<State>({
         firstName: '',
         lastName: '',
+        companyName: '',
         email: '',
         password: '',
         isEmailVerified: false,
         agreeToTerms: false,
         address: {
-            street: '',
+            // street: '',
             city: '',
             country: '',
             telephone: ''
@@ -133,7 +135,7 @@ const RegisterPage = () => {
             if (contentType?.includes('application/json')) {
                 const data = await response.json()
                 setSuccessMessage('Registration successful! Redirecting to login page...')
-                router.push('/pages/professional/login')
+                router.push('/professional/login')
             } else {
                 const errorText = await response.text()
                 throw new Error(errorText || 'Unexpected response format')
@@ -166,7 +168,7 @@ const RegisterPage = () => {
 
                 <form noValidate autoComplete='off' onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        {['firstName', 'lastName', 'email', 'password', 'street', 'city', 'country', 'telephone'].map((field, index) => (
+                        {['firstName', 'lastName', 'companyName', 'email', 'password',  'city', 'country', 'telephone'].map((field, index) => (
                             <Grid item xs={12} key={index}>
                                 <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
                                     {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}

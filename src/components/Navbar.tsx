@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useRouter } from 'next/router';
+import { useUser } from 'src/context/UserContext';
+
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
+  const { user } = useUser();
+
+  // Log the user data for debugging
+  useEffect(() => {
+    console.log("User data from context:", user);
+  }, [user]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -15,23 +23,46 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-
   const handleLogout = () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('user'); // Remove the user data
 
-    // Redirect to login page
-    router.push('/professional/login');
+    // Redirect to login page based on the userRole
+    if (user?.roles[0]?.roleName === 'professional') {
+      router.push('/professional/login');
+    } else if (user?.roles[0]?.roleName === 'client') {
+      router.push('/client/login');
+    } else if (user?.roles[0]?.roleName === 'company') {
+      router.push('/company/login');
+    }
 
-    // Close the menu
     handleMenuClose();
   };
 
   const handleProfile = () => {
-    router.push('/professional/profile');
+    // Redirect to profile page based on the userRole
+    if (user?.roles[0]?.roleName === 'professional') {
+      router.push('/professional/profile');
+    } else if (user?.roles[0]?.roleName === 'client') {
+      router.push('/client/profile');
+    } else if (user?.roles[0]?.roleName === 'company') {
+      router.push('/company/profile');
+    }
 
-    // Close the menu
     handleMenuClose();
-  }
+  };
+
+  const handleLogoClick = () => {
+    // Redirect to the home page based on the userRole
+    if (user?.roles[0]?.roleName === 'professional') {
+      router.push('/professional');
+    } else if (user?.roles[0]?.roleName === 'client') {
+      router.push('/client');
+    } else if (user?.roles[0]?.roleName === 'company') {
+      router.push('/company');
+    }
+  };
+
   return (
     <AppBar
       position="static"
@@ -39,8 +70,8 @@ const Navbar = () => {
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 
-        {/* Logo always aligned to the left */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+        {/* Logo that navigates back to respective home */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', cursor: 'pointer' }} onClick={handleLogoClick}>
           <Typography variant="h6" component="div" sx={{ color: '#333' }}>
             LOGO
           </Typography>
@@ -49,6 +80,13 @@ const Navbar = () => {
         {/* Account icon and menu */}
         <IconButton onClick={handleMenuClick} sx={{ color: '#333' }}>
           <AccountCircle />
+          {user && (
+            <Typography variant="h6" component="div" sx={{ color: '#333', marginRight: '10px' }}>
+              {user.firstName.toLowerCase()}
+              {/* {user.lastName.toLowerCase()}  */}
+            </Typography>
+          )}
+
         </IconButton>
 
         <Menu

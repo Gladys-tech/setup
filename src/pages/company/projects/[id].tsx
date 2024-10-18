@@ -13,6 +13,9 @@ const ProjectDetails = () => {
     const { id } = router.query;
     const [project, setProject] = useState<any>(null);
     const [open, setOpen] = useState(false); // For handling modal
+    const [contactVisible, setContactVisible] = useState(false); // For controlling contact number visibility
+
+    const contactNumber = "0757763516";
 
     // Define phases and their totals in state
     const [phases, setPhases] = useState([
@@ -40,6 +43,11 @@ const ProjectDetails = () => {
     if (!project) {
         return <Typography>Loading...</Typography>;
     }
+
+    // Toggle contact number visibility
+    const handleContactToggle = () => {
+        setContactVisible(!contactVisible);
+    };
 
     return (
         <Box p={4} position="relative" sx={{
@@ -133,24 +141,35 @@ const ProjectDetails = () => {
                 </Grid>
             </Grid>
 
-            {/* Fixed Message Icon */}
-            <IconButton
-                sx={{
-                    position: 'fixed',
-                    bottom: 16,
-                    right: 16,
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
-                    borderRadius: '50%',
-                    '&:hover': {
-                        backgroundColor: theme.palette.secondary.main,
-                    },
-                }}
-                component="a"
-                href="tel:"
-            >
-                <MessageIcon />
-            </IconButton>
+            {/* Fixed Message Icon with Contact Number */}
+            <Box position="relative" sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+                {contactVisible && (
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            bottom: '60px', // Adjust this value to position the number above the icon
+                            right: '0',
+                            backgroundColor: theme.palette.background.paper,
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+                        }}
+                    >
+                        <Typography variant="body2">{contactNumber}</Typography>
+                    </Box>
+                )}
+                <IconButton
+                    sx={{
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                        borderRadius: '50%',
+                        '&:hover': { backgroundColor: theme.palette.secondary.main },
+                    }}
+                    onClick={handleContactToggle} // Toggle contact number visibility
+                >
+                    <MessageIcon />
+                </IconButton>
+            </Box>
 
             {/* Popup Modal for viewing project details */}
             <Dialog

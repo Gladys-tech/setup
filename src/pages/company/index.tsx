@@ -32,7 +32,7 @@ const HomePage = () => {
                         onClick={() => handleNavigation('/company/projects')} // Navigate to projects page
                         sx={{
                             width: 300,
-                            height: 300,
+                            height: 250,
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',
@@ -48,10 +48,10 @@ const HomePage = () => {
                         <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2E7D32' }}>
                             Total Projects
                         </Typography>
-                        <Typography variant="h3" sx={{ marginTop: '10px', color: '#388E3C' }}>
+                        <Typography variant="h1" sx={{ marginTop: '5px', color: '#388E3C' }}>
                             {totalProjects}
                         </Typography>
-                        <Typography sx={{ marginTop: '10px', fontSize: '14px', color: '#4CAF50' }}>
+                        <Typography sx={{ marginTop: '60px', fontSize: '14px', color: '#4CAF50' }}>
                             Click to view projects
                         </Typography>
                     </Paper>
@@ -64,7 +64,7 @@ const HomePage = () => {
                         onClick={() => handleNavigation('/company/manage-material')}
                         sx={{
                             width: 300,
-                            height: 300,
+                            height: 250,
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',
@@ -77,13 +77,13 @@ const HomePage = () => {
                             },
                         }}
                     >
-                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#E65100' }}> {/* Dark Tangerine */}
-                            M.P.I
+                        <Typography variant="h5" sx={{ fontWeight: 'bold', }}> {/* color: '#E65100' Dark Tangerine */}
+                           Material Price Index
                         </Typography>
-                        <Typography variant="h6" sx={{ marginTop: '10px', color: '#FB8C00' }}> {/* Medium Tangerine */}
-                            Manage Project Items
+                        <Typography variant="h1" sx={{ marginTop: '5px',  }}> {/* color: '#FB8C00' Medium Tangerine */}
+                        M.P.I
                         </Typography>
-                        <Typography sx={{ marginTop: '10px', fontSize: '14px', color: '#FFB74D' }}> {/* Light Tangerine */}
+                        <Typography sx={{ marginTop: '60px', fontSize: '14px',  }}> {/* color: '#FFB74D' Light Tangerine */}
                             Click to manage items
                         </Typography>
                     </Paper>

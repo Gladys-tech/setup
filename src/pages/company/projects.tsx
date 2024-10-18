@@ -1,15 +1,16 @@
-import React from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, Button, useTheme, IconButton } from '@mui/material';
-// import theme from 'src/theme/index';
+import React, { useState } from 'react';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, Button, useTheme, IconButton, TextField, InputAdornment } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter } from 'next/router';
+import SearchIcon from '@mui/icons-material/Search';
 
 const ProjectsTable = () => {
     const theme = useTheme();
     const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Dummy data for now
     const projects = [
@@ -109,6 +110,11 @@ const ProjectsTable = () => {
         doc.save(`${projectName}_details.pdf`);
     };
 
+    // Filter the projects based on search query
+    const filteredProjects = projects.filter((project) =>
+        project.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <Box mt={4}>
             {/* Back arrow button for easy navigation */}
@@ -128,11 +134,47 @@ const ProjectsTable = () => {
             >
                 <ArrowBackIcon />
             </IconButton>
-            <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16PX' }}>All Projects</Typography>
+
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16px' }}>
+                    All Projects
+                </Typography>
+
+                {/* Search TextField */}
+                <TextField
+                    placeholder="Search projects"
+                    variant="outlined"
+                    size="small"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    sx={{
+                        width: '300px',
+                        boxShadow: 1,
+                        borderRadius: 2, // Smooth border radius
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: theme.palette.grey[300],
+                            },
+                            '&:hover fieldset': {
+                                borderColor: theme.palette.grey[400],
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: theme.palette.primary.main,
+                            },
+                        },
+                    }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <SearchIcon sx={{ color: theme.palette.primary.main }} />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
             </Box>
 
-            <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 400 }}>
+
+            <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 355 }}>
                 <Table stickyHeader aria-label="projects table">
                     <TableHead>
                         <TableRow>
@@ -195,7 +237,8 @@ const ProjectsTable = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {projects.map((project) => (
+                        {/* {projects.map((project) => ( */}
+                        {filteredProjects.map((project) => (
                             <TableRow key={project.id} sx={{ height: '20px', cursor: 'pointer' }}
                                 onClick={(event) => handleProjectClick(project.id, event)}
                             >
