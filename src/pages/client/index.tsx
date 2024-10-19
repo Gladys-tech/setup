@@ -68,7 +68,7 @@ const ClientHomePage = () => {
 
   return (
     <Box sx={{ padding: '2rem' }}>
-      <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '2rem', textAlign: 'center' }}>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '3rem', textAlign: 'center' }}>
         Welcome, {' '}
         <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{user.name}</span>
       </Typography>

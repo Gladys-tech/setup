@@ -8,7 +8,8 @@ const Footer: React.FC = () => {
                 padding: '16px',
                 textAlign: 'center',
                 fontFamily: 'Inter, sans-serif',
-                position: 'relative',
+                position: 'fixed',  
+                // relative
                 bottom: 0,
                 width: '100%',
             }}

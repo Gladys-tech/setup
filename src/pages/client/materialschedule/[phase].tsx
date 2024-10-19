@@ -14,7 +14,6 @@ import {
     IconButton
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import MessageIcon from '@mui/icons-material/Message';
 import CallIcon from '@mui/icons-material/Call';
 
 // Define the Material interface
@@ -31,6 +30,9 @@ const MaterialSchedule = () => {
     const theme = useTheme();
     const router = useRouter();
     const { phase } = router.query;
+    const [contactVisible, setContactVisible] = useState(false);
+
+    const contactNumber = "0757763516";
 
     // State to manage the materials list with initial data
     const [materials] = useState<Material[]>([
@@ -41,6 +43,11 @@ const MaterialSchedule = () => {
 
     // Calculate total amount
     const totalAmount = materials.reduce((total, material) => total + material.amount, 0);
+
+    // Toggle contact number visibility
+    const handleContactToggle = () => {
+        setContactVisible(!contactVisible);
+    };
 
     return (
         <Box p={4} position="relative">
@@ -125,29 +132,36 @@ const MaterialSchedule = () => {
                 </Typography>
             </Box>
 
-            {/* Fixed Call or Message Button */}
-            <Box
-                sx={{
-                    position: 'fixed',
-                    bottom: 16,
-                    right: 16,
-                    zIndex: 1000,
-                }}
-            >
+            {/* Fixed Call Icon with Contact Number */}
+            <Box position="relative" sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+                {contactVisible && (
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            bottom: '60px',
+                            right: '0',
+                            backgroundColor: theme.palette.background.paper,
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+                        }}
+                    >
+                        <Typography variant="body2">{contactNumber}</Typography>
+                    </Box>
+                )}
                 <IconButton
                     sx={{
                         backgroundColor: theme.palette.primary.main,
                         color: theme.palette.primary.contrastText,
-                        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-                        '&:hover': {
-                            backgroundColor: theme.palette.secondary.main,
-                        },
+                        borderRadius: '50%',
+                        '&:hover': { backgroundColor: theme.palette.secondary.main },
                     }}
-                    href="tel:+1234567890" // `mailto:example@mail.com` for email.
+                    onClick={handleContactToggle} // Toggle contact number visibility
                 >
-                    <CallIcon /> {/*  <MessageIcon /> for message */}
+                    <CallIcon />
                 </IconButton>
             </Box>
+            
         </Box>
     );
 };

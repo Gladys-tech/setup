@@ -4,8 +4,8 @@ import { Box, Typography, TextField, Grid, Button, Dialog, DialogActions, Dialog
 import Image from 'next/image';
 import projects from 'src/pages/professional/projectData';
 import ViewIcon from '@mui/icons-material/Visibility';
-import MessageIcon from '@mui/icons-material/Message';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CallIcon from '@mui/icons-material/Call';
 
 const ProjectDetails = () => {
   const theme = useTheme();
@@ -13,6 +13,9 @@ const ProjectDetails = () => {
   const { id } = router.query;
   const [project, setProject] = useState<any>(null);
   const [open, setOpen] = useState(false); // For handling modal
+  const [contactVisible, setContactVisible] = useState(false);
+
+  const contactNumber = "0757763516";
 
   // Define phases and their totals in state
   const [phases, setPhases] = useState([
@@ -41,6 +44,11 @@ const ProjectDetails = () => {
     return <Typography>Loading...</Typography>;
   }
 
+  // Toggle contact number visibility
+  const handleContactToggle = () => {
+    setContactVisible(!contactVisible);
+  };
+  
   return (
     <Box p={4} position="relative" sx={{
       minHeight: '100vh',
@@ -133,28 +141,35 @@ const ProjectDetails = () => {
         </Grid>
       </Grid>
 
-      {/* Fixed Message Icon */}
-      <IconButton
-        sx={{
-          position: 'fixed',
-          bottom: 16,
-          right: 16,
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
-          borderRadius: '50%',
-          '&:hover': {
-            backgroundColor: theme.palette.secondary.main,
-          },
-        }}
-        // onClick={() => {
-        //   // messaging functionality 
-        //   alert(`Message professional about project: ${project.name}`);
-        // }}  
-        component="a"
-        href="tel:"
-      >
-        <MessageIcon />
-      </IconButton>
+      {/* Fixed Call Icon with Contact Number */}
+      <Box position="relative" sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+        {contactVisible && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: '60px',
+              right: '0',
+              backgroundColor: theme.palette.background.paper,
+              padding: '4px 8px',
+              borderRadius: '4px',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            <Typography variant="body2">{contactNumber}</Typography>
+          </Box>
+        )}
+        <IconButton
+          sx={{
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+            borderRadius: '50%',
+            '&:hover': { backgroundColor: theme.palette.secondary.main },
+          }}
+          onClick={handleContactToggle} // Toggle contact number visibility
+        >
+          <CallIcon />
+        </IconButton>
+      </Box>
 
       {/* Popup Modal for viewing project details */}
       <Dialog
