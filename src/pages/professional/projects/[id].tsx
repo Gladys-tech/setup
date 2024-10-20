@@ -21,14 +21,14 @@ const ProjectDetails = () => {
 
     // Define phases and their totals in state
     const [phases, setPhases] = useState([
-        { name: 'Foundation', total: 10000 },
-        { name: 'Ring beam', total: 20000 },
-        { name: 'Roofing', total: 30000 },
-        { name: 'Window + Doors', total: 34500 },
-        { name: 'Electrical', total: 60000 },
-        { name: 'Interior', total: 56700 },
-        { name: 'Fittings', total: 23000 },
-        { name: 'Exterior', total: 40000 },
+        { name: 'Foundation', total: 10000, color: '#8B4513' }, // Earthy Brown
+        { name: 'Ring beam', total: 20000, color: '#B22222' },  // Brick Red
+        { name: 'Roofing', total: 30000, color: '#708090' },    // Slate Grey
+        { name: 'Window + Doors', total: 34500, color: '#008080' }, // Teal
+        { name: 'Electrical', total: 60000, color: '#1E90FF' }, // Electric Blue
+        { name: 'Interior', total: 56700, color: '#F5DEB3' },   // Light Beige
+        { name: 'Fittings', total: 23000, color: '#9ACD32' },   // Sage Green
+        { name: 'Exterior', total: 40000, color: '#FFD700' },   // Gold
     ]);
 
     useEffect(() => {
@@ -136,7 +136,7 @@ const ProjectDetails = () => {
                             .reverse()
                             .map((phase, index) => (
                                 <Box key={index} mb={3} display="flex" alignItems="center" sx={{ cursor: 'pointer' }}
-                                    onClick={() => router.push(`/professional/materialschedule/${phase.name}`)}>
+                                    onClick={() => router.push(`/professional/materialschedule/${phase.name}?color=${encodeURIComponent(phase.color)}`)}>
                                     <IconButton
                                         sx={{
                                             backgroundColor: theme.palette.primary.main,

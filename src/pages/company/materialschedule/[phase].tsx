@@ -29,7 +29,7 @@ interface Material {
 const MaterialSchedule = () => {
     const theme = useTheme();
     const router = useRouter();
-    const { phase } = router.query;
+    const { phase, color } = router.query;
     const [contactVisible, setContactVisible] = useState(false);
 
     const contactNumber = "0757763516";
@@ -49,6 +49,8 @@ const MaterialSchedule = () => {
         setContactVisible(!contactVisible);
     };
 
+    // Ensure color is a string; use a fallback color if it's not defined
+    const phaseColor = Array.isArray(color) ? color[0] : color || theme.palette.primary.main;
     return (
         <Box p={4} position="relative">
 
@@ -71,29 +73,29 @@ const MaterialSchedule = () => {
             </IconButton>
             <Typography variant="h5" sx={{ mb: 2 }}>
                 Material Schedule for{' '}
-                <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{phase}</span>
+                <span style={{ color: phaseColor, fontWeight: 'bold' }}>{phase}</span>
             </Typography>
 
             <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 380, overflowY: 'auto' }}>
                 <Table stickyHeader aria-label="simple table" sx={{ borderCollapse: 'collapse' }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1 }}>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
                                 Item
                             </TableCell>
-                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1 }}>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
                                 Description
                             </TableCell>
-                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1 }}>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
                                 Unit
                             </TableCell>
-                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1 }}>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
                                 Quantity
                             </TableCell>
-                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1 }}>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
                                 Rate
                             </TableCell>
-                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1 }}>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
                                 Amount
                             </TableCell>
                         </TableRow>
