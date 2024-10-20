@@ -74,10 +74,7 @@ const ProjectDetails = () => {
     }
 
     return (
-        <Box p={4} position="relative" sx={{
-            minHeight: '100vh', // Make the container take full viewport height
-            overflow: 'hidden', // Prevent scrolling
-        }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', padding: '8px' }}>
 
             {/* Back arrow button for easy navigation */}
             <IconButton
@@ -85,6 +82,8 @@ const ProjectDetails = () => {
                     position: 'fixed',
                     top: 75,
                     left: 16, // Place it on the left for easy access
+                    width: '30px', // Adjust icon button size
+                    height: '30px',
                     backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
                     borderRadius: '50%',
@@ -100,7 +99,7 @@ const ProjectDetails = () => {
                 variant="outlined"
                 color="primary"
                 onClick={handleOpen}
-                sx={{ position: 'absolute', top: 5, right: 16, height: '25px' }}
+                sx={{ position: 'absolute', top: 80, right: 16, height: '25px' }}
             >
                 Project Details
             </Button>
@@ -111,26 +110,28 @@ const ProjectDetails = () => {
                     <Box
                         sx={{
                             width: '100%',
-                            maxWidth: '900px',
-                            margin: '0 auto',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            maxHeight: '500px',
+                            margin: '0',
+                            padding: '0',
+                            height: '500px',
                         }}
                     >
                         <Image
                             src="/assets/images/phases diagram.svg"
                             alt="Phases Diagram"
-                            layout="responsive"
                             width={900}
                             height={600}
+                            style={{ objectFit: 'contain', width: '100%', height: '100%' }} // Contain the full image within the box
                         />
                     </Box>
                 </Grid>
 
                 {/* Phase totals and view buttons */}
                 <Grid item xs={12} md={4} sx={{ paddingLeft: '0px !important' }}>
-                    <Box sx={{ mt: '50px', mb: '10px', }}>
+                    <Box sx={{
+                        mt: { xs: '0px !important', md: '50px' },
+                        mb: '10px',
+                        ml: { xs: '60px', md: '0px' }
+                    }}>
                         {phases
                             .slice()
                             .reverse()
@@ -142,6 +143,7 @@ const ProjectDetails = () => {
                                             backgroundColor: theme.palette.primary.main,
                                             color: theme.palette.primary.contrastText,
                                             height: '30px',
+                                            width: '30px',
                                             borderRadius: '6px',
                                             '&:hover': {
                                                 backgroundColor: theme.palette.secondary.main
@@ -165,7 +167,7 @@ const ProjectDetails = () => {
             <IconButton
                 sx={{
                     position: 'fixed',
-                    bottom: 16,
+                    bottom: 45,
                     right: 16,
                     backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
@@ -267,23 +269,6 @@ const ProjectDetails = () => {
                         margin="normal"
                         value={project.location}
                         onChange={(e) => setProject({ ...project, location: e.target.value })}
-                    />
-                    <TextField
-                        label="Amount"
-                        type="number"
-                        fullWidth
-                        margin="normal"
-                        value={project.amount}
-                        onChange={(e) => setProject({ ...project, amount: e.target.value })}
-                    />
-                    <TextField
-                        label="Pay Due Date"
-                        type="date"
-                        fullWidth
-                        margin="normal"
-                        value={project.payDueDate}
-                        onChange={(e) => setProject({ ...project, payDueDate: e.target.value })}
-                        InputLabelProps={{ shrink: true }}
                     />
                     <TextField
                         label="Status"

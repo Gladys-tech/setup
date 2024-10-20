@@ -93,6 +93,8 @@ const MaterialSchedule = () => {
                     position: 'fixed',
                     top: 75,
                     left: 16, // Place it on the left for easy access
+                    width: '30px', // Adjust icon button size
+                    height: '30px',
                     backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
                     borderRadius: '50%',

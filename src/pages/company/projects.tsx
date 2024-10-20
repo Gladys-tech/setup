@@ -121,8 +121,10 @@ const ProjectsTable = () => {
             <IconButton
                 sx={{
                     position: 'fixed',
-                    top: 68,
+                    top: 70,
                     left: 16,
+                    width: '30px', // Adjust icon button size
+                    height: '30px',
                     backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
                     borderRadius: '50%',
@@ -135,7 +137,7 @@ const ProjectsTable = () => {
                 <ArrowBackIcon />
             </IconButton>
 
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" >
                 <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16px' }}>
                     All Projects
                 </Typography>
@@ -149,6 +151,7 @@ const ProjectsTable = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     sx={{
                         width: '300px',
+                        marginBottom:'30px',
                         boxShadow: 1,
                         borderRadius: 2, // Smooth border radius
                         '& .MuiOutlinedInput-root': {

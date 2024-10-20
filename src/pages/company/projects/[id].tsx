@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Grid, Button, Dialog, DialogActions, DialogContent, DialogTitle, useTheme, IconButton } from '@mui/material';
+import { Box, Typography, Grid, Button, Dialog, DialogActions, DialogContent, DialogTitle, useTheme, IconButton } from '@mui/material';
 import Image from 'next/image';
 import projects from 'src/pages/professional/projectData';
 import ViewIcon from '@mui/icons-material/Visibility';
@@ -50,19 +50,17 @@ const ProjectDetails = () => {
     };
 
     return (
-        <Box p={4} position="relative" sx={{
-            minHeight: '100vh',
-            overflow: 'hidden',
-        }}>
-
+        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', padding: '8px' }}>
             {/* Back arrow button for easy navigation */}
             <IconButton
                 sx={{
                     position: 'fixed',
-                    top: 75,
-                    left: 16, // Place it on the left for easy access
+                    top: 70,
+                    left: 20,
                     backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
+                    width: '30px', // Adjust icon button size
+                    height: '30px',
                     borderRadius: '50%',
                     '&:hover': {
                         backgroundColor: theme.palette.secondary.main,
@@ -74,13 +72,14 @@ const ProjectDetails = () => {
             </IconButton>
 
             <Typography variant="h5">
-                <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{project.name}</span>
+                <span style={{ position: 'absolute', top: 80, right: 500, color: theme.palette.primary.main, fontWeight: 'bold', }}>{project.name}</span>
             </Typography>
+
             <Button
                 variant="outlined"
                 color="primary"
                 onClick={handleOpen}
-                sx={{ position: 'absolute', top: 5, right: 16, height: '25px' }}
+                sx={{ position: 'absolute', top: 80, right: 16, height: '25px' }}
             >
                 Project Details
             </Button>
@@ -91,26 +90,29 @@ const ProjectDetails = () => {
                     <Box
                         sx={{
                             width: '100%',
-                            maxWidth: '900px',
-                            margin: '0 auto',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            maxHeight: '500px',
+                            margin: '0',
+                            padding: '0',
+                            height: '500px',
                         }}
                     >
                         <Image
                             src="/assets/images/phases diagram.svg"
                             alt="Phases Diagram"
-                            layout="responsive"
                             width={900}
                             height={600}
+                            style={{ objectFit: 'contain', width: '100%', height: '100%' }} // Contain the full image within the box
                         />
                     </Box>
                 </Grid>
 
                 {/* Phase totals and view buttons */}
                 <Grid item xs={12} md={4} sx={{ paddingLeft: '0px !important' }}>
-                    <Box sx={{ mt: '50px', mb: '10px' }}>
+                    {/* <Box sx={{ mt: '50px', mb: '10px', ml: { xs: '60px', md: '0px' } }}> */}
+                    <Box sx={{
+                        mt: { xs: '0px !important', md: '50px' },
+                        mb: '10px',
+                        ml: { xs: '60px', md: '0px' }
+                    }}>
                         {phases
                             .slice()
                             .reverse()
@@ -122,6 +124,7 @@ const ProjectDetails = () => {
                                             backgroundColor: theme.palette.primary.main,
                                             color: theme.palette.primary.contrastText,
                                             height: '30px',
+                                            width: '30px',
                                             borderRadius: '6px',
                                             '&:hover': {
                                                 backgroundColor: theme.palette.secondary.main
@@ -142,7 +145,7 @@ const ProjectDetails = () => {
             </Grid>
 
             {/* Fixed Call Icon with Contact Number */}
-            <Box position="relative" sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+            <Box position="relative" sx={{ position: 'fixed', bottom: 45, right: 16 }}>
                 {contactVisible && (
                     <Box
                         sx={{
@@ -163,13 +166,15 @@ const ProjectDetails = () => {
                         backgroundColor: theme.palette.primary.main,
                         color: theme.palette.primary.contrastText,
                         borderRadius: '50%',
+                        cursor: 'pointer', // Add cursor pointer
                         '&:hover': { backgroundColor: theme.palette.secondary.main },
                     }}
-                    onClick={handleContactToggle} // Toggle contact number visibility
+                    onClick={handleContactToggle} // Ensure this function is correctly defined
                 >
                     <CallIcon />
                 </IconButton>
             </Box>
+
 
             {/* Popup Modal for viewing project details */}
             <Dialog
@@ -213,9 +218,6 @@ const ProjectDetails = () => {
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: '500' }}>
                         <strong>Amount:</strong> ${project.amount}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: '500' }}>
-                        <strong>Pay Due Date:</strong> {project.payDueDate}
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: '500' }}>
                         <strong>Status:</strong> {project.status}

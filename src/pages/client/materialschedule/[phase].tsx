@@ -61,6 +61,8 @@ const MaterialSchedule = () => {
                     position: 'fixed',
                     top: 75,
                     left: 16,
+                    width: '30px', // Adjust icon button size
+                    height: '30px',
                     backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
                     borderRadius: '50%',
@@ -137,7 +139,7 @@ const MaterialSchedule = () => {
             </Box>
 
             {/* Fixed Call Icon with Contact Number */}
-            <Box position="relative" sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+            <Box position="relative" sx={{ position: 'fixed', bottom: 45, right: 16 }}>
                 {contactVisible && (
                     <Box
                         sx={{
