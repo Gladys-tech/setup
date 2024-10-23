@@ -90,7 +90,7 @@ const LoginPage = () => {
 
       const responseData = await response.json();
       const { user, token } = responseData;
-      setUser(user);
+      // setUser(user);
       router.push('/professional');
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('token', token);

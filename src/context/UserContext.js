@@ -1,25 +1,9 @@
-// import React, { createContext, useContext, useState } from 'react';
-
-// const UserContext = createContext();
-
-// export const UserProvider = ({ children }) => {
-//   const [user, setUser] = useState(null);
-
-//   return (
-//     <UserContext.Provider value={{ user, setUser }}>
-//       {children}
-//     </UserContext.Provider>
-//   );
-// };
-
-// // export const useUser = (user: any) => useContext(UserContext);
-// export const useUser = () => useContext(UserContext);
-
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-const UserContext = createContext();
+// Create the context
+const UserContext = createContext(undefined);
 
+// UserProvider component
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     // Retrieve user data from local storage if it exists
@@ -46,6 +30,11 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-export const useUser = () => useContext(UserContext);
-
-
+// Custom hook to use the UserContext
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (context === undefined) {
+    throw new Error('useUser must be used within a UserProvider');
+  }
+  return context;
+};

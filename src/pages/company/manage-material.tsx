@@ -152,7 +152,7 @@ const ManageMaterial = () => {
                                         disabled={!material.isEditable}  // Disable if not in edit mode
                                     />
                                 </TableCell>
-                                <TableCell sx={{ minWidth: 150 }}>
+                                {/* <TableCell sx={{ minWidth: 150 }}>
                                     <Button variant="contained" component="label" disabled={!material.isEditable}>
                                         Upload
                                         <input
@@ -165,6 +165,30 @@ const ManageMaterial = () => {
                                         />
                                     </Button>
                                     {material.image && (
+                                        <Box mt={1}>
+                                            <img
+                                                src={material.image}
+                                                alt="uploaded"
+                                                style={{ maxWidth: '100px', maxHeight: '100px' }}
+                                            />
+                                        </Box>
+                                    )}
+                                </TableCell> */}
+
+<TableCell sx={{ minWidth: 150 }}>
+                                    {!material.image || material.isEditable ? (
+                                        <Button variant="contained" component="label">
+                                            Upload
+                                            <input
+                                                type="file"
+                                                hidden
+                                                accept="image/*"
+                                                onChange={(e) =>
+                                                    e.target.files ? handleImageUpload(index, e.target.files[0]) : null
+                                                }
+                                            />
+                                        </Button>
+                                    ) : (
                                         <Box mt={1}>
                                             <img
                                                 src={material.image}
