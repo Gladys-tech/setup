@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWith
     ));
 
     return (
-        <SessionProvider session={session}>
+        // <SessionProvider session={session}>
             <UserProvider>
                 <ThemeProviderWrapper>
                     <ThemeProvider theme={theme}>
@@ -39,7 +39,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWith
                     </ThemeProvider>
                 </ThemeProviderWrapper>
             </UserProvider>
-        </SessionProvider>
+        // </SessionProvider>
     );
 }
 
