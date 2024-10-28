@@ -371,9 +371,15 @@ const ProjectDetails = () => {
                     const data = await response.json();
                     console.log('got project data', data);
                     setProject(data);
+
+                    // Check if data.phases is available and use it to calculate updated phases
                     if (data.phases && Array.isArray(data.phases)) {
+                        const updatedPhases = data.phases.map((phase: any) => ({
+                            ...phase,
+                            total: calculatePhaseTotal(phase.materialSchedules || [])
+                        }));
                         console.log('Phases data:', data.phases);
-                        setPhases(data.phases);
+                        setPhases(updatedPhases);
                     }
                 } catch (error) {
                     console.error('Error fetching project data:', error);
@@ -383,21 +389,80 @@ const ProjectDetails = () => {
         fetchProjectData();
     }, [id]);
 
+
+    const calculatePhaseTotal = (materialSchedules: { amount: any }[] = []) => {
+        return materialSchedules.length > 0
+            ? materialSchedules.reduce((acc, material) => acc + Number(material.amount || 0), 0)
+            : 0;
+    };
+
+
     const handleInputChange = (index: number, value: number) => {
         const updatedPhases = [...phases];
         updatedPhases[index].total = value;
         setPhases(updatedPhases);
     };
 
-   
-    const handleEditClick = (phaseName: string) => {
-        if (phaseName) {
+
+    // const handleEditClick = (phaseName: string) => {
+    //     if (phaseName) {
+    //         // Convert the phase name to the appropriate key for the color mapping
+    //         const formattedPhaseName = phaseName.replace(/ /g, '').replace(/\b\w/g, char => char.toUpperCase());
+    //         const color = phaseColors[formattedPhaseName] || '#000000';  // Default color if not found
+    //         router.push(`/professional/materialschedule/${phaseName}?color=${encodeURIComponent(color)}`);
+    //     } else {
+    //         console.warn('Phase name is undefined');
+    //     }
+    // };
+
+
+    const handleEditClick = (id: string, phaseName: string) => {
+        console.log("phaseId:", id);  // Debugging
+        console.log("phaseName:", phaseName);  // Debugging
+        if (id && phaseName) {
             // Convert the phase name to the appropriate key for the color mapping
             const formattedPhaseName = phaseName.replace(/ /g, '').replace(/\b\w/g, char => char.toUpperCase());
             const color = phaseColors[formattedPhaseName] || '#000000';  // Default color if not found
-            router.push(`/professional/materialschedule/${phaseName}?color=${encodeURIComponent(color)}`);
+
+            // Navigate to the MaterialSchedule with both phaseId in the path and color as a query parameter
+            router.push(`/professional/materialschedule/${id}?color=${encodeURIComponent(color)}&phaseName=${encodeURIComponent(phaseName)}`);
         } else {
-            console.warn('Phase name is undefined');
+            console.warn('Phase ID or name is undefined');
+        }
+    };
+
+
+
+    const handleSaveProject = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Token not found');
+
+            const response = await fetch(`${API_BASE_URL}/projects/${id}/professional`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: project.projectName,
+                    client: project.client,
+                    location: project.location,
+                    status: project.status
+                })
+            });
+
+            if (response.ok) {
+                const updatedProject = await response.json();
+                setProject(updatedProject);
+                handleClose();
+                alert("Project updated successfully!");
+            } else {
+                console.error('Failed to save project:', response.statusText);
+                alert("Failed to update project.");
+            }
+        } catch (error) {
+            console.error('Error updating project:', error);
         }
     };
 
@@ -475,7 +540,7 @@ const ProjectDetails = () => {
                             .reverse()
                             .map((phase, index) => (
                                 <Box key={index} mb={3} display="flex" alignItems="center" sx={{ cursor: 'pointer' }}
-                                    onClick={() => handleEditClick(phase.phaseName)}>
+                                    onClick={() => handleEditClick(phase.id, phase.phaseName)}>
                                     <IconButton
                                         sx={{
                                             backgroundColor: theme.palette.primary.main,
@@ -490,7 +555,9 @@ const ProjectDetails = () => {
                                     >
                                         <EditIcon />
                                     </IconButton>
-                                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold', ml: 2, mr: 2 }}>{phase.total}</Typography>
+                                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold', ml: 2, mr: 2 }}>
+                                        {phase.total.toLocaleString()}
+                                    </Typography>
                                     <Typography sx={{ fontSize: '16px', m1: 3 }}>
                                         Total for <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{phase.phaseName} </span>
                                     </Typography>
@@ -594,8 +661,13 @@ const ProjectDetails = () => {
                         label="Client"
                         fullWidth
                         margin="normal"
-                        value={project.client.firstName}
-                        onChange={(e) => setProject({ ...project, client: e.target.value })}
+                        value={project.client?.firstName || ''}
+                        onChange={(e) =>
+                            setProject({
+                                ...project,
+                                client: { ...project.client, firstName: e.target.value },
+                            })
+                        }
                     />
                     <TextField
                         label="Location"
@@ -626,7 +698,8 @@ const ProjectDetails = () => {
                         }}>
                         Cancel
                     </Button>
-                    <Button onClick={handleClose}
+                    <Button
+                        onClick={handleSaveProject}
                         variant='contained'
                         sx={{
                             backgroundColor: theme.palette.primary.main,
