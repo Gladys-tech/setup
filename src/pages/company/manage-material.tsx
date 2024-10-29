@@ -175,7 +175,7 @@ const ManageMaterial = () => {
                                     )}
                                 </TableCell> */}
 
-<TableCell sx={{ minWidth: 150 }}>
+                                <TableCell sx={{ minWidth: 150 }}>
                                     {!material.image || material.isEditable ? (
                                         <Button variant="contained" component="label">
                                             Upload

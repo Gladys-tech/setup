@@ -87,13 +87,13 @@ const LoginPage = () => {
       if (!response.ok) {
         throw new Error('Login failed');
       }
-
       const responseData = await response.json();
       const { user, token } = responseData;
-      // setUser(user);
+      // Use setUser to update the context and localStorage with the new user data
+      setUser(user);
+      // Store the authToken 
+      localStorage.setItem('authToken', token);
       router.push('/professional');
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('token', token);
     } catch (error) {
       console.error('Login failed:', error instanceof Error ? error.message : 'Unknown error');
       alert('Login failed. Please try again.');

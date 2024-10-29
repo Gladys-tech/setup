@@ -38,12 +38,11 @@ interface Address {
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
-  // const { user } = useUser();
-  const { user } = useUser() as { user: User | null };
+  const { user, logout } = useUser();
 
   // Log the user data for debugging
   useEffect(() => {
-    console.log("User data from context:", user);
+    console.log("User data from context in nav:", user);
   }, [user]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -55,10 +54,8 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user'); // Remove the user data
-
-    // Redirect to login page based on the userRole
+    logout();  // Clear user data immediately
+    // Redirect to appropriate login page based on the user role
     if (user?.roles[0]?.roleName === 'professional') {
       router.push('/professional/login');
     } else if (user?.roles[0]?.roleName === 'client') {
@@ -66,7 +63,6 @@ const Navbar = () => {
     } else if (user?.roles[0]?.roleName === 'company') {
       router.push('/company/login');
     }
-
     handleMenuClose();
   };
 
@@ -109,23 +105,12 @@ const Navbar = () => {
         </Box>
 
         {/* Account icon and menu */}
-        {/* <IconButton onClick={handleMenuClick} sx={{ color: '#333' }}>
-          <AccountCircle />
-          {user && (
-            <Typography variant="h6" component="div" sx={{ color: '#333', marginRight: '10px' }}>
-              {user.firstName.toLowerCase()}
-              {/* {user.lastName.toLowerCase()}  */}
-        {/* </Typography>
-          )}
-
-        </IconButton> */}
-
         <IconButton onClick={handleMenuClick} sx={{ color: '#333' }}>
           <AccountCircle />
           {user && (
             <Typography variant="h6" component="div" sx={{ color: '#333', marginRight: '10px' }}>
               {(user.firstName?.toLowerCase() || 'Guest')}
-              {/* {user.lastName?.toLowerCase()}  */} 
+              {/* {user.lastName?.toLowerCase()}  */}
             </Typography>
           )}
         </IconButton>

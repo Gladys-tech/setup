@@ -285,32 +285,90 @@ import {
     IconButton,
     Paper,
     useTheme,
-    Select,
-    MenuItem,
+    Button,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { API_BASE_URL } from 'src/pages/api/http.api';
+import { initializeApp } from 'firebase/app';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+
+
+// Your Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBJaZqdti73p6_W5VLhL4cImtIP3yLPJho",
+    authDomain: "fir-todo-19dea.firebaseapp.com",
+    projectId: "fir-todo-19dea",
+    storageBucket: "fir-todo-19dea.appspot.com",
+    messagingSenderId: "546043032199",
+    appId: "1:546043032199:web:382ef00bd32eef2a4a7e22",
+    measurementId: "G-27XG6KV0ZC"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+
+/**
+ * Uploads an image to Firebase Storage and returns the download URL.
+ * @param {File} file - The image file to upload.
+ * @returns {Promise<string>} - The download URL of the uploaded image.
+ */
+const uploadImageToFirebase = async (file: File): Promise<string> => {
+    if (!file) {
+        throw new Error('No file provided for upload');
+    }
+
+    // Create a reference to the storage bucket
+    const storageRef = ref(storage, `images/${file.name}`);
+
+    try {
+        // Upload the file to the storage bucket
+        await uploadBytes(storageRef, file);
+
+        // Get the download URL
+        const downloadURL = await getDownloadURL(storageRef);
+        return downloadURL; // Return the download URL
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw new Error('Image upload failed');
+    }
+};
 
 // Define the Material interface
 interface Material {
+    id: any;
     item: string;
     description: string;
     unit: string;
     quantity: number;
     rate: number;
     amount: number;
+    imageUrl?: string;
 }
 
 const MaterialSchedule = () => {
     const theme = useTheme();
     const router = useRouter();
     const { color, phaseName } = router.query;
-
-    const { id } = router.query; 
+    const { id } = router.query;
 
     // State to manage the materials list
     const [materials, setMaterials] = useState<Material[]>([]);
+    const [newMaterial, setNewMaterial] = useState<Material>({
+        id: '',
+        item: '',
+        description: '',
+        unit: '',
+        quantity: 0,
+        rate: 0,
+        amount: 0,
+        imageUrl: '',
+    });
+    const [imageFile, setImageFile] = useState<File | null>(null); // State for image file 
+    // State to track if new material data has been saved
+    const [isNewMaterialSaved, setIsNewMaterialSaved] = useState(false);
+
 
     // Fetch materials data from API when the component mounts or phase changes
     useEffect(() => {
@@ -321,7 +379,6 @@ const MaterialSchedule = () => {
                 throw new Error('Token not found');
             }
             const apiUrl = `${API_BASE_URL}/material-schedules/phase/${id}/professional`;
-            
             fetch(apiUrl, {
                 method: 'GET',
                 headers: {
@@ -360,31 +417,108 @@ const MaterialSchedule = () => {
         setMaterials(updatedMaterials);
     };
 
+    // // Add an empty row for a new material below the clicked row
+    // const addMaterial = (index: number) => {
+    //     const newMaterial = { id:'', item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0, image: null };
+    //     const updatedMaterials = [...materials];
+    //     updatedMaterials.splice(index + 1, 0, newMaterial); // Insert new material below the clicked row
+    //     setMaterials(updatedMaterials);
+    // };
+
     // Add an empty row for a new material below the clicked row
+    // const addMaterial = async (index: number) => {
+    //     const newMaterial = { id: '', item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0, imageUrl: '' };
+    //     const updatedMaterials = [...materials];
+    //     updatedMaterials.splice(index + 1, 0, newMaterial); // Insert new material below the clicked row
+    //     setMaterials(updatedMaterials);
+
+    //     // Call the API to add a new material
+    //     await addMaterialToAPI(newMaterial);
+    // };
+
     const addMaterial = (index: number) => {
-        const newMaterial = { item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0 };
+        const newMaterial = { id: '', item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0, imageUrl: '' };
         const updatedMaterials = [...materials];
-        updatedMaterials.splice(index + 1, 0, newMaterial); // Insert new material below the clicked row
+        updatedMaterials.splice(index + 1, 0, newMaterial);
         setMaterials(updatedMaterials);
+        setIsNewMaterialSaved(false); // Reset save status
     };
 
-    // Remove a material row
-    const removeMaterial = (index: number) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const file = e.target.files?.[0] || null; // Cast to HTMLInputElement
+        if (file) {
+            setImageFile(file); // Set the image file state
+            try {
+                const imageUrl = await uploadImageToFirebase(file);
+                const updatedMaterials = [...materials];
+                updatedMaterials[index].imageUrl = imageUrl; // Set the image URL in the material
+                setMaterials(updatedMaterials);
+
+                // Now call the API to add the material
+                await addMaterialToAPI(updatedMaterials[index]);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+    };
+
+    const addMaterialToAPI = async (material: Material) => {
+        // Ensure all required fields are filled out
+        if (material.item && material.description && material.unit && material.quantity > 0 && material.rate > 0 && material.imageUrl) {
+            const token = localStorage.getItem('token');
+            const apiUrl = `${API_BASE_URL}/material-schedules/professional`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(material),
+            });
+            setIsNewMaterialSaved(true);
+
+            if (!response.ok) {
+                throw new Error('Failed to add material');
+            }
+        } else {
+            console.error('Material details are incomplete or image not uploaded');
+        }
+    };
+
+
+
+    // Remove a material row and delete 
+    const removeMaterial = async (index: number) => {
+        const materialToRemove = materials[index];
+        if (materialToRemove.id) {
+            const token = localStorage.getItem('token');
+            const apiUrl = `${API_BASE_URL}/material-schedules/${materialToRemove.id}/professional`;
+            await fetch(apiUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete material');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting material:', error);
+                });
+        }
         const updatedMaterials = materials.filter((_, i) => i !== index);
         setMaterials(updatedMaterials);
     };
 
     // Calculate total amount
     const totalAmount = materials.reduce((total, material) => total + Number(material.amount || 0), 0);
-    // const totalAmount = (materialSchedules: { amount: any }[] = []) => {
-    //     return materialSchedules.length > 0
-    //         ? materialSchedules.reduce((acc, material) => acc + Number(material.amount || 0), 0)
-    //         : 0;
-    // };
 
-    // Ensure color is a string; use a fallback color if it's not defined
+    // color is a string. use a fallback color if it's not defined
     const phaseColor = Array.isArray(color) ? color[0] : color || theme.palette.primary.main;
-
 
     return (
         <Box p={4} position="relative">
@@ -409,39 +543,56 @@ const MaterialSchedule = () => {
             </IconButton>
 
             <Typography variant="h5" sx={{ mb: 2 }}>
-                Material Schedule for <span style={{ color: phaseColor,  fontWeight: 'bold' }}>{phaseName}</span>
+                Material Schedule for <span style={{ color: phaseColor, fontWeight: 'bold' }}>{phaseName}</span>
             </Typography>
-
-                    <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 380, overflowY: 'auto' }}>
+            <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 380, overflowY: 'auto' }}>
                 <Table stickyHeader aria-label="simple table" sx={{ borderCollapse: 'collapse' }}>
-                     <TableHead>
-                         <TableRow>
-                             <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
-                                 Item
-                             </TableCell>
-                             <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
-                                 Description
-                             </TableCell>
-                             <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
-                                 Unit
-                             </TableCell>
-                             <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
-                                 Quantity
-                             </TableCell>
-                             <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
-                                 Rate
-                             </TableCell>
-                             <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
-                                 Amount
-                             </TableCell>
-                             <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
-                                 Actions
-                             </TableCell>
-                         </TableRow>
-                     </TableHead>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
+                                Image
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
+                                Item
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
+                                Description
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
+                                Unit
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
+                                Quantity
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
+                                Rate
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
+                                Amount
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, color: phaseColor }}>
+                                Actions
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
                     <TableBody>
                         {materials.map((material, index) => (
                             <TableRow key={index} sx={{ height: '20px', cursor: 'pointer' }}>
+                                <TableCell sx={{ padding: '4px 8px' }}>
+                                    {/* Displaying the image if available */}
+                                    {material.imageUrl ? (
+                                        <img src={material.imageUrl} alt={material.item} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                                    ) : (
+                                        <Typography>No Image</Typography>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e, index)} // Use the file input change handler
+                                    />
+
+                                </TableCell>
+
                                 <TableCell sx={{ padding: '4px 8px' }}>
                                     <TextField
                                         fullWidth
@@ -511,6 +662,13 @@ const MaterialSchedule = () => {
                                         <IconButton onClick={() => addMaterial(index)} color="secondary">
                                             <AddIcon />
                                         </IconButton>
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => addMaterialToAPI(newMaterial)}
+                                            disabled={isNewMaterialSaved}
+                                        >
+                                            Save
+                                        </Button>
                                         <IconButton onClick={() => removeMaterial(index)} color="primary">
                                             -
                                         </IconButton>
@@ -533,4 +691,6 @@ const MaterialSchedule = () => {
 };
 
 export default MaterialSchedule;
+
+
 

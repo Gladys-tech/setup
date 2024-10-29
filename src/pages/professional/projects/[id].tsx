@@ -389,32 +389,17 @@ const ProjectDetails = () => {
         fetchProjectData();
     }, [id]);
 
-
     const calculatePhaseTotal = (materialSchedules: { amount: any }[] = []) => {
         return materialSchedules.length > 0
             ? materialSchedules.reduce((acc, material) => acc + Number(material.amount || 0), 0)
             : 0;
     };
 
-
     const handleInputChange = (index: number, value: number) => {
         const updatedPhases = [...phases];
         updatedPhases[index].total = value;
         setPhases(updatedPhases);
     };
-
-
-    // const handleEditClick = (phaseName: string) => {
-    //     if (phaseName) {
-    //         // Convert the phase name to the appropriate key for the color mapping
-    //         const formattedPhaseName = phaseName.replace(/ /g, '').replace(/\b\w/g, char => char.toUpperCase());
-    //         const color = phaseColors[formattedPhaseName] || '#000000';  // Default color if not found
-    //         router.push(`/professional/materialschedule/${phaseName}?color=${encodeURIComponent(color)}`);
-    //     } else {
-    //         console.warn('Phase name is undefined');
-    //     }
-    // };
-
 
     const handleEditClick = (id: string, phaseName: string) => {
         console.log("phaseId:", id);  // Debugging
@@ -430,8 +415,6 @@ const ProjectDetails = () => {
             console.warn('Phase ID or name is undefined');
         }
     };
-
-
 
     const handleSaveProject = async () => {
         try {
@@ -612,7 +595,6 @@ const ProjectDetails = () => {
                     >
                         Copy Link
                     </Button>
-
                     <Button
                         variant="contained"
                         startIcon={<EmailIcon />}

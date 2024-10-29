@@ -215,12 +215,12 @@ const ProjectDetails = () => {
           <Typography variant="body1" sx={{ fontWeight: '500' }}>
             <strong>Location:</strong> {project.location}
           </Typography>
-          <Typography variant="body1" sx={{ fontWeight: '500' }}>
+          {/* <Typography variant="body1" sx={{ fontWeight: '500' }}>
             <strong>Amount:</strong> ${project.amount}
           </Typography>
           <Typography variant="body1" sx={{ fontWeight: '500' }}>
             <strong>Status:</strong> {project.status}
-          </Typography>
+          </Typography> */}
         </DialogContent>
 
         <DialogActions

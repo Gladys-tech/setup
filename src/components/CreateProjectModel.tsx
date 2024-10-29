@@ -5,16 +5,16 @@ import {
     Typography,
     TextField,
     Button,
-    Checkbox,
-    FormControlLabel,
     CircularProgress,
     Snackbar,
     Alert,
+    IconButton,
 } from '@mui/material';
 import { API_BASE_URL } from 'src/pages/api/http.api';
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'next/router';
+import { Close } from '@mui/icons-material';
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -72,7 +72,7 @@ interface Project {
     status: string;
     phases: Phase[];
     createdBy: User;
-    isVerified: boolean;
+    // isVerified: boolean;
     updatedBy: User | null;
     updatedAt: string;
     isActive: boolean;
@@ -110,12 +110,13 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ open, handleClo
     const [projectName, setProjectName] = useState('');
     const [status, setStatus] = useState('');
     const [location, setLocation] = useState('');
-    const [isVerified, setIsVerified] = useState(false);
+    // const [isVerified, setIsVerified] = useState(false);
     const [imageUrl, setImageUrl] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     // State for Snackbar
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [finalImageUrl, setFinalImageUrl] = useState<string | null>(null);
 
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +134,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ open, handleClo
             projectName,
             status,
             location,
-            isVerified,
+            // isVerified,
         };
 
         // Retrieve user ID from local storage
@@ -158,6 +159,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ open, handleClo
             try {
                 const imageUrlString = await uploadImageToFirebase(imageUrl); // Upload and get the download URL
                 formData.imageUrl = imageUrlString;
+                setFinalImageUrl(imageUrlString);
             } catch (error) {
                 console.error('Error uploading image:', error);
                 setLoading(false);
@@ -211,7 +213,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ open, handleClo
         setProjectName('');
         setStatus('');
         setLocation('');
-        setIsVerified(false);
+        // setIsVerified(false);
         setImageUrl(null);
     };
 
@@ -225,11 +227,18 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ open, handleClo
 
     return (
         <>
-            <Modal open={open} onClose={handleClose}>
-                <Box sx={modalStyle}>
+            <Modal open={open} onClose={handleClose} BackdropProps={{ onClick: handleClose }}>
+                <Box sx={modalStyle} onClick={(e) => e.stopPropagation()}>
                     <Typography variant="h6" component="h2" gutterBottom>
                         Create New Project
                     </Typography>
+                    {/* Close Button */}
+                    <IconButton
+                        onClick={handleClose}
+                        sx={{ position: 'absolute', top: '6px', right: '16px', fontWeight: 600, }}
+                    >
+                        <Close />
+                    </IconButton>
                     <form onSubmit={handleSubmit}>
                         <TextField
                             label="Project Name"
@@ -258,7 +267,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ open, handleClo
                             onChange={(e) => setLocation(e.target.value)}
                             required
                         />
-                        <FormControlLabel
+                        {/* <FormControlLabel
                             control={
                                 <Checkbox
                                     checked={isVerified}
@@ -267,9 +276,21 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ open, handleClo
                                 />
                             }
                             label="Verified"
-                        />
-                        <input type="file" accept="image/*" onChange={handleFileChange} />
-
+                        /> */}
+                        {/* <input type="file" accept="image/*" onChange={handleFileChange} /> */}
+                        <label htmlFor="file-upload">
+                            <Button variant="outlined" component="span">
+                                Upload Project Image
+                            </Button>
+                            <input
+                                id="file-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }}
+                            />
+                        </label>
+                        {finalImageUrl && <img src={finalImageUrl} alt="Uploaded" style={{ marginTop: 8, maxHeight: 100 }} />}
                         <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }} disabled={loading}>
                             {loading ? <CircularProgress size={24} /> : 'Create Project'}
                         </Button>

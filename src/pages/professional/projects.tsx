@@ -613,7 +613,7 @@ interface Project {
     status: string;
     phases: Phase[];
     createdBy: User;
-    isVerified: boolean;
+    // isVerified: boolean;
     updatedBy: User | null;
     updatedAt: string;
     isActive: boolean;
@@ -808,7 +808,10 @@ const Projects = () => {
                             textAlign: 'center',
                         }}
                     >
-                        <CreateProjectModal open={modalOpen} handleClose={handleClose} onProjectCreated={setProjects} />
+                        <CreateProjectModal open={modalOpen} 
+                        // handleClose={handleClose} 
+                        handleClose={() => setModalOpen(false)}
+                        onProjectCreated={setProjects} />
                         <Box
                             sx={{
                                 backgroundColor: theme.palette.secondary.main,
