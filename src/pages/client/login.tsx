@@ -55,7 +55,7 @@ const LoginPage = () => {
 
     const theme = useTheme();
     const router = useRouter();
-    const { setUser } = useUser();
+    const { setUser , setToken} = useUser();
 
     const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
         setValues({ ...values, [prop]: event.target.value });
@@ -92,8 +92,7 @@ const LoginPage = () => {
             const { user, token } = responseData;
             // Use setUser to update the context and localStorage with the new user data
             setUser(user);
-            // Store the authToken 
-            localStorage.setItem('authToken', token);
+            setToken(token);
             router.push('/pages/client');
         } catch (error) {
             console.error('Login failed:', error instanceof Error ? error.message : 'Unknown error');

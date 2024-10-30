@@ -288,6 +288,7 @@ import {
     Button,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { API_BASE_URL } from 'src/pages/api/http.api';
 import { initializeApp } from 'firebase/app';
@@ -337,6 +338,7 @@ const uploadImageToFirebase = async (file: File): Promise<string> => {
 
 // Define the Material interface
 interface Material {
+    image: string | undefined;
     id: any;
     item: string;
     description: string;
@@ -344,7 +346,24 @@ interface Material {
     quantity: number;
     rate: number;
     amount: number;
-    imageUrl?: string;
+    // imageUrl?: string;
+    createdBy: string;
+    isEditable: boolean;  // New property to track if a row is in edit mode
+    updatedBy?: User | null;
+    // isActive: boolean;
+    phaseId?: string; // Add this if necessary
+    phase?: {
+        id: string;
+        phaseName: string;
+        phaseDescription: string;
+        // Include other phase properties as needed
+    };
+}
+
+interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
 }
 
 const MaterialSchedule = () => {
@@ -363,12 +382,13 @@ const MaterialSchedule = () => {
         quantity: 0,
         rate: 0,
         amount: 0,
-        imageUrl: '',
+        // imageUrl: '',
+        image: '',
+        isEditable: false,
+        createdBy: 'user.id',
+        phaseId: id as string,
     });
     const [imageFile, setImageFile] = useState<File | null>(null); // State for image file 
-    // State to track if new material data has been saved
-    const [isNewMaterialSaved, setIsNewMaterialSaved] = useState(false);
-
 
     // Fetch materials data from API when the component mounts or phase changes
     useEffect(() => {
@@ -417,31 +437,33 @@ const MaterialSchedule = () => {
         setMaterials(updatedMaterials);
     };
 
-    // // Add an empty row for a new material below the clicked row
-    // const addMaterial = (index: number) => {
-    //     const newMaterial = { id:'', item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0, image: null };
-    //     const updatedMaterials = [...materials];
-    //     updatedMaterials.splice(index + 1, 0, newMaterial); // Insert new material below the clicked row
-    //     setMaterials(updatedMaterials);
+    // Handle input changes for newMaterial
+    // const handleNewMaterialChange = (field: keyof Material, value: string | number) => {
+    //     const numericValue = (field === 'quantity' || field === 'rate') ? Number(value) : value;
+    //     setNewMaterial((prev) => ({
+    //         ...prev,
+    //         [field]: numericValue,
+    //         amount: (field === 'quantity' || field === 'rate')
+    //             ? (typeof prev.quantity === 'number' ? prev.quantity : 0) * (typeof numericValue === 'number' ? numericValue : 0)
+    //             : prev.amount,
+    //     }));
     // };
+
 
     // Add an empty row for a new material below the clicked row
-    // const addMaterial = async (index: number) => {
-    //     const newMaterial = { id: '', item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0, imageUrl: '' };
-    //     const updatedMaterials = [...materials];
-    //     updatedMaterials.splice(index + 1, 0, newMaterial); // Insert new material below the clicked row
-    //     setMaterials(updatedMaterials);
-
-    //     // Call the API to add a new material
-    //     await addMaterialToAPI(newMaterial);
-    // };
-
     const addMaterial = (index: number) => {
-        const newMaterial = { id: '', item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0, imageUrl: '' };
+        const newMaterial = { id: '', item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0, image: '', isEditable: true, createdBy: 'user.id', };
         const updatedMaterials = [...materials];
         updatedMaterials.splice(index + 1, 0, newMaterial);
         setMaterials(updatedMaterials);
-        setIsNewMaterialSaved(false); // Reset save status
+    };
+
+    // Toggle edit mode for a row
+    const toggleEditMode = (index: number) => {
+        const updatedMaterials = [...materials];
+        updatedMaterials[index].isEditable = !updatedMaterials[index].isEditable;
+        setMaterials(updatedMaterials);
+
     };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -449,22 +471,47 @@ const MaterialSchedule = () => {
         if (file) {
             setImageFile(file); // Set the image file state
             try {
-                const imageUrl = await uploadImageToFirebase(file);
+                const image = await uploadImageToFirebase(file);
                 const updatedMaterials = [...materials];
-                updatedMaterials[index].imageUrl = imageUrl; // Set the image URL in the material
+                updatedMaterials[index].image = image; // Set the image URL in the material
                 setMaterials(updatedMaterials);
-
-                // Now call the API to add the material
-                await addMaterialToAPI(updatedMaterials[index]);
             } catch (error) {
                 console.error('Error uploading image:', error);
             }
         }
     };
 
-    const addMaterialToAPI = async (material: Material) => {
-        // Ensure all required fields are filled out
-        if (material.item && material.description && material.unit && material.quantity > 0 && material.rate > 0 && material.imageUrl) {
+    const addMaterialToAPI = async () => {
+        const storedUser = localStorage.getItem('user');
+        if (!storedUser) {
+            console.error('User not found');
+            return;
+        }
+
+        const user = JSON.parse(storedUser);
+        const userId = user.id;
+
+        // Upload image only if there's a new file selected
+        let imageUrl = newMaterial.image;
+        if (imageFile) {
+            try {
+                imageUrl = await uploadImageToFirebase(imageFile);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                return; // Stop further execution if upload fails
+            }
+        }
+
+        // Prepare material object for API
+        const materialToAdd = {
+            ...newMaterial,
+            image: imageUrl, // Use the uploaded image URL
+            createdBy: userId,
+        };
+
+        try {
+            console.log('Material to add:', materialToAdd); // Before API call
+
             const token = localStorage.getItem('token');
             const apiUrl = `${API_BASE_URL}/material-schedules/professional`;
 
@@ -474,18 +521,22 @@ const MaterialSchedule = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(material),
+                body: JSON.stringify(materialToAdd), // Use the new material object
             });
-            setIsNewMaterialSaved(true);
 
-            if (!response.ok) {
-                throw new Error('Failed to add material');
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Material created successfully', data);
+                setMaterials((prev) => [...prev, data]); // Optionally update the state
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to add material:', errorData); // Log the error response
+                throw new Error(errorData.message || 'Failed to add material');
             }
-        } else {
-            console.error('Material details are incomplete or image not uploaded');
+        } catch (error) {
+            console.error('Error:', error);
         }
     };
-
 
 
     // Remove a material row and delete 
@@ -579,26 +630,43 @@ const MaterialSchedule = () => {
                         {materials.map((material, index) => (
                             <TableRow key={index} sx={{ height: '20px', cursor: 'pointer' }}>
                                 <TableCell sx={{ padding: '4px 8px' }}>
-                                    {/* Displaying the image if available */}
-                                    {material.imageUrl ? (
-                                        <img src={material.imageUrl} alt={material.item} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                                    {material.image && !material.isEditable ? (
+                                        <img
+                                            src={material.image}
+                                            alt={`Material ${material.item}`}
+                                            style={{ width: '50px', height: '50px', objectFit: 'cover' }} // Adjust size as necessary
+                                        />
                                     ) : (
-                                        <Typography>No Image</Typography>
+                                        <>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleImageUpload(e, index)}
+                                                style={{ display: 'none' }} // Hide the default input
+                                                id={`upload-${index}`}
+                                            />
+                                            <label htmlFor={`upload-${index}`}>
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    component="span"
+                                                    startIcon={<AddIcon />}
+                                                >
+                                                    Upload
+                                                </Button>
+                                            </label>
+                                        </>
                                     )}
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleImageUpload(e, index)} // Use the file input change handler
-                                    />
-
                                 </TableCell>
-
                                 <TableCell sx={{ padding: '4px 8px' }}>
                                     <TextField
                                         fullWidth
                                         variant="standard"
+                                        // value={newmaterial.item}
                                         value={material.item}
                                         onChange={(e) => handleMaterialChange(index, 'item', e.target.value)}
+                                        // onChange={(e) => handleNewMaterialChange( 'item', e.target.value)}
+                                        disabled={!material.isEditable}  // Disable if not in edit mode
                                         InputProps={{
                                             disableUnderline: true,
                                         }}
@@ -610,6 +678,7 @@ const MaterialSchedule = () => {
                                         variant="standard"
                                         value={material.description}
                                         onChange={(e) => handleMaterialChange(index, 'description', e.target.value)}
+                                        disabled={!material.isEditable}  // Disable if not in edit mode
                                         InputProps={{
                                             disableUnderline: true,
                                         }}
@@ -621,6 +690,7 @@ const MaterialSchedule = () => {
                                         variant="standard"
                                         value={material.unit}
                                         onChange={(e) => handleMaterialChange(index, 'unit', e.target.value)}
+                                        disabled={!material.isEditable}  // Disable if not in edit mode
                                         InputProps={{
                                             disableUnderline: true,
                                         }}
@@ -633,6 +703,7 @@ const MaterialSchedule = () => {
                                         variant="standard"
                                         value={material.quantity}
                                         onChange={(e) => handleMaterialChange(index, 'quantity', e.target.value)}
+                                        disabled={!material.isEditable}  // Disable if not in edit mode
                                         InputProps={{
                                             disableUnderline: true,
                                         }}
@@ -645,6 +716,7 @@ const MaterialSchedule = () => {
                                         variant="standard"
                                         value={material.rate}
                                         onChange={(e) => handleMaterialChange(index, 'rate', e.target.value)}
+                                        disabled={!material.isEditable}  // Disable if not in edit mode
                                         InputProps={{
                                             disableUnderline: true,
                                         }}
@@ -662,15 +734,14 @@ const MaterialSchedule = () => {
                                         <IconButton onClick={() => addMaterial(index)} color="secondary">
                                             <AddIcon />
                                         </IconButton>
-                                        <Button
-                                            variant="contained"
-                                            onClick={() => addMaterialToAPI(newMaterial)}
-                                            disabled={isNewMaterialSaved}
-                                        >
-                                            Save
-                                        </Button>
                                         <IconButton onClick={() => removeMaterial(index)} color="primary">
                                             -
+                                        </IconButton>
+                                        <IconButton onClick={() => toggleEditMode(index)} color="secondary">
+                                            {material.isEditable ? 'save' : <EditIcon />}
+                                        </IconButton>
+                                        <IconButton onClick={() => addMaterialToAPI()} color="secondary">
+                                            save
                                         </IconButton>
                                     </Box>
                                 </TableCell>
@@ -691,6 +762,5 @@ const MaterialSchedule = () => {
 };
 
 export default MaterialSchedule;
-
 
 

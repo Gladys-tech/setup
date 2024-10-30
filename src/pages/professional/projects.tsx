@@ -640,7 +640,7 @@ const Projects = () => {
     const [shareLink, setShareLink] = useState(''); // Share link state
     const [searchQuery, setSearchQuery] = useState('');
     const [projects, setProjects] = useState<Project[]>([]);
-    const { user } = useUser();
+    const { user , token} = useUser();
     const [modalOpen, setModalOpen] = useState(false);
     const handleShareOpen = () => setShareOpen(true);
     const handleShareClose = () => setShareOpen(false);
@@ -649,10 +649,10 @@ const Projects = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    throw new Error('Token not found');
-                }
+                // const token = localStorage.getItem('token');
+                // if (!token) {
+                //     throw new Error('Token not found');
+                // }
                 const storedUser = localStorage.getItem('user');
                 if (!storedUser) {
                     throw new Error('User not found');
