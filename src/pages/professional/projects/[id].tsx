@@ -127,8 +127,54 @@ const ProjectDetails = () => {
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const handleShareOpen = () => setShareOpen(true);
+    // const handleShareOpen = () => setShareOpen(true);
     const handleShareClose = () => setShareOpen(false);
+
+    // /share-links/professional
+    const handleShareLink = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Token not found');
+            // Log the project ID being sent
+            console.log('Project ID:', id);
+
+            // Check if project ID is provided
+            if (!id) {
+                console.error('No project ID provided');
+                alert('Project ID is required to generate the share link.');
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/share-links/professional`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ projectId: id }),
+            });
+
+            // Log the response status
+            console.log('Response status:', response.status);
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('sharelink response', data);
+                setShareLink(data.link); // Assuming the response contains the shareable link
+            } else {
+                console.error('Failed to generate share link:', response.statusText);
+                alert('Failed to generate share link.');
+            }
+        } catch (error) {
+            console.error('Error generating share link:', error);
+        }
+    };
+
+    const handleShareOpen = async () => {
+        console.log('Opening share dialog...');
+        await handleShareLink(); // Fetch the share link before opening the dialog
+        setShareOpen(true);
+    };
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(shareLink);
