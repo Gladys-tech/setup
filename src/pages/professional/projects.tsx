@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useTheme } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,6 +13,7 @@ import html2canvas from 'html2canvas';
 import { API_BASE_URL } from '../api/http.api';
 import { useUser } from 'src/context/UserContext';
 import CreateProjectModal from 'src/components/CreateProjectModel';
+import ProjectDetails from './projects/[id]';
 
 // Define project interface
 interface Project {
@@ -53,6 +54,7 @@ const Projects = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const handleShareClose = () => setShareOpen(false);
     const router = useRouter();
+    const projectDetailsRef = useRef<HTMLDivElement>(null);
     const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null); // State for selected project ID
 
     useEffect(() => {
@@ -199,6 +201,7 @@ const Projects = () => {
             doc.addImage(imageData, 'JPEG', 20, 130, pdfWidth - 40, 100); // Adjust width and height
         };
 
+
         const savePDF = () => {
             // Add phases section
             doc.setFontSize(14);
@@ -213,6 +216,19 @@ const Projects = () => {
                 });
             } else {
                 doc.text('No phases available.', 20, yOffset);
+            }
+
+            // Capture hidden ProjectDetails component screenshot
+            if (projectDetailsRef.current) {
+                html2canvas(projectDetailsRef.current).then((canvas) => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = pdfWidth - 40;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    doc.addImage(imgData, 'PNG', 20, yOffset + 10, imgWidth, imgHeight);
+                    doc.save(`${projectName}_details.pdf`);
+                });
+            } else {
+                doc.save(`${projectName}_details.pdf`);
             }
 
             // Capture table if available
@@ -257,335 +273,342 @@ const Projects = () => {
 
 
     return (
-        <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
-            <Grid container spacing={3}>
-                {/* first Box: Create Project */}
-                <Grid item xs={12} sm={4} md={4}>
-                    <Box
-                        onClick={handleClickOpen}
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <CreateProjectModal open={modalOpen}
-                            // handleClose={handleClose} 
-                            handleClose={() => setModalOpen(false)}
-                            onProjectCreated={setProjects} />
+        <>
+            {/* Hidden ProjectDetails component for capturing screenshot */}
+            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} ref={projectDetailsRef}>
+                <ProjectDetails /> {/* Accesses project ID directly via router query */}
+            </div>
+
+            <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
+                <Grid container spacing={3}>
+                    {/* first Box: Create Project */}
+                    <Grid item xs={12} sm={4} md={4}>
                         <Box
+                            onClick={handleClickOpen}
                             sx={{
-                                backgroundColor: theme.palette.secondary.main,
-                                borderRadius: 1,
-                                width: 64,
-                                height: 64,
                                 display: 'flex',
+                                flexDirection: 'column',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                marginBottom: 1,
-                                boxShadow: 3,
-                                transition: '0.3s',
-                                '&:hover': { boxShadow: 6 },
-                                cursor: 'pointer',
+                                textAlign: 'center',
                             }}
                         >
-                            <AddIcon sx={{ fontSize: 40, color: 'white' }} />
+                            <CreateProjectModal open={modalOpen}
+                                // handleClose={handleClose} 
+                                handleClose={() => setModalOpen(false)}
+                                onProjectCreated={setProjects} />
+                            <Box
+                                sx={{
+                                    backgroundColor: theme.palette.secondary.main,
+                                    borderRadius: 1,
+                                    width: 64,
+                                    height: 64,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginBottom: 1,
+                                    boxShadow: 3,
+                                    transition: '0.3s',
+                                    '&:hover': { boxShadow: 6 },
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                <AddIcon sx={{ fontSize: 40, color: 'white' }} />
+                            </Box>
+                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                Create Project
+                            </Typography>
                         </Box>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                            Create Project
-                        </Typography>
-                    </Box>
-                </Grid>
+                    </Grid>
 
-                {/* second Box: Home Icon */}
-                <Grid item xs={12} sm={4} md={4}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            textAlign: 'center',
-                        }}
-                    >
+                    {/* second Box: Home Icon */}
+                    <Grid item xs={12} sm={4} md={4}>
                         <Box
                             sx={{
-                                backgroundColor: theme.palette.primary.main,
-                                borderRadius: 1,
-                                width: 64,
-                                height: 64,
                                 display: 'flex',
+                                flexDirection: 'column',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                marginBottom: 1,
-                                boxShadow: 3,
-                                transition: '0.3s',
-                                '&:hover': { boxShadow: 6 },
-                                cursor: 'pointer',
+                                textAlign: 'center',
                             }}
                         >
-                            <HomeIcon sx={{ fontSize: 40, color: 'white' }} />
+                            <Box
+                                sx={{
+                                    backgroundColor: theme.palette.primary.main,
+                                    borderRadius: 1,
+                                    width: 64,
+                                    height: 64,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginBottom: 1,
+                                    boxShadow: 3,
+                                    transition: '0.3s',
+                                    '&:hover': { boxShadow: 6 },
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                <HomeIcon sx={{ fontSize: 40, color: 'white' }} />
+                            </Box>
+                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                Sample Project
+                            </Typography>
                         </Box>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                            Sample Project
-                        </Typography>
-                    </Box>
+                    </Grid>
+
+                    {/* Third Box: Search TextField */}
+                    <Grid item xs={12} sm={4} md={4}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', }}>
+                            <TextField
+                                placeholder="Search projects"
+                                variant="outlined"
+                                size="small"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                sx={{
+                                    width: '300px',
+                                    boxShadow: 1,
+                                    borderRadius: 2, // Smooth border radius
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: theme.palette.grey[300],
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: theme.palette.grey[400],
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: theme.palette.primary.main,
+                                        },
+                                    },
+                                }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <SearchIcon sx={{ color: theme.palette.primary.main }} />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Box>
+                    </Grid>
                 </Grid>
 
-                {/* Third Box: Search TextField */}
-                <Grid item xs={12} sm={4} md={4}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', }}>
-                        <TextField
-                            placeholder="Search projects"
-                            variant="outlined"
-                            size="small"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            sx={{
-                                width: '300px',
-                                boxShadow: 1,
-                                borderRadius: 2, // Smooth border radius
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {
-                                        borderColor: theme.palette.grey[300],
-                                    },
-                                    '&:hover fieldset': {
-                                        borderColor: theme.palette.grey[400],
-                                    },
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: theme.palette.primary.main,
-                                    },
-                                },
-                            }}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <SearchIcon sx={{ color: theme.palette.primary.main }} />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                {/* Projects Table */}
+                <Box mt={4}>
+                    <Box display="flex" justifyContent="space-between" mb={1}>
+                        <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16PX' }}>My Projects</Typography>
                     </Box>
-                </Grid>
-            </Grid>
-
-            {/* Projects Table */}
-            <Box mt={4}>
-                <Box display="flex" justifyContent="space-between" mb={1}>
-                    <Typography variant="h3" sx={{ fontWeight: 'bold', color: theme.palette.primary.main, fontSize: '16PX' }}>My Projects</Typography>
-                </Box>
-                <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 250, overflowY: 'auto', }}>
-                    <Table stickyHeader
-                        aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{
-                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
-                                    top: 0,
-                                    backgroundColor: theme.palette.background.paper,
-                                    zIndex: 1,
-                                }}>
-                                    Name
-                                </TableCell>
-                                <TableCell sx={{
-                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
-                                    top: 0,
-                                    backgroundColor: theme.palette.background.paper,
-                                    zIndex: 1,
-                                }}>
-                                    Client
-                                </TableCell>
-                                <TableCell sx={{
-                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
-                                    top: 0,
-                                    backgroundColor: theme.palette.background.paper,
-                                    zIndex: 1,
-                                }}>
-                                    Location
-                                </TableCell>
-                                <TableCell sx={{
-                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
-                                    top: 0,
-                                    backgroundColor: theme.palette.background.paper,
-                                    zIndex: 1,
-                                }}>
-                                    Updated Date
-                                </TableCell>
-                                <TableCell sx={{
-                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
-                                    top: 0,
-                                    backgroundColor: theme.palette.background.paper,
-                                    zIndex: 1,
-                                }}>
-                                    Status
-                                </TableCell>
-                                <TableCell sx={{
-                                    fontWeight: 600, padding: '6px 10px', position: 'sticky',
-                                    top: 0,
-                                    backgroundColor: theme.palette.background.paper,
-                                    zIndex: 1,
-                                }}>
-                                    Actions
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filteredProjects.map((project) => (
-                                <TableRow key={project.id} sx={{ height: '20px', cursor: 'pointer' }}
-                                    onClick={(event) => handleProjectClick(project.id, event)}
-                                    id={`project-table-${project.id}`}
-                                >
-                                    <TableCell sx={{ fontWeight: 'bold', color: theme.palette.primary.main, padding: '4px 8px' }}>{project.projectName}</TableCell>
-                                    <TableCell sx={{ padding: '4px 8px' }}>{project.client?.firstName}</TableCell>
-                                    <TableCell sx={{ padding: '4px 8px' }}>{project.location}</TableCell>
-                                    {/* <TableCell sx={{ padding: '4px 8px' }}>{project.updatedAt}</TableCell> */}
-                                    <TableCell sx={{ padding: '4px 8px' }}>
-                                        {new Date(project.updatedAt).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'short',
-                                            day: 'numeric'
-                                        })}
-                                    </TableCell>
-                                    <TableCell sx={{ padding: '4px 8px', }}>
-                                        <Box
-                                            sx={{
-                                                minWidth: '100px',
-                                                padding: '4px 8px',
-                                                backgroundColor:
-                                                    project.status === 'Complete'
-                                                        ? 'rgba(108, 117, 125, 0.1)' // light gray
-                                                        : project.status === 'In Progress'
-                                                            ? 'rgba(220, 53, 69, 0.1)' // light red
-                                                            : 'rgba(0, 0, 0, 0.05)', // default light black for unknown status
-                                                color:
-                                                    project.status === 'Complete' ? '#6c757d' : '#333', // darker color for complete
-                                                borderRadius: '4px',
-                                                display: 'inline-block',
-                                            }}>
-                                            {project.status}
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell className="action-btns" sx={{
-                                        display: 'flex', justifyContent: 'center', padding: '4px 8px', flexDirection: 'column',
-                                        alignItems: 'flex-start',
+                    <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 250, overflowY: 'auto', }}>
+                        <Table stickyHeader
+                            aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{
+                                        fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                        top: 0,
+                                        backgroundColor: theme.palette.background.paper,
+                                        zIndex: 1,
                                     }}>
-                                        <Box display="flex" gap={1} justifyContent="center" >
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                size="small"
-                                                sx={{
-                                                    minWidth: '34px',
-                                                    minHeight: '34px',
-                                                    padding: 0,
-                                                    borderRadius: '8px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    color: 'white',
-                                                    '&:hover': {
-                                                        backgroundColor: theme => theme.palette.secondary.main,
-                                                    },
-                                                }}
-                                                onClick={() => handleShareOpen(project.id)}
-                                            >
-                                                <ShareIcon sx={{ color: 'white' }} />
-                                            </Button>
-
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                size="small"
-                                                sx={{
-                                                    minWidth: '34px',
-                                                    minHeight: '34px',
-                                                    padding: 0,
-                                                    borderRadius: '8px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    color: 'white',
-                                                    '&:hover': {
-                                                        backgroundColor: theme => theme.palette.secondary.main,
-                                                    },
-                                                }}
-                                                onClick={() => handleDownload(project.projectName, project.id)}
-                                            >
-                                                <DownloadIcon sx={{ color: 'white' }} />
-                                            </Button>
-                                        </Box>
+                                        Name
+                                    </TableCell>
+                                    <TableCell sx={{
+                                        fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                        top: 0,
+                                        backgroundColor: theme.palette.background.paper,
+                                        zIndex: 1,
+                                    }}>
+                                        Client
+                                    </TableCell>
+                                    <TableCell sx={{
+                                        fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                        top: 0,
+                                        backgroundColor: theme.palette.background.paper,
+                                        zIndex: 1,
+                                    }}>
+                                        Location
+                                    </TableCell>
+                                    <TableCell sx={{
+                                        fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                        top: 0,
+                                        backgroundColor: theme.palette.background.paper,
+                                        zIndex: 1,
+                                    }}>
+                                        Updated Date
+                                    </TableCell>
+                                    <TableCell sx={{
+                                        fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                        top: 0,
+                                        backgroundColor: theme.palette.background.paper,
+                                        zIndex: 1,
+                                    }}>
+                                        Status
+                                    </TableCell>
+                                    <TableCell sx={{
+                                        fontWeight: 600, padding: '6px 10px', position: 'sticky',
+                                        top: 0,
+                                        backgroundColor: theme.palette.background.paper,
+                                        zIndex: 1,
+                                    }}>
+                                        Actions
                                     </TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                {filteredProjects.map((project) => (
+                                    <TableRow key={project.id} sx={{ height: '20px', cursor: 'pointer' }}
+                                        onClick={(event) => handleProjectClick(project.id, event)}
+                                        id={`project-table-${project.id}`}
+                                    >
+                                        <TableCell sx={{ fontWeight: 'bold', color: theme.palette.primary.main, padding: '4px 8px' }}>{project.projectName}</TableCell>
+                                        <TableCell sx={{ padding: '4px 8px' }}>{project.client?.firstName}</TableCell>
+                                        <TableCell sx={{ padding: '4px 8px' }}>{project.location}</TableCell>
+                                        {/* <TableCell sx={{ padding: '4px 8px' }}>{project.updatedAt}</TableCell> */}
+                                        <TableCell sx={{ padding: '4px 8px' }}>
+                                            {new Date(project.updatedAt).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric'
+                                            })}
+                                        </TableCell>
+                                        <TableCell sx={{ padding: '4px 8px', }}>
+                                            <Box
+                                                sx={{
+                                                    minWidth: '100px',
+                                                    padding: '4px 8px',
+                                                    backgroundColor:
+                                                        project.status === 'Complete'
+                                                            ? 'rgba(108, 117, 125, 0.1)' // light gray
+                                                            : project.status === 'In Progress'
+                                                                ? 'rgba(220, 53, 69, 0.1)' // light red
+                                                                : 'rgba(0, 0, 0, 0.05)', // default light black for unknown status
+                                                    color:
+                                                        project.status === 'Complete' ? '#6c757d' : '#333', // darker color for complete
+                                                    borderRadius: '4px',
+                                                    display: 'inline-block',
+                                                }}>
+                                                {project.status}
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell className="action-btns" sx={{
+                                            display: 'flex', justifyContent: 'center', padding: '4px 8px', flexDirection: 'column',
+                                            alignItems: 'flex-start',
+                                        }}>
+                                            <Box display="flex" gap={1} justifyContent="center" >
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    size="small"
+                                                    sx={{
+                                                        minWidth: '34px',
+                                                        minHeight: '34px',
+                                                        padding: 0,
+                                                        borderRadius: '8px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        color: 'white',
+                                                        '&:hover': {
+                                                            backgroundColor: theme => theme.palette.secondary.main,
+                                                        },
+                                                    }}
+                                                    onClick={() => handleShareOpen(project.id)}
+                                                >
+                                                    <ShareIcon sx={{ color: 'white' }} />
+                                                </Button>
+
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    size="small"
+                                                    sx={{
+                                                        minWidth: '34px',
+                                                        minHeight: '34px',
+                                                        padding: 0,
+                                                        borderRadius: '8px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        color: 'white',
+                                                        '&:hover': {
+                                                            backgroundColor: theme => theme.palette.secondary.main,
+                                                        },
+                                                    }}
+                                                    onClick={() => handleDownload(project.projectName, project.id)}
+                                                >
+                                                    <DownloadIcon sx={{ color: 'white' }} />
+                                                </Button>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+
+                {/* Share Link Popup */}
+                <Dialog open={shareOpen} onClose={handleShareClose}>
+                    <DialogTitle>Share Project Link</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            label="Shareable Link"
+                            fullWidth
+                            margin="normal"
+                            value={shareLink}
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            startIcon={<ContentCopyIcon />}
+                            onClick={handleCopyLink}
+                            sx={{
+                                backgroundColor: theme.palette.primary.main,
+                                color: theme.palette.primary.contrastText,
+                                mt: 2,
+                                textTransform: 'none',
+                                '&:hover': {
+                                    backgroundColor: theme.palette.secondary.main
+                                }
+                            }}
+                        >
+                            Copy Link
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<EmailIcon />}
+                            onClick={handleShareViaEmail}
+                            sx={{
+                                backgroundColor: theme.palette.primary.main,
+                                color: theme.palette.primary.contrastText,
+                                mt: 2,
+                                ml: 2,
+                                textTransform: 'none',
+                                '&:hover': {
+                                    backgroundColor: theme.palette.secondary.main
+                                }
+                            }}
+                        >
+                            Share via Email
+                        </Button>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleShareClose}
+                            variant='contained'
+                            sx={{
+                                backgroundColor: theme.palette.error.main,
+                                color: theme.palette.primary.contrastText,
+                                textTransform: 'none',
+                                '&:hover': {
+                                    backgroundColor: theme.palette.error.dark
+                                }
+                            }}>
+                            Close
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
             </Box>
-
-            {/* Share Link Popup */}
-            <Dialog open={shareOpen} onClose={handleShareClose}>
-                <DialogTitle>Share Project Link</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        label="Shareable Link"
-                        fullWidth
-                        margin="normal"
-                        value={shareLink}
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    />
-                    <Button
-                        variant="contained"
-                        startIcon={<ContentCopyIcon />}
-                        onClick={handleCopyLink}
-                        sx={{
-                            backgroundColor: theme.palette.primary.main,
-                            color: theme.palette.primary.contrastText,
-                            mt: 2,
-                            textTransform: 'none',
-                            '&:hover': {
-                                backgroundColor: theme.palette.secondary.main
-                            }
-                        }}
-                    >
-                        Copy Link
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<EmailIcon />}
-                        onClick={handleShareViaEmail}
-                        sx={{
-                            backgroundColor: theme.palette.primary.main,
-                            color: theme.palette.primary.contrastText,
-                            mt: 2,
-                            ml: 2,
-                            textTransform: 'none',
-                            '&:hover': {
-                                backgroundColor: theme.palette.secondary.main
-                            }
-                        }}
-                    >
-                        Share via Email
-                    </Button>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleShareClose}
-                        variant='contained'
-                        sx={{
-                            backgroundColor: theme.palette.error.main,
-                            color: theme.palette.primary.contrastText,
-                            textTransform: 'none',
-                            '&:hover': {
-                                backgroundColor: theme.palette.error.dark
-                            }
-                        }}>
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-        </Box>
+        </>
     );
 };
 

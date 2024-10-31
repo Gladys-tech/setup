@@ -29,6 +29,7 @@ const ProjectDetails = () => {
     const [open, setOpen] = useState(false); // For handling modal
     const [shareOpen, setShareOpen] = useState(false); // For share link modal
     const [shareLink, setShareLink] = useState(''); // Share link state
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProjectData = async () => {
@@ -59,7 +60,10 @@ const ProjectDetails = () => {
                     }
                 } catch (error) {
                     console.error('Error fetching project data:', error);
-                }
+                // }
+            } finally {
+                setLoading(false); // Set loading to false after data fetch
+            }
             }
         };
         fetchProjectData();
