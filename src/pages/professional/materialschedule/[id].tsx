@@ -346,17 +346,15 @@ interface Material {
     quantity: number;
     rate: number;
     amount: number;
-    // imageUrl?: string;
     createdBy: string;
+    imageUrl: string;
     isEditable: boolean;  // New property to track if a row is in edit mode
     updatedBy?: User | null;
-    // isActive: boolean;
     phaseId?: string; // Add this if necessary
     phase?: {
         id: string;
         phaseName: string;
         phaseDescription: string;
-        // Include other phase properties as needed
     };
 }
 
@@ -374,25 +372,10 @@ const MaterialSchedule = () => {
 
     // State to manage the materials list
     const [materials, setMaterials] = useState<Material[]>([]);
-    const [newMaterial, setNewMaterial] = useState<Material>({
-        id: '',
-        item: '',
-        description: '',
-        unit: '',
-        quantity: 0,
-        rate: 0,
-        amount: 0,
-        // imageUrl: '',
-        image: '',
-        isEditable: false,
-        createdBy: 'user.id',
-        phaseId: id as string,
-    });
     const [imageFile, setImageFile] = useState<File | null>(null); // State for image file 
 
     // Fetch materials data from API when the component mounts or phase changes
     useEffect(() => {
-
         if (id) {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -422,7 +405,31 @@ const MaterialSchedule = () => {
         }
     }, [id]);
 
-    // Handle input changes for a material
+    // Toggle edit mode for a row
+    const toggleEditMode = (index: number) => {
+        const updatedMaterials = [...materials];
+        updatedMaterials[index].isEditable = !updatedMaterials[index].isEditable;
+        setMaterials(updatedMaterials);
+
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const file = e.target.files?.[0] || null; // Cast to HTMLInputElement
+        if (file) {
+            setImageFile(file); // Set the image file state
+            try {
+                const imageUrl = await uploadImageToFirebase(file);
+                const updatedMaterials = [...materials];
+                updatedMaterials[index].imageUrl = imageUrl;// Set the image URL in the material
+                setMaterials(updatedMaterials);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+    };
+
+
+    // Update handleMaterialChange to apply to both new and existing materials
     const handleMaterialChange = (index: number, field: keyof Material, value: string | number) => {
         const numericValue = (field === 'quantity' || field === 'rate') ? Number(value) : value;
 
@@ -437,101 +444,68 @@ const MaterialSchedule = () => {
         setMaterials(updatedMaterials);
     };
 
-    // Handle input changes for newMaterial
-    // const handleNewMaterialChange = (field: keyof Material, value: string | number) => {
-    //     const numericValue = (field === 'quantity' || field === 'rate') ? Number(value) : value;
-    //     setNewMaterial((prev) => ({
-    //         ...prev,
-    //         [field]: numericValue,
-    //         amount: (field === 'quantity' || field === 'rate')
-    //             ? (typeof prev.quantity === 'number' ? prev.quantity : 0) * (typeof numericValue === 'number' ? numericValue : 0)
-    //             : prev.amount,
-    //     }));
-    // };
-
-
-    // Add an empty row for a new material below the clicked row
+    // Add a new row with empty fields but make it part of `materials` state
     const addMaterial = (index: number) => {
-        const newMaterial = { id: '', item: '', description: '', unit: '', quantity: 0, rate: 0, amount: 0, image: '', isEditable: true, createdBy: 'user.id', };
-        const updatedMaterials = [...materials];
-        updatedMaterials.splice(index + 1, 0, newMaterial);
-        setMaterials(updatedMaterials);
-    };
-
-    // Toggle edit mode for a row
-    const toggleEditMode = (index: number) => {
-        const updatedMaterials = [...materials];
-        updatedMaterials[index].isEditable = !updatedMaterials[index].isEditable;
-        setMaterials(updatedMaterials);
-
-    };
-
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-        const file = e.target.files?.[0] || null; // Cast to HTMLInputElement
-        if (file) {
-            setImageFile(file); // Set the image file state
-            try {
-                const image = await uploadImageToFirebase(file);
-                const updatedMaterials = [...materials];
-                updatedMaterials[index].image = image; // Set the image URL in the material
-                setMaterials(updatedMaterials);
-            } catch (error) {
-                console.error('Error uploading image:', error);
-            }
-        }
-    };
-
-    const addMaterialToAPI = async () => {
         const storedUser = localStorage.getItem('user');
         if (!storedUser) {
             console.error('User not found');
             return;
         }
-
         const user = JSON.parse(storedUser);
-        const userId = user.id;
+        console.log('userId got', user.id)
 
-        // Upload image only if there's a new file selected
-        let imageUrl = newMaterial.image;
-        if (imageFile) {
-            try {
-                imageUrl = await uploadImageToFirebase(imageFile);
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                return; // Stop further execution if upload fails
-            }
-        }
-
-        // Prepare material object for API
-        const materialToAdd = {
-            ...newMaterial,
-            image: imageUrl, // Use the uploaded image URL
-            createdBy: userId,
+        const emptyMaterial: Material = {
+            id: '',
+            item: '',
+            description: '',
+            unit: '',
+            quantity: 0,
+            rate: 0,
+            amount: 0,
+            image: '',
+            imageUrl: '',
+            isEditable: true,
+            createdBy: user?.id,
+            phaseId: id as string,
         };
+        const updatedMaterials = [...materials];
+        updatedMaterials.splice(index + 1, 0, emptyMaterial); // Insert after the clicked row
+        setMaterials(updatedMaterials);
+    };
+
+    // Function to save new material row data to API
+    const saveNewMaterialRow = async (index: number) => {
+        const material = materials[index];
+
+        // Ensure all required fields are present
+        if (!material.item || !material.description) {
+            console.error("Please complete all required fields");
+            return;
+        }
+        // Log the payload to check for accuracy
+        console.log('Payload before sending:', material);
+        const token = localStorage.getItem('token');
+        const apiUrl = `${API_BASE_URL}/material-schedules/professional`;
 
         try {
-            console.log('Material to add:', materialToAdd); // Before API call
-
-            const token = localStorage.getItem('token');
-            const apiUrl = `${API_BASE_URL}/material-schedules/professional`;
-
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(materialToAdd), // Use the new material object
+                body: JSON.stringify(material),
             });
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Material created successfully', data);
-                setMaterials((prev) => [...prev, data]); // Optionally update the state
+                const updatedMaterials = [...materials];
+                updatedMaterials[index] = { ...data, isEditable: false }; // Update with returned data and set to non-editable
+                setMaterials(updatedMaterials);
+                console.log('New material saved:', data);
             } else {
                 const errorData = await response.json();
-                console.error('Failed to add material:', errorData); // Log the error response
-                throw new Error(errorData.message || 'Failed to add material');
+                console.error('Failed to add material:', errorData);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -737,12 +711,19 @@ const MaterialSchedule = () => {
                                         <IconButton onClick={() => removeMaterial(index)} color="primary">
                                             -
                                         </IconButton>
-                                        <IconButton onClick={() => toggleEditMode(index)} color="secondary">
+                                        {/* <IconButton onClick={() => toggleEditMode(index)} color="secondary">
                                             {material.isEditable ? 'save' : <EditIcon />}
                                         </IconButton>
                                         <IconButton onClick={() => addMaterialToAPI()} color="secondary">
                                             save
-                                        </IconButton>
+                                        </IconButton> */}
+                                        {material.isEditable ? (
+                                            <Button onClick={() => saveNewMaterialRow(index)}>Save</Button>
+                                        ) : (
+                                            <IconButton onClick={() => toggleEditMode(index)}>
+                                                <EditIcon />
+                                            </IconButton>
+                                        )}
                                     </Box>
                                 </TableCell>
                             </TableRow>
