@@ -93,7 +93,7 @@ const LoginPage = () => {
             // Use setUser to update the context and localStorage with the new user data
             setUser(user);
             setToken(token);
-            router.push('/pages/client');
+            router.push('/client');
         } catch (error) {
             console.error('Login failed:', error instanceof Error ? error.message : 'Unknown error');
             alert('Login failed. Please try again.');

@@ -2,39 +2,97 @@ import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { Box, Typography, Grid, Button, Dialog, DialogActions, DialogContent, DialogTitle, useTheme, IconButton } from '@mui/material';
 import Image from 'next/image';
-import projects from 'src/pages/professional/projectData';
 import ViewIcon from '@mui/icons-material/Visibility';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CallIcon from '@mui/icons-material/Call';
+import { API_BASE_URL } from 'src/pages/api/http.api';
+
+const phaseColors: { [key: string]: string } = {
+  Foundation: '#8B4513', // Earthy Brown   
+  Ringbeam: '#B22222',    // Brick Red
+  Roofing: '#708090',      // Slate Grey
+  Windowsanddoors: '#008080', // Teal
+  Electrical: '#1E90FF', // Electric Blue
+  Interior: '#F5DEB3',   // Light Beige
+  Fittings: '#9ACD32',   // Sage Green
+  Exterior: '#FFD700',   // Gold
+};
 
 const ProjectDetails = () => {
   const theme = useTheme();
   const router = useRouter();
   const { id } = router.query;
   const [project, setProject] = useState<any>(null);
+  const [phases, setPhases] = useState<any[]>([]);  // Initially empty array 
   const [open, setOpen] = useState(false); // For handling modal
   const [contactVisible, setContactVisible] = useState(false); // For controlling contact number visibility
 
   const contactNumber = "0757763516";
 
-  // Define phases and their totals in state
-  const [phases, setPhases] = useState([
-    { name: 'Foundation', total: 10000, color: '#8B4513' }, // Earthy Brown
-    { name: 'Ring beam', total: 20000, color: '#B22222' },  // Brick Red
-    { name: 'Roofing', total: 30000, color: '#708090' },    // Slate Grey
-    { name: 'Window + Doors', total: 34500, color: '#008080' }, // Teal
-    { name: 'Electrical', total: 60000, color: '#1E90FF' }, // Electric Blue
-    { name: 'Interior', total: 56700, color: '#F5DEB3' },   // Light Beige
-    { name: 'Fittings', total: 23000, color: '#9ACD32' },   // Sage Green
-    { name: 'Exterior', total: 40000, color: '#FFD700' },   // Gold
-  ]);
 
   useEffect(() => {
-    if (id) {
-      const selectedProject = projects.find((project: { id: number }) => project.id === parseInt(id as string));
-      setProject(selectedProject);
-    }
+    const fetchProjectData = async () => {
+      if (id) {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            throw new Error('Token not found');
+          }
+          const response = await fetch(`${API_BASE_URL}/projects/${id}/professional`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          const data = await response.json();
+          console.log('got project data', data);
+          setProject(data);
+
+          // Check if data.phases is available and use it to calculate updated phases
+          if (data.phases && Array.isArray(data.phases)) {
+            const updatedPhases = data.phases.map((phase: any) => ({
+              ...phase,
+              total: calculatePhaseTotal(phase.materialSchedules || [])
+            }));
+            console.log('Phases data:', data.phases);
+            setPhases(updatedPhases);
+          }
+        } catch (error) {
+          console.error('Error fetching project data:', error);
+        }
+
+      }
+    };
+    fetchProjectData();
   }, [id]);
+
+  const calculatePhaseTotal = (materialSchedules: { amount: any }[] = []) => {
+    return materialSchedules.length > 0
+      ? materialSchedules.reduce((acc, material) => acc + Number(material.amount || 0), 0)
+      : 0;
+  };
+
+  const handleInputChange = (index: number, value: number) => {
+    const updatedPhases = [...phases];
+    updatedPhases[index].total = value;
+    setPhases(updatedPhases);
+  };
+
+  const handleViewClick = (id: string, phaseName: string) => {
+    console.log("phaseId:", id);  // Debugging
+    console.log("phaseName:", phaseName);  // Debugging
+    if (id && phaseName) {
+      // Convert the phase name to the appropriate key for the color mapping
+      const formattedPhaseName = phaseName.replace(/ /g, '').replace(/\b\w/g, char => char.toUpperCase());
+      const color = phaseColors[formattedPhaseName] || '#000000';  // Default color if not found
+
+      // Navigate to the MaterialSchedule with both phaseId in the path and color as a query parameter
+      router.push(`/client/materialschedule/${id}?color=${encodeURIComponent(color)}&phaseName=${encodeURIComponent(phaseName)}`);
+    } else {
+      console.warn('Phase ID or name is undefined');
+    }
+  };
+
 
   // Handle modal open/close
   const handleOpen = () => setOpen(true);
@@ -72,7 +130,7 @@ const ProjectDetails = () => {
       </IconButton>
 
       <Typography variant="h5">
-        <span style={{ position: 'absolute', top: 80, right: 500, color: theme.palette.primary.main, fontWeight: 'bold', }}>{project.name}</span>
+        <span style={{ position: 'absolute', top: 80, right: 500, color: theme.palette.primary.main, fontWeight: 'bold', }}>{project.projectName}</span>
       </Typography>
 
       <Button
@@ -117,7 +175,7 @@ const ProjectDetails = () => {
               .reverse()
               .map((phase, index) => (
                 <Box key={index} mb={3} display="flex" alignItems="center" sx={{ cursor: 'pointer' }}
-                  onClick={() => router.push(`/client/materialschedule/${phase.name}?color=${encodeURIComponent(phase.color)}`)}>
+                  onClick={() => handleViewClick(phase.id, phase.phaseName)}>
                   <IconButton
                     sx={{
                       backgroundColor: theme.palette.primary.main,
@@ -134,7 +192,7 @@ const ProjectDetails = () => {
                   </IconButton>
                   <Typography sx={{ fontSize: '20px', fontWeight: 'bold', ml: 2, mr: 2 }}>{phase.total}</Typography>
                   <Typography sx={{ fontSize: '16px', m1: 3 }}>Total for {''}
-                    <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{phase.name}
+                    <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{phase.phaseName}
                     </span>
                   </Typography>
                 </Box>
@@ -210,17 +268,17 @@ const ProjectDetails = () => {
           }}
         >
           <Typography variant="body1" sx={{ fontWeight: '500' }}>
-            <strong>Client:</strong> {project.client}
+            <strong>Client:</strong> {project.client?.firstName}
           </Typography>
           <Typography variant="body1" sx={{ fontWeight: '500' }}>
             <strong>Location:</strong> {project.location}
           </Typography>
-          {/* <Typography variant="body1" sx={{ fontWeight: '500' }}>
-            <strong>Amount:</strong> ${project.amount}
+          <Typography variant="body1" sx={{ fontWeight: '500' }}>
+            <strong>Professional Name:</strong> {project.createdBy?.firstName}
           </Typography>
           <Typography variant="body1" sx={{ fontWeight: '500' }}>
-            <strong>Status:</strong> {project.status}
-          </Typography> */}
+            <strong>Company Name:</strong> {project.createdBy?.companyName}
+          </Typography>
         </DialogContent>
 
         <DialogActions
@@ -256,4 +314,5 @@ const ProjectDetails = () => {
 };
 
 export default ProjectDetails;
+
 

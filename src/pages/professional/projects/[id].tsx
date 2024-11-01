@@ -60,10 +60,10 @@ const ProjectDetails = () => {
                     }
                 } catch (error) {
                     console.error('Error fetching project data:', error);
-                // }
-            } finally {
-                setLoading(false); // Set loading to false after data fetch
-            }
+                    // }
+                } finally {
+                    setLoading(false); // Set loading to false after data fetch
+                }
             }
         };
         fetchProjectData();

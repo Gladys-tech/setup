@@ -14,6 +14,7 @@ import { API_BASE_URL } from '../api/http.api';
 import { useUser } from 'src/context/UserContext';
 import CreateProjectModal from 'src/components/CreateProjectModel';
 import ProjectDetails from './projects/[id]';
+import MaterialSchedule from './materialschedule/[id]';
 
 // Define project interface
 interface Project {
@@ -55,6 +56,7 @@ const Projects = () => {
     const handleShareClose = () => setShareOpen(false);
     const router = useRouter();
     const projectDetailsRef = useRef<HTMLDivElement>(null);
+    const materialScheduleRef = useRef<HTMLDivElement>(null);
     const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null); // State for selected project ID
 
     useEffect(() => {
@@ -218,18 +220,46 @@ const Projects = () => {
                 doc.text('No phases available.', 20, yOffset);
             }
 
-            // Capture hidden ProjectDetails component screenshot
+            // // Capture hidden ProjectDetails component screenshot
+            // if (projectDetailsRef.current) {
+            //     html2canvas(projectDetailsRef.current).then((canvas) => {
+            //         const imgData = canvas.toDataURL('image/png');
+            //         const imgWidth = pdfWidth - 40;
+            //         const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            //         doc.addImage(imgData, 'PNG', 20, yOffset + 10, imgWidth, imgHeight);
+            //         doc.save(`${projectName}_details.pdf`);
+            //     });
+            // } else {
+            //     doc.save(`${projectName}_details.pdf`);
+            // }
+            // Capture and add ProjectDetails component screenshot
             if (projectDetailsRef.current) {
                 html2canvas(projectDetailsRef.current).then((canvas) => {
                     const imgData = canvas.toDataURL('image/png');
                     const imgWidth = pdfWidth - 40;
                     const imgHeight = (canvas.height * imgWidth) / canvas.width;
                     doc.addImage(imgData, 'PNG', 20, yOffset + 10, imgWidth, imgHeight);
-                    doc.save(`${projectName}_details.pdf`);
+
+                    // Update yOffset after ProjectDetails screenshot
+                    yOffset += imgHeight + 20;
+
+                    // Capture and add MaterialSchedule component screenshot
+                    if (materialScheduleRef.current) {
+                        html2canvas(materialScheduleRef.current).then((canvas) => {
+                            const imgData = canvas.toDataURL('image/png');
+                            const imgWidth = pdfWidth - 40;
+                            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                            doc.addImage(imgData, 'PNG', 20, yOffset + 40, imgWidth, imgHeight);
+                            doc.save(`${projectName}_details.pdf`);
+                        });
+                    } else {
+                        doc.save(`${projectName}_details.pdf`);
+                    }
                 });
             } else {
                 doc.save(`${projectName}_details.pdf`);
             }
+
 
             // Capture table if available
             const tableElement = document.getElementById(`project-table-${projectId}`);
@@ -277,6 +307,10 @@ const Projects = () => {
             {/* Hidden ProjectDetails component for capturing screenshot */}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} ref={projectDetailsRef}>
                 <ProjectDetails /> {/* Accesses project ID directly via router query */}
+            </div>
+            {/* materialScheduleRef */}
+            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} ref={materialScheduleRef}>
+                <MaterialSchedule /> {/* Accesses project ID directly via router query */}
             </div>
 
             <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
