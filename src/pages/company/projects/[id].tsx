@@ -26,8 +26,9 @@ const ProjectDetails = () => {
   const [phases, setPhases] = useState<any[]>([]);  // Initially empty array 
   const [open, setOpen] = useState(false); // For handling modal
   const [contactVisible, setContactVisible] = useState(false); // For controlling contact number visibility
+  const [contactNumber, setContactNumber] = useState<string | null>(null);
 
-  const contactNumber = "0757763516";
+  // const contactNumber = "0757763516";
 
 
   useEffect(() => {
@@ -48,6 +49,10 @@ const ProjectDetails = () => {
           console.log('got project data', data);
           setProject(data);
 
+          if (data.createdBy && data.createdBy.id) {
+            fetchProfessionalContact(data.createdBy.id, token);
+          }
+
           // Check if data.phases is available and use it to calculate updated phases
           if (data.phases && Array.isArray(data.phases)) {
             const updatedPhases = data.phases.map((phase: any) => ({
@@ -63,8 +68,28 @@ const ProjectDetails = () => {
 
       }
     };
+
+
+    const fetchProfessionalContact = async (professionalId: string, token: string) => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/users/${professionalId}/company`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const professionalData = await response.json();
+        console.log('contact fetched data', professionalData.user);
+        setContactNumber(professionalData.user.address?.telphone || 'Not available');
+      } catch (error) {
+        console.error('Error fetching professional contact:', error);
+      }
+    };
+
     fetchProjectData();
   }, [id]);
+
+  
 
   const calculatePhaseTotal = (materialSchedules: { amount: any }[] = []) => {
     return materialSchedules.length > 0
@@ -215,7 +240,7 @@ const ProjectDetails = () => {
               boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
             }}
           >
-            <Typography variant="body2">{contactNumber}</Typography>
+            <Typography variant="body2">{contactNumber || 'Contact not available'}</Typography>
           </Box>
         )}
         <IconButton

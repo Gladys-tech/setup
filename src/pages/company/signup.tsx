@@ -25,16 +25,14 @@ import { Grid } from '@mui/material'
 import AuthLayout from 'src/layouts/AuthLayout'
 
 interface Address {
-    // street: string;
     city: string;
     country: string;
-    telephone: string; 
+    telphone: string;
 }
 
 interface State {
     firstName: string;
     lastName: string;
-    companyName: string;
     email: string;
     password: string;
     isEmailVerified: boolean;
@@ -72,20 +70,32 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
     }
 }))
 
+
+// Define reusable fieldStyles
+const fieldStyles = {
+    height: '20px',
+    marginBottom: 1,
+    padding: '2px',
+    '& .MuiInputBase-input': {
+        padding: '10px 14px',
+    },
+    '@media (max-width: 480px)': {
+        width: '100%', // Full width on small screens
+    }
+}
+
 const RegisterPage = () => {
     const [signupDetails, setSignupDetails] = useState<State>({
         firstName: '',
         lastName: '',
-        companyName: '',
         email: '',
         password: '',
         isEmailVerified: false,
         agreeToTerms: false,
         address: {
-            // street: '',
             city: '',
             country: '',
-            telephone: ''
+            telphone: ''
         }
     })
 
@@ -168,92 +178,144 @@ const RegisterPage = () => {
 
                 <form noValidate autoComplete='off' onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        {['firstName', 'lastName', 'companyName', 'email', 'password',  'city', 'country', 'telephone'].map((field, index) => (
-                            <Grid item xs={12} key={index}>
-                                <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
-                                    {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    name={field}
-                                    value={field.includes('address.') ? signupDetails.address[field.split('.')[1] as keyof Address] : signupDetails[field as keyof State]}
-                                    onChange={field.includes('address.') ? handleAddressChange(field.split('.')[1] as keyof Address) : handleChange(field as keyof State)}
-                                    sx={{
-                                        height: '20px',
-                                        marginBottom: 1,
-                                        padding: '2px',
-                                        '& .MuiInputBase-input': {
-                                            padding: '10px 14px',
-                                        },
-                                        '@media (max-width: 480px)': {
-                                            width: '100%', // Full width on small screens
-                                        }
-                                    }}
-                                    type={field === 'password' ? (showPassword ? 'text' : 'password') : 'text'}
-                                    InputProps={field === 'password' ? {
-                                        endAdornment: (
-                                            <InputAdornment position='end'>
-                                                <IconButton onClick={togglePasswordVisibility} edge='end'>
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        )
-                                    } : undefined}
-                                />
-                            </Grid>
-                        ))}
-
                         <Grid item xs={12}>
-                            <FormControlLabel
-                                control={<Checkbox checked={signupDetails.agreeToTerms} onChange={handleChange('agreeToTerms')} />}
-                                label={
-                                    <Fragment>
-                                        <span>I agree to </span>
-                                        <Link href='/pages/terms_and_conditions' passHref>
-                                            <LinkStyled>privacy policy & terms</LinkStyled>
-                                        </Link>
-                                    </Fragment>
-                                }
+                            <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
+                                First Name
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                value={signupDetails.firstName}
+                                onChange={handleChange('firstName')}
+                                sx={fieldStyles}
                             />
                         </Grid>
-
-                        {error && (
-                            <Grid item xs={12}>
-                                <Typography color='error' variant='body2'>
-                                    {error}
-                                </Typography>
-                            </Grid>
-                        )}
-                        {successMessage && (
-                            <Grid item xs={12}>
-                                <Typography color='success' variant='body2'>
-                                    {successMessage}
-                                </Typography>
-                            </Grid>
-                        )}
                         <Grid item xs={12}>
-                            <Button
+                            <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
+                                Last Name
+                            </Typography>
+                            <TextField
                                 fullWidth
-                                type='submit'
-                                size='large'
-                                variant='contained'
-                                sx={{
-                                    backgroundColor: theme.palette.primary.main,
-                                    color: theme.palette.primary.contrastText,
-                                    font: '12px',
-                                    padding: '8px 20px',
-                                    textTransform: 'none',
-                                    height: '35px',
-                                    borderRadius: '8px',
-                                    margin: '5px 0px 0px',
-                                    '&:hover': {
-                                        backgroundColor: theme.palette.secondary.main
-                                    }
-                                }}
-                            >
-                                Sign Up
-                            </Button>
+                                value={signupDetails.lastName}
+                                onChange={handleChange('lastName')}
+                                sx={fieldStyles}
+                            />
                         </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
+                                Email
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                value={signupDetails.email}
+                                onChange={handleChange('email')}
+                                sx={fieldStyles}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
+                                Password
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                value={signupDetails.password}
+                                onChange={handleChange('password')}
+                                sx={fieldStyles}
+                                type={showPassword ? 'text' : 'password'}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position='end'>
+                                            <IconButton onClick={togglePasswordVisibility} edge='end'>
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    )
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
+                                City
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                value={signupDetails.address.city}
+                                onChange={handleAddressChange('city')}
+                                sx={fieldStyles}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
+                                Country
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                value={signupDetails.address.country}
+                                onChange={handleAddressChange('country')}
+                                sx={fieldStyles}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant='body1' sx={{ fontSize: '13px', fontWeight: '600' }}>
+                                Telephone
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                value={signupDetails.address.telphone}
+                                onChange={handleAddressChange('telphone')}
+                                sx={fieldStyles}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <FormControlLabel
+                            control={<Checkbox checked={signupDetails.agreeToTerms} onChange={handleChange('agreeToTerms')} />}
+                            label={
+                                <Fragment>
+                                    <span>I agree to </span>
+                                    <Link href='/pages/terms_and_conditions' passHref>
+                                        <LinkStyled>privacy policy & terms</LinkStyled>
+                                    </Link>
+                                </Fragment>
+                            }
+                        />
+                    </Grid>
+
+                    {error && (
+                        <Grid item xs={12}>
+                            <Typography color='error' variant='body2'>
+                                {error}
+                            </Typography>
+                        </Grid>
+                    )}
+                    {successMessage && (
+                        <Grid item xs={12}>
+                            <Typography color='success' variant='body2'>
+                                {successMessage}
+                            </Typography>
+                        </Grid>
+                    )}
+                    <Grid item xs={12}>
+                        <Button
+                            fullWidth
+                            type='submit'
+                            size='large'
+                            variant='contained'
+                            sx={{
+                                backgroundColor: theme.palette.primary.main,
+                                color: theme.palette.primary.contrastText,
+                                font: '12px',
+                                padding: '8px 20px',
+                                textTransform: 'none',
+                                height: '35px',
+                                borderRadius: '8px',
+                                margin: '5px 0px 0px',
+                                '&:hover': {
+                                    backgroundColor: theme.palette.secondary.main
+                                }
+                            }}
+                        >
+                            Sign Up
+                        </Button>
                     </Grid>
                 </form>
 
