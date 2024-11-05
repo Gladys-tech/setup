@@ -28,9 +28,7 @@ const ProjectDetails = () => {
   const [contactVisible, setContactVisible] = useState(false); // For controlling contact number visibility
   const [contactNumber, setContactNumber] = useState<string | null>(null);
 
-  // const contactNumber = "0757763516";
-
-
+  
   useEffect(() => {
     const fetchProjectData = async () => {
       if (id) {
@@ -112,7 +110,7 @@ const ProjectDetails = () => {
       const color = phaseColors[formattedPhaseName] || '#000000';  // Default color if not found
 
       // Navigate to the MaterialSchedule with both phaseId in the path and color as a query parameter
-      router.push(`/client/materialschedule/${id}?color=${encodeURIComponent(color)}&phaseName=${encodeURIComponent(phaseName)}`);
+      router.push(`/company/materialschedule/${id}?color=${encodeURIComponent(color)}&phaseName=${encodeURIComponent(phaseName)}&contactNumber=${encodeURIComponent(contactNumber || '')}`);
     } else {
       console.warn('Phase ID or name is undefined');
     }

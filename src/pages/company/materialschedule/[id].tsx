@@ -48,14 +48,13 @@ interface User {
 const MaterialSchedule = () => {
     const theme = useTheme();
     const router = useRouter();
-    const { phaseName, color } = router.query;
+    const { phaseName, color , contactNumber } = router.query;
     const { id } = router.query;
 
     // State to manage the materials list
     const [materials, setMaterials] = useState<Material[]>([]);
     const [contactVisible, setContactVisible] = useState(false);
 
-    const contactNumber = "0757763516";
 
     // Fetch materials data from API when the component mounts or phase changes
     useEffect(() => {
@@ -80,7 +79,7 @@ const MaterialSchedule = () => {
                 })
                 .then(data => {
                     console.log('materialschedule got', data)
-                    setMaterials(data);
+                    setMaterials(data.materialSchedules);
                 })
                 .catch(error => {
                     console.error('Error fetching materials:', error);
@@ -207,7 +206,7 @@ const MaterialSchedule = () => {
                             boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
                         }}
                     >
-                        <Typography variant="body2">{contactNumber}</Typography>
+                        <Typography variant="body2"> {contactNumber || 'Not available'}</Typography>
                     </Box>
                 )}
                 <IconButton

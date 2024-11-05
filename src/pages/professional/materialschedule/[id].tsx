@@ -128,7 +128,7 @@ const MaterialSchedule = () => {
                 })
                 .then(data => {
                     console.log('materialschedule got', data)
-                    setMaterials(data);
+                    setMaterials(data.materialSchedules);
                 })
                 .catch(error => {
                     console.error('Error fetching materials:', error);
@@ -290,12 +290,18 @@ const MaterialSchedule = () => {
                 body: JSON.stringify({
                     description: material.description,
                     quantity: material.quantity,
+                    unit: material.unit,
                 }),
             });
 
             if (response.ok) {
+                // const updatedMaterials = [...materials];
+                // updatedMaterials[index].isEditable = false;
+                // setMaterials(updatedMaterials);
+                // toast.success('Material updated successfully!');
+                const updatedMaterial = await response.json(); // Assuming API returns updated data
                 const updatedMaterials = [...materials];
-                updatedMaterials[index].isEditable = false;
+                updatedMaterials[index] = { ...updatedMaterials[index], ...updatedMaterial, isEditable: false };
                 setMaterials(updatedMaterials);
                 toast.success('Material updated successfully!');
             } else {
@@ -452,17 +458,21 @@ const MaterialSchedule = () => {
                                             material.description
                                         )}
                                     </TableCell>
-                                    <TableCell sx={{ padding: '4px 8px', minWidth: 100, minHeight: 100, }}>
-                                        <TextField
-                                            fullWidth
-                                            variant="standard"
-                                            value={material.unit}
-                                            onChange={(e) => handleMaterialChange(index, 'unit', e.target.value)}
-                                            disabled={!material.isEditable}  // Disable if not in edit mode
-                                            InputProps={{
-                                                disableUnderline: true,
-                                            }}
-                                        />
+                                     <TableCell sx={{ padding: '4px 8px', minWidth: 100, minHeight: 100, }}>
+                                        {material.isEditable ? (
+                                            <TextField
+                                                fullWidth
+                                                variant="standard"
+                                                value={material.unit}
+                                                onChange={(e) => handleMaterialChange(index, 'unit', e.target.value)}
+                                                disabled={!material.isEditable}
+                                                InputProps={{
+                                                    disableUnderline: true,
+                                                }}
+                                            />
+                                        ) : (
+                                            material.unit
+                                        )}
                                     </TableCell>
                                     <TableCell sx={{ padding: '4px 8px', minWidth: 100, minHeight: 100, }}>
                                         {material.isEditable ? (
