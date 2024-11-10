@@ -295,13 +295,8 @@ const MaterialSchedule = () => {
             });
 
             if (response.ok) {
-                // const updatedMaterials = [...materials];
-                // updatedMaterials[index].isEditable = false;
-                // setMaterials(updatedMaterials);
-                // toast.success('Material updated successfully!');
-                const updatedMaterial = await response.json(); // Assuming API returns updated data
                 const updatedMaterials = [...materials];
-                updatedMaterials[index] = { ...updatedMaterials[index], ...updatedMaterial, isEditable: false };
+                updatedMaterials[index].isEditable = false;
                 setMaterials(updatedMaterials);
                 toast.success('Material updated successfully!');
             } else {

@@ -1,12 +1,38 @@
-import React from 'react';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Grid, Paper, IconButton } from '@mui/material';
 import { useRouter } from 'next/router';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { API_BASE_URL } from '../api/http.api';
 
 const HomePage = () => {
     const router = useRouter();
+    const [totalProjects, setTotalProjects] = useState<number>(0);
 
-    // Dummy data for total projects count
-    const totalProjects = 50;
+    // Fetch total projects count
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('Token not found');
+                }
+                const response = await fetch(`${API_BASE_URL}/projects/professional`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const data = await response.json();
+                setTotalProjects(data.length); // Assuming the API returns an array of projects
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
 
     // Navigation handler
     const handleNavigation = (path: string) => {
@@ -78,18 +104,34 @@ const HomePage = () => {
                         }}
                     >
                         <Typography variant="h5" sx={{ fontWeight: 'bold', }}> {/* color: '#E65100' Dark Tangerine */}
-                           Material Price Index
+                            Material Price Index
                         </Typography>
-                        <Typography variant="h1" sx={{ marginTop: '5px',  }}> {/* color: '#FB8C00' Medium Tangerine */}
-                        M.P.I
+                        <Typography variant="h1" sx={{ marginTop: '5px', }}> {/* color: '#FB8C00' Medium Tangerine */}
+                            M.P.I
                         </Typography>
-                        <Typography sx={{ marginTop: '60px', fontSize: '14px',  }}> {/* color: '#FFB74D' Light Tangerine */}
+                        <Typography sx={{ marginTop: '60px', fontSize: '14px', }}> {/* color: '#FFB74D' Light Tangerine */}
                             Click to manage items
                         </Typography>
                     </Paper>
                 </Grid>
 
             </Grid>
+
+            {/* Floating button for roles page */}
+            <IconButton
+                onClick={() => handleNavigation('/company/roles')}
+                sx={{
+                    position: 'absolute',
+                    top: 100,
+                    right: 20,
+                    backgroundColor: '#FFA726',
+                    '&:hover': {
+                        backgroundColor: '#FB8C00',
+                    },
+                }}
+            >
+                <AddCircleIcon sx={{ color: 'white' }} />
+            </IconButton>
         </Box>
     );
 };

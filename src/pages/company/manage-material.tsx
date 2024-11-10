@@ -14,6 +14,11 @@ import {
     Paper,
     useTheme,
     Button,
+    MenuItem,
+    Select,
+    List,
+    ListItem,
+    ListItemText,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,6 +28,7 @@ import { initializeApp } from 'firebase/app';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BorderRadius } from 'mdi-material-ui';
 
 
 // Your Firebase configuration
@@ -77,7 +83,16 @@ interface Material {
     imageUrl: string;
     isEditable: boolean;  // New property to track if a row is in edit mode
     updatedBy?: User | null;
+    // variationOptions: VariationOption[];
+    variationOptions?: VariationOption[];
+}
 
+// Define VariationOption interface
+interface VariationOption {
+    id: string;
+    description: string;
+    rate: number;
+    isEditable?: boolean;
 }
 
 interface User {
@@ -92,8 +107,10 @@ const ManageMaterial = () => {
 
     // State to manage the materials list
     const [materials, setMaterials] = useState<Material[]>([]);
+    const [variationOptions, setVariationOptions] = useState<{ description: string; rate: number }[]>([]); // New state for variation options
     const [imageFile, setImageFile] = useState<File | null>(null); // State for image file 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+
 
     // Fetch materials on component mount
     useEffect(() => {
@@ -112,7 +129,15 @@ const ManageMaterial = () => {
                 });
                 const data = await response.json();
                 console.log('fetched data', data);
-                setMaterials(data);
+                // Add variation options to each material based on fetched data
+                const materialsWithVariations = data.map((material: any) => ({
+                    ...material,
+                    isEditable: false,
+                    variationOptions: material.variationOptions || [], // Ensure variationOptions is present
+                }));
+
+                setMaterials(materialsWithVariations);
+                // setMaterials(data);
             } catch (error) {
                 console.error("Failed to fetch materials:", error);
             }
@@ -146,13 +171,31 @@ const ManageMaterial = () => {
 
 
     // Handle input changes for a material
-    const handleMaterialChange = (index: number, field: keyof Material, value: string | number) => {
+    const handleMaterialChange = (index: number, field: string, value: string | number) => {
         const updatedMaterials = [...materials];
         updatedMaterials[index] = {
             ...updatedMaterials[index],
             [field]: value,
         };
+        const material = updatedMaterials[index];
+        if (field === 'description') {
+            material.description = value as string;
+            const selectedOption = material.variationOptions?.find(opt => opt.description === value);
+            material.rate = selectedOption ? selectedOption.rate : material.rate;
+        }
         setMaterials(updatedMaterials);
+    };
+
+    // Function to add a new variation option 
+    const addNewVariationOption = (index: number, newOption: { id: string; description: string; rate: number }) => {
+        setMaterials(prevMaterials => {
+            const updatedMaterials = [...prevMaterials];
+            const material = { ...updatedMaterials[index] };
+            material.variationOptions = material.variationOptions ? [...material.variationOptions] : [];
+            material.variationOptions.push(newOption);
+            updatedMaterials[index] = material;
+            return updatedMaterials;
+        });
     };
 
     // Add a new row with empty fields but make it part of `materials` state
@@ -174,6 +217,7 @@ const ManageMaterial = () => {
             imageUrl: '',
             isEditable: true,
             createdBy: user?.id,
+            variationOptions: [],
 
         };
         const updatedMaterials = [...materials];
@@ -193,6 +237,15 @@ const ManageMaterial = () => {
         }
         // Log the payload to check for accuracy
         console.log('Payload before sending:', material);
+
+        // Only send the description and rate for each variation option
+        const materialData = {
+            ...material,
+            variationOptions: material.variationOptions?.map(option => ({
+                description: option.description,
+                rate: option.rate
+            }))
+        };
         const token = localStorage.getItem('token');
         const apiUrl = `${API_BASE_URL}/variations-categories/company`;
 
@@ -203,7 +256,7 @@ const ManageMaterial = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(material),
+                body: JSON.stringify(materialData),
             });
 
             if (response.ok) {
@@ -224,32 +277,80 @@ const ManageMaterial = () => {
         }
     };
 
-    // Remove a material row and delete 
+
+    // Remove a material row and delete from the backend
     const removeMaterial = async (index: number) => {
         const materialToRemove = materials[index];
+
         if (materialToRemove.id) {
-            const token = localStorage.getItem('token');
-            const apiUrl = `${API_BASE_URL}/variations-categories/${materialToRemove.id}/company`;
-            await fetch(apiUrl, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to delete material');
-                    }
-                    toast.success('Material deleted successfully!');
-                })
-                .catch(error => {
-                    toast.error('Error deleting material');
-                    console.error('Error deleting material:', error);
+            try {
+                const token = localStorage.getItem('token');
+                const apiUrl = `${API_BASE_URL}/variations-categories/${materialToRemove.id}/company`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
                 });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete material');
+                }
+
+                // Update state only after successful deletion
+                setMaterials(prevMaterials => prevMaterials.filter((_, i) => i !== index));
+                toast.success('Material deleted successfully!');
+
+            } catch (error) {
+                toast.error('Error deleting material');
+                console.error('Error deleting material:', error);
+            }
+        } else {
+            // Remove from local state if there's no backend ID (e.g., unsaved material)
+            setMaterials(prevMaterials => prevMaterials.filter((_, i) => i !== index));
+            toast.success('Material removed successfully!');
         }
-        const updatedMaterials = materials.filter((_, i) => i !== index);
-        setMaterials(updatedMaterials);
+    };
+
+
+    // Function to toggle edit mode for a variation option
+    const handleEditVariation = (materialIndex: number, optionIndex: number) => {
+        setMaterials((prevMaterials) => {
+            const updatedMaterials = [...prevMaterials];
+            const material = updatedMaterials[materialIndex];
+
+            // Make sure variationOptions exists before modifying it
+            if (material.variationOptions) {
+                material.variationOptions[optionIndex].isEditable = !material.variationOptions[optionIndex].isEditable;
+            }
+
+            return updatedMaterials;
+        });
+    };
+
+    // Function to handle changes in variation option properties
+    const handleVariationChange = (
+        materialIndex: number,
+        optionIndex: number,
+        field: keyof VariationOption,
+        value: string | number
+    ) => {
+        setMaterials((prevMaterials) => {
+            const updatedMaterials = [...prevMaterials];
+            const material = updatedMaterials[materialIndex];
+
+            // Ensure variationOptions exists before modifying it
+            if (material.variationOptions) {
+                material.variationOptions[optionIndex] = {
+                    ...material.variationOptions[optionIndex],
+                    [field]: value,
+                };
+            }
+
+            return updatedMaterials;
+        });
     };
 
     // update the material.
@@ -275,17 +376,46 @@ const ManageMaterial = () => {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({
-                    imageUrl,           // Include the updated image URL
+                    //     imageUrl,           // Include the updated image URL
+                    //     item: material.item, // Include item field
+                    //     description: material.description,
+                    //     rate: material.rate, // Include rate field
+                    //     variationOptions: material.variationOptions?.map(option => ({
+                    //     id: option.id,
+                    //     description: option.description,
+                    //     rate: option.rate,
+                    // })),
+                    imageUrl,            // Include the updated image URL
                     item: material.item, // Include item field
                     description: material.description,
                     rate: material.rate, // Include rate field
+                    variationOptions: material.variationOptions?.map(option => ({
+                        // Send options with or without `id` to handle both existing and new options
+                        id: option.id || null,
+                        description: option.description,
+                        rate: option.rate,
+                    })) || [], // Default to an empty array if variationOptions is undefined
                 }),
             });
 
             if (response.ok) {
-                const updatedMaterials = [...materials];
-                updatedMaterials[index].isEditable = false;
-                setMaterials(updatedMaterials);
+                // setMaterials((prevMaterials) => {
+                //     const updatedMaterials = [...(prevMaterials || [])];
+                //     if (updatedMaterials[index]) {
+                //         updatedMaterials[index].isEditable = false; // Ensure index is within bounds
+                //     }
+                //     return updatedMaterials;
+                // });
+
+                setMaterials((prevMaterials) => {
+                    const updatedMaterials = [...(prevMaterials || [])];
+                    if (updatedMaterials[index]) {
+                        updatedMaterials[index].isEditable = false;
+                        // Mark all options as non-editable after update
+                        updatedMaterials[index].variationOptions?.forEach(opt => (opt.isEditable = false));
+                    }
+                    return updatedMaterials;
+                });
                 toast.success('Material updated successfully!');
             } else {
                 console.error('Failed to update material');
@@ -308,6 +438,56 @@ const ManageMaterial = () => {
             await saveNewMaterialRow(index);
         }
     };
+
+    // Remove a variation option row and delete from the backend
+    const removeVariationOption = async (categoryIndex: number, optionIndex: number) => {
+        const category = materials[categoryIndex];
+
+        if (!category.variationOptions) {
+            console.error('No variation options found for this category');
+            return;
+        }
+
+        const optionToRemove = category.variationOptions[optionIndex];
+
+        if (optionToRemove?.id) {
+            try {
+                const token = localStorage.getItem('token');
+                const apiUrl = `${API_BASE_URL}/categories/${category.id}/options/${optionToRemove.id}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete variation option');
+                }
+
+                setMaterials(prevMaterials => {
+                    const updatedMaterials = [...prevMaterials];
+                    updatedMaterials[categoryIndex].variationOptions = updatedMaterials[categoryIndex].variationOptions?.filter((_, i) => i !== optionIndex);
+                    return updatedMaterials;
+                });
+                toast.success('Variation option deleted successfully!');
+
+            } catch (error) {
+                toast.error('Error deleting variation option');
+                console.error('Error deleting variation option:', error);
+            }
+        } else {
+            setMaterials(prevMaterials => {
+                const updatedMaterials = [...prevMaterials];
+                updatedMaterials[categoryIndex].variationOptions = updatedMaterials[categoryIndex].variationOptions?.filter((_, i) => i !== optionIndex);
+                return updatedMaterials;
+            });
+            toast.success('Variation option removed successfully!');
+        }
+    };
+
 
 
     return (
@@ -411,24 +591,99 @@ const ManageMaterial = () => {
                                             disabled={!material.isEditable}
                                         />
                                     </TableCell>
+
                                     <TableCell>
-                                        <TextField
-                                            fullWidth
-                                            variant="standard"
-                                            value={material.description}
-                                            onChange={(e) => handleMaterialChange(index, 'description', e.target.value)}
-                                            disabled={!material.isEditable}
-                                        />
+                                        {material.isEditable ? (
+                                            <Select
+                                                value={material.description}
+                                                onChange={(e) => handleMaterialChange(index, 'description', e.target.value as string)}
+                                                fullWidth
+                                            >
+                                                {material.variationOptions?.map((option) => (
+                                                    <MenuItem key={option.description} value={option.description}>
+                                                        {option.description} - {option.rate}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        ) : (
+                                            <Typography>{material.description}</Typography>
+                                        )}
                                     </TableCell>
                                     <TableCell>
-                                        <TextField
-                                            fullWidth
-                                            variant="standard"
-                                            type="number"
-                                            value={material.rate}
-                                            onChange={(e) => handleMaterialChange(index, 'rate', +e.target.value)}
-                                            disabled={!material.isEditable}
-                                        />
+                                        {material.isEditable ? (
+                                            <TextField
+                                                type="number"
+                                                value={material.rate}
+                                                onChange={(e) => handleMaterialChange(index, 'rate', e.target.value)}
+                                                fullWidth
+                                            />
+                                        ) : (
+                                            <Typography>{material.rate}</Typography>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        {material.isEditable && (
+                                            <div>
+                                                <TextField
+                                                    value={material.description}
+                                                    onChange={(e) => handleMaterialChange(index, 'description', e.target.value)}
+                                                    fullWidth
+                                                    label="New Variation Description"
+
+                                                />
+                                                <TextField
+                                                    type="number"
+                                                    value={material.rate}
+                                                    onChange={(e) => handleMaterialChange(index, 'rate', parseFloat(e.target.value))}
+                                                    fullWidth
+                                                    label="New Variation Rate"
+                                                    sx={{ marginTop: 1, BorderRadius: "8px" }}
+                                                />
+                                                <Button
+                                                    onClick={() => addNewVariationOption(index, { id: "", description: material.description, rate: material.rate })}
+                                                    variant="outlined"
+                                                    sx={{ marginTop: 1, height: "30px", BorderRadius: "8px" }}
+                                                >
+                                                    Add Variation
+                                                </Button>
+                                                <List>
+                                                    {material.variationOptions?.map((option, i) => (
+                                                        <ListItem key={i} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                            {option.isEditable ? (
+                                                                <Box display="flex" alignItems="center">
+                                                                    <TextField
+                                                                        label="Description"
+                                                                        value={option.description}
+                                                                        onChange={(e) => handleVariationChange(index, i, 'description', e.target.value)}
+                                                                        fullWidth
+                                                                    />
+                                                                    <TextField
+                                                                        label="Rate"
+                                                                        type="number"
+                                                                        value={option.rate}
+                                                                        onChange={(e) => handleVariationChange(index, i, 'rate', e.target.value)}
+                                                                        sx={{ marginLeft: 2 }}
+                                                                    />
+                                                                    <IconButton onClick={() => saveMaterialUpdate(index)} color="primary">
+                                                                        Save
+                                                                    </IconButton>
+                                                                </Box>
+                                                            ) : (
+                                                                <ListItemText primary={`${option.description} - ${option.rate}`} />
+                                                            )}
+                                                            <Box>
+                                                                <IconButton onClick={() => handleEditVariation(index, i)} color="secondary">
+                                                                    <EditIcon />
+                                                                </IconButton>
+                                                                <IconButton onClick={() => removeVariationOption(index, i)} color="error">
+                                                                    -
+                                                                </IconButton>
+                                                            </Box>
+                                                        </ListItem>
+                                                    ))}
+                                                </List>
+                                            </div>
+                                        )}
                                     </TableCell>
 
                                     <TableCell sx={{
