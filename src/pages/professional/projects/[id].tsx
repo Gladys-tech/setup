@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Box, Typography, TextField, Grid, Button, Dialog, DialogActions, DialogContent, DialogTitle, useTheme, IconButton } from '@mui/material';
 import Image from 'next/image';
 import EditIcon from '@mui/icons-material/Edit';
@@ -8,6 +8,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EmailIcon from '@mui/icons-material/Email';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { API_BASE_URL } from 'src/pages/api/http.api';
+import html2canvas from 'html2canvas';
 
 const phaseColors: { [key: string]: string } = {
     Foundation: '#8B4513', // Earthy Brown   
@@ -191,12 +192,26 @@ const ProjectDetails = () => {
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
     };
 
+    // Ref to capture the entire page
+    const pageRef = useRef<HTMLDivElement>(null);
+
+    const handleCaptureScreenshot = async () => {
+        if (pageRef.current) {
+            const canvas = await html2canvas(pageRef.current);
+            const imgData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = 'project_details_screenshot.png';
+            link.click();
+        }
+    };
+
     if (!project) {
         return <Typography>Loading...</Typography>;
     }
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', padding: '8px' }}>
+        <Box ref={pageRef} sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', padding: '8px' }}>
             <IconButton
                 sx={{
                     position: 'fixed',
@@ -279,7 +294,7 @@ const ProjectDetails = () => {
             <IconButton
                 sx={{
                     position: 'fixed',
-                    bottom: 45,
+                    bottom: 80,
                     right: 16,
                     backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
@@ -291,6 +306,10 @@ const ProjectDetails = () => {
                 onClick={handleShareOpen}
             >
                 <ShareIcon />
+            </IconButton>
+
+            <IconButton onClick={handleCaptureScreenshot} sx={{ position: 'fixed', right: 16, bottom: 45, }}>
+                Capture Screenshot
             </IconButton>
 
             <Dialog open={shareOpen} onClose={handleShareClose}>

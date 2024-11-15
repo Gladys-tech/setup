@@ -376,22 +376,15 @@ const ManageMaterial = () => {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({
-                    //     imageUrl,           // Include the updated image URL
-                    //     item: material.item, // Include item field
-                    //     description: material.description,
-                    //     rate: material.rate, // Include rate field
-                    //     variationOptions: material.variationOptions?.map(option => ({
-                    //     id: option.id,
-                    //     description: option.description,
-                    //     rate: option.rate,
-                    // })),
                     imageUrl,            // Include the updated image URL
                     item: material.item, // Include item field
                     description: material.description,
                     rate: material.rate, // Include rate field
                     variationOptions: material.variationOptions?.map(option => ({
                         // Send options with or without `id` to handle both existing and new options
-                        id: option.id || null,
+                        // id: option.id ||"",
+                        // Only include `id` if it exists
+                        ...(option.id ? { id: option.id } : {}),
                         description: option.description,
                         rate: option.rate,
                     })) || [], // Default to an empty array if variationOptions is undefined
@@ -399,14 +392,6 @@ const ManageMaterial = () => {
             });
 
             if (response.ok) {
-                // setMaterials((prevMaterials) => {
-                //     const updatedMaterials = [...(prevMaterials || [])];
-                //     if (updatedMaterials[index]) {
-                //         updatedMaterials[index].isEditable = false; // Ensure index is within bounds
-                //     }
-                //     return updatedMaterials;
-                // });
-
                 setMaterials((prevMaterials) => {
                     const updatedMaterials = [...(prevMaterials || [])];
                     if (updatedMaterials[index]) {
@@ -537,6 +522,10 @@ const ManageMaterial = () => {
                                 </TableCell>
 
                                 <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, }}>
+                                    Variaty Options
+                                </TableCell>
+
+                                <TableCell sx={{ fontWeight: 600, padding: '6px 10px', position: 'sticky', top: 0, backgroundColor: theme.palette.background.paper, zIndex: 1, }}>
                                     Actions
                                 </TableCell>
                             </TableRow>
@@ -623,38 +612,50 @@ const ManageMaterial = () => {
                                     </TableCell>
                                     <TableCell>
                                         {material.isEditable && (
-                                            <div>
-                                                <TextField
-                                                    value={material.description}
-                                                    onChange={(e) => handleMaterialChange(index, 'description', e.target.value)}
-                                                    fullWidth
-                                                    label="New Variation Description"
+                                            <Box sx={{ padding: 2, borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
+                                                {/* New Variation Input Fields */}
+                                                <Box display="flex" flexDirection="column" gap={1} mb={2}>
+                                                    <TextField
+                                                        value={material.description}
+                                                        onChange={(e) => handleMaterialChange(index, 'description', e.target.value)}
+                                                        fullWidth
+                                                        label="New Variation Description"
+                                                        variant="outlined"
+                                                        size="small"
+                                                    />
+                                                    <TextField
+                                                        type="number"
+                                                        value={material.rate}
+                                                        onChange={(e) => handleMaterialChange(index, 'rate', parseFloat(e.target.value))}
+                                                        fullWidth
+                                                        label="New Variation Rate"
+                                                        variant="outlined"
+                                                        size="small"
+                                                        sx={{ mt: 1 }}
+                                                    />
+                                                    <Button
+                                                        onClick={() => addNewVariationOption(index, { id: "", description: material.description, rate: material.rate })}
+                                                        variant="outlined"
+                                                        color="primary"
+                                                        size="small"
+                                                        sx={{ mt: 2, alignSelf: 'flex-start', textTransform: 'none' }}
+                                                    >
+                                                        Add Variation
+                                                    </Button>
+                                                </Box>
 
-                                                />
-                                                <TextField
-                                                    type="number"
-                                                    value={material.rate}
-                                                    onChange={(e) => handleMaterialChange(index, 'rate', parseFloat(e.target.value))}
-                                                    fullWidth
-                                                    label="New Variation Rate"
-                                                    sx={{ marginTop: 1, BorderRadius: "8px" }}
-                                                />
-                                                <Button
-                                                    onClick={() => addNewVariationOption(index, { id: "", description: material.description, rate: material.rate })}
-                                                    variant="outlined"
-                                                    sx={{ marginTop: 1, height: "30px", BorderRadius: "8px" }}
-                                                >
-                                                    Add Variation
-                                                </Button>
-                                                <List>
+                                                {/* Variation Options List */}
+                                                <List dense sx={{ mt: 2, bgcolor: '#ffffff', borderRadius: '8px', boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.1)' }}>
                                                     {material.variationOptions?.map((option, i) => (
-                                                        <ListItem key={i} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <ListItem key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 1.5, py: 1 }}>
                                                             {option.isEditable ? (
-                                                                <Box display="flex" alignItems="center">
+                                                                <Box display="flex" alignItems="center" gap={1} width="100%">
                                                                     <TextField
                                                                         label="Description"
                                                                         value={option.description}
                                                                         onChange={(e) => handleVariationChange(index, i, 'description', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
                                                                         fullWidth
                                                                     />
                                                                     <TextField
@@ -662,29 +663,32 @@ const ManageMaterial = () => {
                                                                         type="number"
                                                                         value={option.rate}
                                                                         onChange={(e) => handleVariationChange(index, i, 'rate', e.target.value)}
-                                                                        sx={{ marginLeft: 2 }}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        sx={{ width: '100px' }}
                                                                     />
-                                                                    <IconButton onClick={() => saveMaterialUpdate(index)} color="primary">
+                                                                    <IconButton onClick={() => saveMaterialUpdate(index)} color="primary" size="small">
                                                                         Save
                                                                     </IconButton>
                                                                 </Box>
                                                             ) : (
                                                                 <ListItemText primary={`${option.description} - ${option.rate}`} />
                                                             )}
-                                                            <Box>
-                                                                <IconButton onClick={() => handleEditVariation(index, i)} color="secondary">
+                                                            <Box display="flex" alignItems="center">
+                                                                <IconButton onClick={() => handleEditVariation(index, i)} color="secondary" size="small">
                                                                     <EditIcon />
                                                                 </IconButton>
-                                                                <IconButton onClick={() => removeVariationOption(index, i)} color="error">
+                                                                <IconButton onClick={() => removeVariationOption(index, i)} color="error" size="small">
                                                                     -
                                                                 </IconButton>
                                                             </Box>
                                                         </ListItem>
                                                     ))}
                                                 </List>
-                                            </div>
+                                            </Box>
                                         )}
                                     </TableCell>
+
 
                                     <TableCell sx={{
                                         display: 'flex',

@@ -11,7 +11,10 @@ import {
     TableRow,
     Paper,
     useTheme,
-    IconButton
+    IconButton,
+    FormControl,
+    Select,
+    MenuItem
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CallIcon from '@mui/icons-material/Call';
@@ -19,6 +22,7 @@ import { API_BASE_URL } from 'src/pages/api/http.api';
 
 // Define the Material interface
 interface Material {
+    variationOptions: any;
     image: string | undefined;
     id: any;
     item: string;
@@ -86,6 +90,23 @@ const MaterialSchedule = () => {
                 });
         }
     }, [id]);
+
+    // Function to update description, rate, and amount
+    const handleDescriptionChange = (id: string, newDescription: string, newRate: number) => {
+        setMaterials(prevMaterials =>
+            prevMaterials.map(material =>
+                material.id === id
+                    ? {
+                        ...material,
+                        description: newDescription,
+                        rate: newRate,
+                        amount: newRate * material.quantity, // Recalculate amount
+                    }
+                    : material
+            )
+        );
+    };
+
 
     // Calculate total amount
     const totalAmount = materials.reduce((total, material) => total + Number(material.amount || 0), 0);
@@ -165,8 +186,34 @@ const MaterialSchedule = () => {
                                     <Typography>{material.item}</Typography>
                                 </TableCell>
                                 <TableCell sx={{ padding: '4px 8px' }}>
-                                    <Typography>{material.description}</Typography>
+                                    {/* Description Dropdown */}
+                                    <FormControl fullWidth>
+                                        <Select
+                                            value={material.variationOptions?.length > 0 ? material.description : material.description}
+                                            onChange={(e) => {
+                                                const selectedOption = material.variationOptions?.find((option: { description: string; }) => option.description === e.target.value);
+                                                if (selectedOption) {
+                                                    handleDescriptionChange(material.id, e.target.value, selectedOption.rate);
+                                                }
+                                            }}
+                                        >
+                                            {/* If variationOptions is empty, just display the material.description */}
+                                            {material.variationOptions?.length > 0 ? (
+                                                material.variationOptions?.map((option: { description: any; }, idx: any) => (
+                                                    <MenuItem key={idx} value={option.description}>
+                                                        {option.description}
+                                                    </MenuItem>
+                                                ))
+                                            ) : (
+                                                // If variationOptions is empty, just show the description
+                                                <MenuItem value={material.description}>
+                                                    {material.description}
+                                                </MenuItem>
+                                            )}
+                                        </Select>
+                                    </FormControl>
                                 </TableCell>
+
                                 <TableCell sx={{ padding: '4px 8px' }}>
                                     <Typography>{material.unit}</Typography>
                                 </TableCell>

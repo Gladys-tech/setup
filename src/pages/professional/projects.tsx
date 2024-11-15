@@ -176,7 +176,6 @@ const Projects = () => {
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
     };
 
-
     // Function to generate PDF for a project
     const handleDownload = async (projectName: string, projectId: number) => {
         const project = projects.find((p) => p.id === projectId);
@@ -220,18 +219,6 @@ const Projects = () => {
                 doc.text('No phases available.', 20, yOffset);
             }
 
-            // // Capture hidden ProjectDetails component screenshot
-            // if (projectDetailsRef.current) {
-            //     html2canvas(projectDetailsRef.current).then((canvas) => {
-            //         const imgData = canvas.toDataURL('image/png');
-            //         const imgWidth = pdfWidth - 40;
-            //         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            //         doc.addImage(imgData, 'PNG', 20, yOffset + 10, imgWidth, imgHeight);
-            //         doc.save(`${projectName}_details.pdf`);
-            //     });
-            // } else {
-            //     doc.save(`${projectName}_details.pdf`);
-            // }
             // Capture and add ProjectDetails component screenshot
             if (projectDetailsRef.current) {
                 html2canvas(projectDetailsRef.current).then((canvas) => {

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     Box,
     Typography,
@@ -14,6 +14,9 @@ import {
     Paper,
     useTheme,
     Button,
+    MenuItem,
+    FormControl,
+    Select,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,6 +26,7 @@ import { initializeApp } from 'firebase/app';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import html2canvas from 'html2canvas';
 
 
 // Your Firebase configuration
@@ -68,6 +72,7 @@ const uploadImageToFirebase = async (file: File): Promise<string> => {
 
 // Define the Material interface
 interface Material {
+    variationOptions: any;
     image: string | undefined;
     id: any;
     item: string;
@@ -176,6 +181,23 @@ const MaterialSchedule = () => {
         setMaterials(updatedMaterials);
     };
 
+    // Function to update description, rate, and amount
+    const handleDescriptionChange = (id: string, newDescription: string, newRate: number) => {
+        setMaterials(prevMaterials =>
+            prevMaterials.map(material =>
+                material.id === id
+                    ? {
+                        ...material,
+                        description: newDescription,
+                        rate: newRate,
+                        amount: newRate * material.quantity, // Recalculate amount
+                    }
+                    : material
+            )
+        );
+    };
+
+
     // Add a new row with empty fields but make it part of `materials` state
     const addMaterial = (index: number) => {
         const storedUser = localStorage.getItem('user');
@@ -199,6 +221,7 @@ const MaterialSchedule = () => {
             isEditable: true,
             createdBy: user?.id,
             phaseId: id as string,
+            variationOptions: [],
         };
         const updatedMaterials = [...materials];
         updatedMaterials.splice(index + 1, 0, emptyMaterial); // Insert after the clicked row
@@ -328,10 +351,25 @@ const MaterialSchedule = () => {
     // color is a string. use a fallback color if it's not defined
     const phaseColor = Array.isArray(color) ? color[0] : color || theme.palette.primary.main;
 
+    // Ref to capture the entire page
+    const pageRef = useRef<HTMLDivElement>(null);
+
+    const handleCaptureScreenshot = async () => {
+        if (pageRef.current) {
+            const canvas = await html2canvas(pageRef.current);
+            const imgData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = 'material_schedule_screenshot.png';
+            link.click();
+        }
+    };
+
+
     return (
         <>
             <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
-            <Box p={4} position="relative">
+            <Box ref={pageRef} p={4} position="relative">
                 {/* Back arrow button for easy navigation */}
                 <IconButton
                     sx={{
@@ -350,6 +388,10 @@ const MaterialSchedule = () => {
                     onClick={() => router.back()} // Navigates to the previous page
                 >
                     <ArrowBackIcon />
+                </IconButton>
+
+                <IconButton onClick={handleCaptureScreenshot} sx={{ position: 'fixed', top: 75, right: 16, }}>
+                    Capture Screenshot
                 </IconButton>
 
                 <Typography variant="h5" sx={{ mb: 2 }}>
@@ -437,7 +479,7 @@ const MaterialSchedule = () => {
                                             }}
                                         />
                                     </TableCell>
-                                    <TableCell sx={{ padding: '4px 8px', minWidth: 100, minHeight: 100, }}>
+                                    <TableCell sx={{ padding: '4px 8px', minWidth: 100, minHeight: 100 }}>
                                         {material.isEditable ? (
                                             <TextField
                                                 fullWidth
@@ -450,10 +492,35 @@ const MaterialSchedule = () => {
                                                 }}
                                             />
                                         ) : (
-                                            material.description
+                                            <FormControl fullWidth>
+                                                <Select
+                                                    value={material.variationOptions?.length > 0 ? material.description : material.description}
+                                                    onChange={(e) => {
+                                                        const selectedOption = material.variationOptions?.find((option: { description: string; }) => option.description === e.target.value);
+                                                        if (selectedOption) {
+                                                            handleDescriptionChange(material.id, e.target.value, selectedOption.rate);
+                                                        }
+                                                    }}
+                                                >
+                                                    {/* If variationOptions is empty, just display the material.description */}
+                                                    {material.variationOptions?.length > 0 ? (
+                                                        material.variationOptions?.map((option: { description: any; }, idx: any) => (
+                                                            <MenuItem key={idx} value={option.description}>
+                                                                {option.description}
+                                                            </MenuItem>
+                                                        ))
+                                                    ) : (
+                                                        // If variationOptions is empty, just show the description
+                                                        <MenuItem value={material.description}>
+                                                            {material.description}
+                                                        </MenuItem>
+                                                    )}
+                                                </Select>
+                                            </FormControl>
                                         )}
                                     </TableCell>
-                                     <TableCell sx={{ padding: '4px 8px', minWidth: 100, minHeight: 100, }}>
+
+                                    <TableCell sx={{ padding: '4px 8px', minWidth: 100, minHeight: 100, }}>
                                         {material.isEditable ? (
                                             <TextField
                                                 fullWidth
@@ -532,13 +599,16 @@ const MaterialSchedule = () => {
                     </Table>
                 </TableContainer>
 
+
                 {/* Total Amount Display */}
                 <Box display="flex" justifyContent="flex-end" mt={2}>
                     <Typography variant="h6">
                         Total Amount: {totalAmount}
                     </Typography>
                 </Box>
+               
             </Box>
+
         </>
     );
 };
