@@ -294,7 +294,7 @@ const ProjectDetails = () => {
             <IconButton
                 sx={{
                     position: 'fixed',
-                    bottom: 80,
+                    bottom: 45,
                     right: 16,
                     backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
@@ -308,9 +308,9 @@ const ProjectDetails = () => {
                 <ShareIcon />
             </IconButton>
 
-            <IconButton onClick={handleCaptureScreenshot} sx={{ position: 'fixed', right: 16, bottom: 45, }}>
+            {/* <IconButton onClick={handleCaptureScreenshot} sx={{ position: 'fixed', right: 16, bottom: 45, }}>
                 Capture Screenshot
-            </IconButton>
+            </IconButton> */}
 
             <Dialog open={shareOpen} onClose={handleShareClose}>
                 <DialogTitle>Share Project Link</DialogTitle>

@@ -214,10 +214,21 @@ const ProjectDetails = () => {
                     <ViewIcon />
                   </IconButton>
                   <Typography sx={{ fontSize: '20px', fontWeight: 'bold', ml: 2, mr: 2 }}>{phase.total}</Typography>
-                  <Typography sx={{ fontSize: '16px', m1: 3 }}>Total for {''}
+                  <Typography sx={{ fontSize: '16px', m1: 2 , mr:2 }}>Total for {''}
                     <span style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>{phase.phaseName}
                     </span>
                   </Typography>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={(e) => {
+                      e.stopPropagation(); 
+                      router.push(`/save-phase/${phase.id}`); 
+                    }}
+                    sx={{ textTransform: 'none', }}
+                  >
+                    save for phase
+                  </Button>
                 </Box>
               ))}
           </Box>

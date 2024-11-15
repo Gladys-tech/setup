@@ -390,9 +390,9 @@ const MaterialSchedule = () => {
                     <ArrowBackIcon />
                 </IconButton>
 
-                <IconButton onClick={handleCaptureScreenshot} sx={{ position: 'fixed', top: 75, right: 16, }}>
+                {/* <IconButton onClick={handleCaptureScreenshot} sx={{ position: 'fixed', top: 75, right: 16, }}>
                     Capture Screenshot
-                </IconButton>
+                </IconButton> */}
 
                 <Typography variant="h5" sx={{ mb: 2 }}>
                     Material Schedule for <span style={{ color: phaseColor, fontWeight: 'bold' }}>{phaseName}</span>

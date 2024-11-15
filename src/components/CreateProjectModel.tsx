@@ -86,10 +86,26 @@ interface User {
     lastName: string;
 }
 
+
 interface Phase {
     id: string;
     phaseName: string;
     phaseDescription: string;
+    materialSchedules: MaterialSchedule[];
+}
+
+interface MaterialSchedule {
+    image: any;
+    id: string;
+    amount: string;
+    description: string;
+    item: string;
+    quantity: string;
+    rate: string;
+    unit: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 const modalStyle = {

@@ -42,6 +42,21 @@ interface Phase {
     id: string;
     phaseName: string;
     phaseDescription: string;
+    materialSchedules: MaterialSchedule[];
+}
+
+interface MaterialSchedule {
+    image: any;
+    id: string;
+    amount: string;
+    description: string;
+    item: string;
+    quantity: string;
+    rate: string;
+    unit: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 const Projects = () => {
@@ -202,65 +217,90 @@ const Projects = () => {
             doc.addImage(imageData, 'JPEG', 20, 130, pdfWidth - 40, 100); // Adjust width and height
         };
 
-
         const savePDF = () => {
-            // Add phases section
+            // Set up the document
+            const pdfWidth = doc.internal.pageSize.getWidth();
+            const pdfHeight = doc.internal.pageSize.getHeight();
+
             doc.setFontSize(14);
-            doc.text(`Phases`, pdfWidth / 2, 300, { align: 'center' });
+            doc.text(`Phases`, pdfWidth / 2, 30, { align: 'center' });
             doc.setFontSize(12);
-            let yOffset = 330; // Start of phase details
+
+            let yOffset = 330; // Start of content
+
             if (project.phases && project.phases.length > 0) {
-                project.phases.forEach((phase, index) => {
-                    doc.text(`Phase ${index + 1}: ${phase.phaseName}`, 20, yOffset);
-                    doc.text(`Description: ${phase.phaseDescription}`, 20, yOffset + 20);
-                    yOffset += 80; // Adjust for the next phase
+                project.phases.forEach((phase, phaseIndex) => {
+                    // Phase title and description
+                    doc.setFontSize(12);
+                    doc.text(`Phase ${phaseIndex + 1}: ${phase.phaseName}`, 20, yOffset);
+                    yOffset += 20;
+                    doc.text(`Description: ${phase.phaseDescription}`, 20, yOffset);
+                    yOffset += 20;
+
+                    if (phase.materialSchedules && phase.materialSchedules.length > 0) {
+                        // Table headers
+                        const headers = ['Image', 'Item', 'Description', 'Quantity', 'Rate', 'Amount'];
+                        const headerX = [20, 100, 200, 350, 400, 480]; // X positions for each column
+                        doc.setFontSize(10);
+                        headers.forEach((header, index) => {
+                            doc.text(header, headerX[index], yOffset);
+                        });
+                        yOffset += 10;
+
+                        // Table rows
+                        phase.materialSchedules.forEach(async (schedule, i) => {
+                            // Add image if available
+                            if (schedule.image) {
+                                if (schedule.image.startsWith("http")) {
+                                    try {
+                                        // Fetch the image and convert to base64
+                                        const response = await fetch(schedule.image);
+                                        const blob = await response.blob();
+                                        const reader = new FileReader();
+                                        reader.onload = () => {
+                                            const imageData = reader.result as string; // Convert to base64
+                                            doc.addImage(imageData, "JPEG", 20, yOffset, 30, 30); // Add image to PDF
+                                        };
+                                        reader.readAsDataURL(blob); // Start reading the blob
+                                    } catch (error) {
+                                        console.error(`Error loading image: ${schedule.image}, Error: ${error}`);
+                                        doc.text("Image not available", 20, yOffset + 15); // Fallback text
+                                    }
+                                } else {
+                                    console.warn(`Unsupported image format: ${schedule.image}`);
+                                    doc.text("Image format not supported", 20, yOffset + 15); // Fallback text
+                                }
+                            } else {
+                                // If no image, display placeholder text
+                                doc.text("No Image", 20, yOffset + 15);
+                            }
+                            doc.text(schedule.item, 100, yOffset + 15); // Center text vertically for images
+                            doc.text(schedule.description, 200, yOffset + 15);
+                            doc.text(schedule.quantity.toString(), 350, yOffset + 15);
+                            doc.text(schedule.rate.toString(), 400, yOffset + 15);
+                            doc.text(schedule.amount.toString(), 480, yOffset + 15);
+                            yOffset += 40; // Move to next row
+                        });
+                    } else {
+                        doc.text('No material schedules available.', 20, yOffset);
+                        yOffset += 20;
+                    }
+
+                    // Add space before the next phase
+                    yOffset += 20;
+
+                    // Check if yOffset exceeds the page height, and add a new page if needed
+                    if (yOffset > pdfHeight - 40) {
+                        doc.addPage();
+                        yOffset = 40; // Reset yOffset for the new page
+                    }
                 });
             } else {
                 doc.text('No phases available.', 20, yOffset);
             }
 
-            // Capture and add ProjectDetails component screenshot
-            if (projectDetailsRef.current) {
-                html2canvas(projectDetailsRef.current).then((canvas) => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const imgWidth = pdfWidth - 40;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    doc.addImage(imgData, 'PNG', 20, yOffset + 10, imgWidth, imgHeight);
+            doc.save(`${projectName}_details.pdf`);
 
-                    // Update yOffset after ProjectDetails screenshot
-                    yOffset += imgHeight + 20;
-
-                    // Capture and add MaterialSchedule component screenshot
-                    if (materialScheduleRef.current) {
-                        html2canvas(materialScheduleRef.current).then((canvas) => {
-                            const imgData = canvas.toDataURL('image/png');
-                            const imgWidth = pdfWidth - 40;
-                            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                            doc.addImage(imgData, 'PNG', 20, yOffset + 40, imgWidth, imgHeight);
-                            doc.save(`${projectName}_details.pdf`);
-                        });
-                    } else {
-                        doc.save(`${projectName}_details.pdf`);
-                    }
-                });
-            } else {
-                doc.save(`${projectName}_details.pdf`);
-            }
-
-
-            // Capture table if available
-            const tableElement = document.getElementById(`project-table-${projectId}`);
-            if (tableElement) {
-                html2canvas(tableElement).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const imgWidth = pdfWidth - 40;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    doc.addImage(imgData, 'PNG', 20, yOffset + 10, imgWidth, imgHeight);
-                    doc.save(`${projectName}_details.pdf`);
-                });
-            } else {
-                doc.save(`${projectName}_details.pdf`);
-            }
         };
 
         // Check if project.image is a URL or File object
@@ -291,15 +331,6 @@ const Projects = () => {
 
     return (
         <>
-            {/* Hidden ProjectDetails component for capturing screenshot */}
-            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} ref={projectDetailsRef}>
-                <ProjectDetails /> {/* Accesses project ID directly via router query */}
-            </div>
-            {/* materialScheduleRef */}
-            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} ref={materialScheduleRef}>
-                <MaterialSchedule /> {/* Accesses project ID directly via router query */}
-            </div>
-
             <Box display="flex" flexDirection="column" flexGrow={1} p={1}>
                 <Grid container spacing={3}>
                     {/* first Box: Create Project */}
