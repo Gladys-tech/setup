@@ -14,7 +14,8 @@ import {
     IconButton,
     FormControl,
     Select,
-    MenuItem
+    MenuItem,
+    Slider
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CallIcon from '@mui/icons-material/Call';
@@ -23,6 +24,7 @@ import { API_BASE_URL } from 'src/pages/api/http.api';
 // Define the Material interface
 interface Material {
     variationOptions: any;
+    // variationOptions: { description: string; rate: number }[]; // Modified to define variations
     image: string | undefined;
     id: any;
     item: string;
@@ -58,6 +60,7 @@ const MaterialSchedule = () => {
     // State to manage the materials list
     const [materials, setMaterials] = useState<Material[]>([]);
     const [contactVisible, setContactVisible] = useState(false);
+    const [laborPercentage, setLaborPercentage] = useState<number>(15); // Initial percentage for labor
 
 
     // Fetch materials data from API when the component mounts or phase changes
@@ -111,6 +114,13 @@ const MaterialSchedule = () => {
     // Calculate total amount
     const totalAmount = materials.reduce((total, material) => total + Number(material.amount || 0), 0);
 
+
+    // Calculate labor cost based on the slider percentage
+    const laborAmount = (totalAmount * laborPercentage) / 100;
+
+    // Calculate grand total
+    const grandTotal = totalAmount + laborAmount;
+
     // color is a string. use a fallback color if it's not defined
     const phaseColor = Array.isArray(color) ? color[0] : color || theme.palette.primary.main;
 
@@ -145,7 +155,7 @@ const MaterialSchedule = () => {
                 Material Schedule for <span style={{ color: phaseColor, fontWeight: 'bold' }}>{phaseName}</span>
             </Typography>
 
-            <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 380, overflowY: 'auto' }}>
+            <TableContainer component={Paper} sx={{ boxShadow: 3, overflowX: 'auto', minWidth: 300, maxHeight: 250, overflowY: 'auto' }}>
                 <Table stickyHeader aria-label="simple table" sx={{ borderCollapse: 'collapse' }}>
                     <TableHead>
                         <TableRow>
@@ -237,6 +247,26 @@ const MaterialSchedule = () => {
                 <Typography variant="h6">
                     Total Amount: {totalAmount}
                 </Typography>
+            </Box>
+
+            {/* Labor Slider */}
+            <Box mt={2}>
+                <Typography variant="body1">Labor Percentage: {laborPercentage}%</Typography>
+                <Slider
+                    value={laborPercentage}
+                    min={15}
+                    max={30}
+                    step={1}
+                    onChange={(e, value) => setLaborPercentage(value as number)}
+                    aria-labelledby="labor-slider"
+                    sx={{ width: 300, mx: 'auto' }}
+                />
+                <Typography variant="body1">Labor Amount: {laborAmount.toFixed(2)}</Typography>
+            </Box>
+
+            {/* Grand Total */}
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+                <Typography variant="h5">Grand Total: {grandTotal}</Typography>
             </Box>
 
             {/* Fixed Call Icon with Contact Number */}
